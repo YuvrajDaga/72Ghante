@@ -532,6 +532,20 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .k4b{--c:140,90,255}
 #fkpis .kpi .tr{font-size:12px}
 .fbar label.srch2{flex-direction:row;align-items:center;font-weight:400}
+
+/* Analytics page */
+#akpis .kpi{height:132px}
+#akpis .kpi .tr{right:96px;overflow:hidden;text-overflow:ellipsis}#akpis .kpi .sp{height:44px}
+.alist{position:absolute;list-style:none;font-size:13px;right:14px}
+.alist li{height:32px;display:flex;align-items:center;gap:10px}
+.alist li i{width:12px;height:12px;border-radius:50%;flex:none;box-shadow:0 0 6px currentColor}
+.alist li span{flex:1}.alist li em{font-style:normal;width:40px;text-align:right;color:#dfe9e6}.alist li b{width:40px;text-align:right;font-weight:600}
+.cico{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none}.cico svg{width:16px;height:16px}
+.hg{position:absolute;left:14px;right:14px;top:44px;display:grid;grid-template-columns:34px repeat(8,1fr);gap:3px;font-size:10.5px;color:#d6e2de}
+.hg small{display:flex;align-items:center;justify-content:center;height:16px}
+.hg i{height:25px;border-radius:3px;animation:rise .5s both}
+.hl{position:absolute;left:14px;right:14px;bottom:12px;display:flex;justify-content:space-around;font-size:12px}
+.hl i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
 </style>
 </head>
 <body>
@@ -699,6 +713,30 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <div class="sTabs" id="fTabs" style="top:132px"><span class="on" data-t="ov">Overview</span><span data-t="pol">Policy &amp; Docs</span><span data-t="past">Past Cases</span><span data-t="con">Consent</span><span data-t="act">Activity</span></div>
       <div id="fBody" style="position:absolute;left:10px;right:10px;top:172px;bottom:56px;overflow:hidden"></div>
       <div class="sBtns" style="position:absolute;left:10px;right:10px;bottom:10px;margin:0"><span class="b1" data-a="Call"><i data-lucide="phone"></i>Call Farmer</span><span class="b3" data-a="WhatsApp"><i data-lucide="message-circle"></i>WhatsApp</span><span class="b2" data-a="Edit"><i data-lucide="square-pen"></i>Edit Profile</span><span class="b4" data-a="New case"><i data-lucide="plus"></i>New Case</span></div>
+    </section>
+  </div>
+  <div class="page" id="pg-analytics">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Analytics</div><h1>Analytics</h1>
+      <p>Track performance, identify bottlenecks and improve farmer support with real-time insights.</p>
+      <button class="pbtn exp" id="aExp" style="left:700px"><i data-lucide="download"></i>Export</button>
+    </section>
+    <section class="ckpis" id="akpis" style="height:132px"></section>
+    <section class="card" id="aDay" style="left:10px;top:316px;width:calc(64% - 12px);height:330px"><h3>Cases per Day</h3>
+      <div class="ctl" style="right:12px"><select class="pill" id="aReg"><option value="">All Regions</option><option>Nashik</option><option>Jodhpur</option></select></div>
+      <div class="leg" style="top:40px;bottom:auto"><span style="color:#2fe08a"><i style="background:#2fe08a"></i><b style="color:#e6eeec;font-weight:400">Submitted</b></span><span style="color:#3d8bff"><i style="background:#3d8bff"></i><b style="color:#e6eeec;font-weight:400">Acknowledged</b></span><span style="color:#facc15"><i style="background:#facc15"></i><b style="color:#e6eeec;font-weight:400">In Progress</b></span><span style="color:#ff3b4e"><i style="background:#ff3b4e"></i><b style="color:#e6eeec;font-weight:400">At Risk</b></span><span style="color:#5eead4"><i style="background:none;border:2px dashed #5eead4;box-shadow:none"></i><b style="color:#e6eeec;font-weight:400">Forecast (7d)</b></span></div>
+      <div style="position:absolute;left:8px;right:12px;top:66px;bottom:8px"><canvas id="aDayC"></canvas></div>
+    </section>
+    <section class="card" id="aDmg" style="left:calc(64% + 6px);top:316px;right:10px;height:330px"><h3>Damage Type Distribution</h3>
+      <div style="position:absolute;left:14px;top:56px;width:220px;height:220px"><canvas id="aDmgC"></canvas></div>
+      <div style="position:absolute;left:14px;top:56px;width:220px;height:220px;display:grid;place-items:center;text-align:center;pointer-events:none"><div><b id="aDmgT" style="display:block;font-size:30px;font-weight:800">—</b><span style="font-size:13px">Total Cases</span></div></div>
+      <ul id="aDmgL" class="alist" style="left:256px;top:66px"></ul>
+    </section>
+    <section class="card" id="aCrop" style="left:10px;top:656px;width:calc(38% - 12px);bottom:10px"><h3>Cases by Crop</h3><div style="position:absolute;left:8px;right:10px;top:42px;bottom:8px"><canvas id="aCropC"></canvas></div></section>
+    <section class="card" id="aPeak" style="left:calc(38% + 6px);top:656px;width:calc(31% - 8px);bottom:10px"><h3>Peak Hours <small>(Reports received)</small></h3><div id="aHeat"></div></section>
+    <section class="card" id="aChan" style="left:calc(69% + 6px);top:656px;right:10px;bottom:10px"><h3>Channel &amp; Language Usage</h3>
+      <div class="tabs" id="aChT" style="position:absolute;left:14px;top:44px"><span class="pill on" data-v="ch">Channels</span><span class="pill" data-v="la">Languages</span></div>
+      <ul id="aChL" class="alist" style="left:14px;right:14px;top:84px"></ul>
     </section>
   </div>
   <div class="page" id="pg-cases">
@@ -902,7 +940,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1027,6 +1065,49 @@ $('fTabs').addEventListener('click',e=>{const t=e.target.closest('span');if(t){F
 $('fClose').addEventListener('click',()=>document.querySelector('.nav li[data-p="dashboard"]').click());
 $('fSide').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: not connected yet — needs WhatsApp/Twilio keys`)});
 $('fAdd').addEventListener('click',()=>toast('Add Farmer form comes next'));
+
+// ===== Analytics page (real data) =====
+let ACH='ch';
+function analyticsPage(){if(!STATS||!CASES.length){setTimeout(analyticsPage,500);return}const S=STATS,ack=S.kpis.acknowledged.value||1;
+  const within=Math.round(100*S.within_window/ack),rec=S.recovery.failures?Math.round(100*S.recovery.recovered/S.recovery.failures):100,avg=Math.round(S.kpis.avg_resolution_min.value);
+  const sp=k=>(S.kpis[k]?.spark||[]).slice(-10),bars=a=>{const m=Math.max(1,...a);return`<span class="sp">${a.map((v,j)=>`<i style="--i:${j};height:${Math.max(2,Math.round(34*v/m))}px"></i>`).join('')}</span>`};
+  const K=[['k1','file-check-2',within+'%','Filed Within 72h',`${S.within_window} of ${ack} verified`,sp('acknowledged')],
+    ['k6','clock',avg+' min','Avg Time to Verified Receipt',`${S.kpis.avg_resolution_min.trend>=0?'↑':'↓'} ${Math.abs(S.kpis.avg_resolution_min.trend)}% vs last week`,sp('avg_resolution_min')],
+    ['k3','shield',rec+'%','Recovery Rate after Failure',`${S.recovery.recovered} of ${S.recovery.failures} recovered`,sp('submitted')],
+    ['k4b','circle-check',String(S.recovery.false_done),'False "Done" Cases','Only verified = done',sp('total').map(()=>0)]];
+  $('akpis').innerHTML=K.map(([k,ic,v,l,sub,a])=>`<div class="kpi ${k}"><span class="ic" style="width:62px;height:62px;top:30px"><i data-lucide="${ic}"></i></span><b style="left:92px;top:22px;font-size:30px">${v}</b><span class="lb" style="left:92px;top:62px;font-size:15px">${l}</span><span class="tr up" style="left:92px;bottom:18px;font-weight:500;font-size:12.5px;color:#d6e4df">${sub}</span>${bars(a)}</div>`).join('');
+  // cases per day
+  const reg=$('aReg').value,L=reg?CASES.filter(c=>c.district===reg):CASES,days=S.daily.slice(-15).map(d=>d.date);
+  const by=(pred)=>days.map(d=>L.filter(c=>c.created?.slice(0,10)===d&&pred(c)).length);
+  const sub=by(c=>c.status_key!=='awaiting_info'&&c.status_key!=='in_progress'),ackd=by(c=>['acknowledged','closed'].includes(c.status_key)),prog=by(c=>['in_progress','awaiting_info','pending'].includes(c.status_key)),risk=by(c=>c.status_key==='at_risk'||c.status_key==='escalated');
+  const lab=[...days,...S.forecast.map(f=>f.date)].map(d=>new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'})),pad=a=>[...a,...S.forecast.map(()=>null)];
+  const tot=by(()=>true),fc=[...days.map((_,i)=>i===days.length-1?tot[i]:null),...S.forecast.map(f=>reg?null:f.total)];
+  const ds=[[sub,'#2fe08a','Submitted'],[ackd,'#3d8bff','Acknowledged'],[prog,'#facc15','In Progress'],[risk,'#ff3b4e','At Risk']].map(([d,c,l])=>({label:l,data:pad(d),borderColor:c,backgroundColor:x=>fade(x,c),fill:true,tension:.35,borderWidth:2.2,pointRadius:3,pointBackgroundColor:c}));
+  chart('aDayC',{type:'line',data:{labels:lab,datasets:[...ds,{label:'Forecast (7d)',data:fc,borderColor:'#5eead4',borderDash:[6,5],borderWidth:2,pointRadius:2.5,fill:false,tension:.3}]},
+    options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(8,24,30,.95)',borderColor:'rgba(90,200,255,.4)',borderWidth:1}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.06)'}}}}});
+  // damage types
+  const PC=['#2fe08a','#3d8bff','#facc15','#c4b5fd','#f472b6','#fb923c'],cnt={};CASES.forEach(c=>{const k=c.peril||'other';cnt[k]=(cnt[k]||0)+1});const dm=Object.entries(cnt).sort((a,b)=>b[1]-a[1]),dt=CASES.length;
+  $('aDmgT').textContent=dt.toLocaleString('en-IN');
+  chart('aDmgC',{type:'doughnut',data:{labels:dm.map(d=>cap(d[0])),datasets:[{data:dm.map(d=>d[1]),backgroundColor:PC,borderWidth:2,borderColor:'#0a1f20'}]},options:{cutout:'64%',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  $('aDmgL').innerHTML=dm.map(([k,v],i)=>`<li><i style="background:${PC[i]};color:${PC[i]}"></i><span>${cap(k)}</span><em>${Math.round(100*v/dt)}%</em><b>${v}</b></li>`).join('');
+  // crops
+  const CC2=['#2fe08a','#a855f7','#ff3b4e','#facc15','#f59e0b','#60a5fa','#f472b6','#94a3b8'];const cr=S.crops,ct=cr.reduce((a,c)=>a+c.n,0);
+  chart('aCropC',{type:'bar',data:{labels:cr.map(c=>cap(c.crop)),datasets:[{data:cr.map(c=>c.n),backgroundColor:CC2,borderRadius:4,barPercentage:.72}]},
+    options:{maintainAspectRatio:false,layout:{padding:{top:30}},plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'rgba(255,255,255,.06)'},ticks:{maxTicksLimit:5}}},
+      animation:{onComplete(){const ch=this,x=ch.ctx;x.save();x.textAlign='center';ch.getDatasetMeta(0).data.forEach((b,i)=>{const v=ch.data.datasets[0].data[i];x.fillStyle='#fff';x.font='700 12px "Inter Tight"';x.fillText(v,b.x,b.y-16);x.font='600 10px "Inter Tight"';x.fillStyle='#cfdcd8';x.fillText(Math.round(100*v/ct)+'%',b.x,b.y-4)});x.restore()}}}});
+  // peak hours heat grid: real report times (day × 3-hour slot)
+  const D=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],grid=D.map(()=>Array(8).fill(0));CASES.forEach(c=>{const t=new Date(c.created);if(!isNaN(t))grid[(t.getDay()+6)%7][Math.floor(t.getHours()/3)]++});
+  const mx=Math.max(1,...grid.flat()),col=v=>{const f=v/mx;return f>.75?'#ff3b4e':f>.5?'#fb923c':f>.3?'#facc15':f>.12?'#4ade80':'#14532d'};
+  $('aHeat').innerHTML=`<div class="hg"><span></span>${['12AM','3AM','6AM','9AM','12PM','3PM','6PM','9PM'].map(h=>`<small>${h}</small>`).join('')}${D.map((d,i)=>`<small>${d}</small>${grid[i].map(v=>`<i title="${v} reports" style="background:${col(v)}"></i>`).join('')}`).join('')}</div>
+    <div class="hl"><span><i style="background:#14532d"></i>Low</span><span><i style="background:#facc15"></i>Medium</span><span><i style="background:#ff3b4e"></i>High</span></div>`;
+  drawChan()}
+function drawChan(){const I={whatsapp:['message-circle','#25d366','WhatsApp'],voice:['phone','#3d8bff','Voice Call'],sms:['message-square-text','#a855f7','SMS'],mr:['languages','#2fe08a','Marathi'],hi:['languages','#3d8bff','Hindi'],mwr:['languages','#a855f7','Marwadi']};
+  const rows=ACH==='ch'?STATS.channels:STATS.languages,t=rows.reduce((a,r)=>a+r[1],0)||1;
+  $('aChL').innerHTML=rows.map(([k,v])=>{const[ic,c,l]=I[k]||['circle','#94a3b8',cap(k)];return`<li style="height:40px"><span class="cico" style="background:${c}33;color:${c}"><i data-lucide="${ic}"></i></span><span style="width:96px;flex:none">${l}</span><u style="flex:1;height:12px;border-radius:6px;background:rgba(255,255,255,.08);position:relative"><i style="position:absolute;left:0;top:0;bottom:0;width:${100*v/t}%;border-radius:6px;background:${c};box-shadow:0 0 8px ${c};transform-origin:left;animation:fill 1s both"></i></u><b>${v}</b><em>${Math.round(100*v/t)}%</em></li>`}).join('');lucide.createIcons()}
+$('aChT').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;ACH=p.dataset.v;document.querySelectorAll('#aChT .pill').forEach(x=>x.classList.toggle('on',x===p));drawChan()});
+$('aReg').addEventListener('change',analyticsPage);
+$('aExp').addEventListener('click',()=>{const S=STATS,rows=[['metric','value'],['filed_within_72h',S.within_window],['verified',S.kpis.acknowledged.value],['avg_minutes_to_verified',S.kpis.avg_resolution_min.value],['failures',S.recovery.failures],['recovered',S.recovery.recovered],['false_done',S.recovery.false_done],...S.crops.map(c=>['crop_'+c.crop,c.n]),...S.channels.map(c=>['channel_'+c[0],c[1]]),...S.languages.map(c=>['language_'+c[0],c[1]])];
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='72ghante-analytics.csv';a.click()});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>
