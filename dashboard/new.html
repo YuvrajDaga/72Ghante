@@ -200,10 +200,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .tabs .pill{border:0;border-radius:0;background:rgba(12,34,48,.6)}
 .tabs .pill.on{background:rgba(42,120,255,.4)}
 /* row 5 */
-#cTrend{left:12px;top:357px;width:calc(37% - 14px);height:240px}
-#cCrop{left:calc(37% + 6px);top:357px;width:calc(24% - 8px);height:240px}
-#cMap{left:calc(61% + 6px);top:357px;width:calc(25% - 8px);height:240px}
-#cTop{left:calc(86% + 6px);top:357px;right:12px;height:240px}
+#cTrend{left:12px;top:357px;width:calc(37% - 14px);height:228px}
+#cCrop{left:calc(37% + 6px);top:357px;width:calc(24% - 8px);height:228px}
+#cMap{left:calc(61% + 6px);top:357px;width:calc(25% - 8px);height:228px}
+#cTop{left:calc(86% + 6px);top:357px;right:12px;height:228px}
 #trendBox{position:absolute;left:8px;right:12px;top:42px;bottom:34px}
 .leg{position:absolute;left:14px;right:10px;bottom:9px;display:flex;gap:16px;font-size:12px;color:#e6eeec;white-space:nowrap}
 .leg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 6px currentColor}
@@ -218,7 +218,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #cropList li span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #cropList li em{font-style:normal;width:34px;text-align:right;color:#dfe9e6}
 #cropList li b{width:30px;text-align:right;font-weight:600}
-#cropTiles{position:absolute;left:10px;right:10px;bottom:8px;height:44px;display:flex;gap:6px}
+#cropTiles{position:absolute;left:10px;right:10px;bottom:4px;height:40px;display:flex;gap:6px}
 #cropTiles div{flex:1;display:flex;align-items:center;gap:6px;padding-left:6px;border-left:1px solid rgba(255,255,255,.08)}
 #cropTiles div:first-child{border-left:0}
 #cropTiles .dot{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px}
@@ -244,9 +244,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #topList li small{width:38px;text-align:right;font-size:11.5px;font-weight:700}
 #terrain{position:absolute;left:8px;right:8px;bottom:6px;height:56px;background:url(img/terrain.png) center bottom/contain no-repeat;pointer-events:none}
 /* row 6 */
-#cRecent{left:12px;top:607px;width:calc(40.5% - 14px);height:262px}
-#cDetail{left:calc(40.5% + 6px);top:607px;width:calc(35% - 8px);height:262px}
-#cLive{left:calc(75.5% + 6px);top:607px;right:12px;height:262px}
+#cRecent{left:12px;top:595px;width:calc(40.5% - 14px);height:276px}
+#cDetail{left:calc(40.5% + 6px);top:595px;width:calc(35% - 8px);height:276px}
+#cLive{left:calc(75.5% + 6px);top:595px;right:12px;height:276px}
 .srch2{position:absolute;left:44%;top:8px;width:34%;height:26px;display:flex;align-items:center;gap:7px;padding:0 9px;border-radius:7px;
   background:rgba(12,34,48,.7);border:1px solid rgba(110,170,210,.3);font-size:12px;color:#cdd9df}
 .srch2 svg{width:14px;height:14px}
@@ -274,21 +274,21 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .dTabs{position:absolute;left:10px;right:10px;top:40px;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
 .dTabs span{padding:6px 9px;font-size:12px;color:#d6e2de;cursor:pointer;white-space:nowrap}
 .dTabs span.on{color:#fff;font-weight:700;background:rgba(42,120,255,.25);border-radius:6px 6px 0 0;box-shadow:inset 0 -2px 0 #3d8bff}
-#dBody{position:absolute;left:12px;right:12px;top:72px;bottom:6px}
-.dRow{display:flex;gap:12px;align-items:flex-start;height:47px}
+#dBody{position:absolute;left:12px;right:12px;top:76px;bottom:6px}
+.dRow{display:flex;gap:12px;align-items:flex-start;height:42px}
 .dRow .big{width:40px;height:40px;font-size:13px}
 .dRow .who b{display:block;font-size:13.5px}
 .dRow .who small{display:block;font-size:11px;line-height:13px;color:#d3dfdb;margin-top:1px;white-space:nowrap}
 .dRow .kv{font-size:11px;color:#b9cac5;white-space:nowrap;padding-left:10px;border-left:1px solid rgba(255,255,255,.1)}
 .dRow .kv b{display:block;font-size:12.5px;color:#fff;margin-top:2px}
-.dTime{margin-top:4px;height:42px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 10px;
+.dTime{margin-top:4px;height:52px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 10px;
   background:linear-gradient(90deg,rgba(200,30,58,.35),rgba(120,20,40,.25));border:1px solid rgba(255,70,90,.6)}
 .dTime.ok{background:linear-gradient(90deg,rgba(30,160,90,.3),rgba(20,90,60,.2));border-color:rgba(60,220,150,.55)}
 .dTime svg{width:24px;height:24px;color:#ff5a6a}.dTime.ok svg{color:#3dffa0}
-.dTime small{display:block;font-size:11px;color:#f0d6da}
-.dTime b{display:block;font-size:14px;color:#ff5a6a}.dTime.ok b{color:#3dffa0}
+.dTime small{display:block;font-size:11px;line-height:13px;color:#f0d6da}
+.dTime b{display:block;font-size:14.5px;line-height:19px;color:#ff5a6a}.dTime.ok b{color:#3dffa0}
 .dTime .pri{margin-left:auto;padding:5px 9px;border-radius:6px;font-size:11.5px;font-weight:700;color:#ff8a96;border:1px solid rgba(255,90,110,.6);background:rgba(120,20,40,.5);white-space:nowrap}
-.steps{display:flex;margin-top:7px;position:relative}
+.steps{display:flex;margin-top:8px;position:relative}
 .steps::before{content:"";position:absolute;left:10%;right:10%;top:9px;height:2px;background:rgba(255,255,255,.18)}
 .steps div{flex:1;text-align:center;position:relative;font-size:10.5px;font-weight:600;line-height:12px}
 .steps i{display:grid;place-items:center;width:20px;height:20px;margin:0 auto 4px;border-radius:50%;background:#0b1e20;border:2px solid #7d8c88;font-style:normal;font-size:11px}
@@ -296,7 +296,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .steps .fail i{background:#ff3b4e;border-color:#ff3b4e;color:#fff;box-shadow:0 0 8px rgba(255,59,78,.6)}
 .steps small{display:block;font-weight:400;color:#c5d3cf;font-size:10px}
 .steps .fail small,.steps .wait small{color:#ff6b78;font-weight:700}
-.dBtns{display:flex;gap:7px;margin-top:6px}
+.dBtns{display:flex;gap:7px;margin-top:7px}
 .dBtns .pill{height:26px!important}
 .dBtns .pill{height:28px}
 .dBtns .pill.g{margin-left:auto;color:#3dffa0;font-weight:700}
@@ -428,10 +428,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <li data-p="maps"><img class="mi" src="img/ic_maps.png" alt="">Maps &amp; Regions</li>
     <li data-p="analytics"><img class="mi" src="img/ic_analytics.png" alt="">Analytics</li>
     <li data-p="logs"><img class="mi" src="img/ic_logs.png" alt="">Agent Logs</li>
-    <li data-p="tools"><i data-lucide="cog"></i>Tools &amp; Integrations</li>
+    <li data-p="tools"><img class="mi" src="img/ic_tools.png" alt="">Tools &amp; Integrations</li>
     <li data-p="failure"><img class="mi" src="img/ic_failure.png" alt="">Failure Simulation</li>
     <li data-p="reports"><img class="mi" src="img/ic_reports.png" alt="">Reports</li>
-    <li data-p="eval"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5.2" r="2.2"/><circle cx="12" cy="3.6" r="2.2"/><circle cx="19" cy="5.2" r="2.2"/><rect x="2.8" y="9" width="4.4" height="12" rx="1"/><rect x="9.8" y="7.4" width="4.4" height="13.6" rx="1"/><rect x="16.8" y="9" width="4.4" height="12" rx="1"/></svg>Model Evaluation</li>
+    <li data-p="eval"><img class="mi" src="img/ic_eval.png" alt="">Model Evaluation</li>
     <li data-p="team"><img class="mi" src="img/ic_team.png" alt="">Team &amp; Access</li>
     <li data-p="settings"><img class="mi" src="img/ic_settings.png" alt="">Settings</li>
   </ul>
@@ -688,7 +688,7 @@ async function drawFeed(c,caseTrace){let t=await fetch('/api/trace?limit=8').the
   let ev=t.length?t.map(x=>({ts:x.ts,ic:FI[x.kind]||'circle',title:cap(x.name),sub:(x.output||x.input||x.status||'').slice(0,60),bad:x.status!=='ok'})):[];
   if(!ev.length){const ds=await Promise.all(CASES.slice(0,4).map(x=>fetch('/api/cases/'+x.id).then(r=>r.json()).catch(()=>null)));
     ev=ds.filter(Boolean).flatMap(d=>evOf(d.case)).filter(e=>e.ts).sort((a,b)=>new Date(b.ts)-new Date(a.ts))}
-  $('feed').innerHTML=ev.slice(0,7).map(e=>`<div class="ev ${e.bad?'bad':''} ${e.good?'good':''}"><span class="ic2"><i data-lucide="${e.ic}"></i></span><time>${e.ts?new Date(e.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''}</time><p><b>${esc(e.title)}</b><small>${esc(e.sub)}</small></p></div>`).join('')||'<p style="font-size:12px;color:#cfdcd8">Waiting for agent activity…</p>';
+  $("feed").innerHTML=ev.slice(0,6).map(e=>`<div class="ev ${e.bad?'bad':''} ${e.good?'good':''}"><span class="ic2"><i data-lucide="${e.ic}"></i></span><time>${e.ts?new Date(e.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''}</time><p><b>${esc(e.title)}</b><small>${esc(e.sub)}</small></p></div>`).join('')||'<p style="font-size:12px;color:#cfdcd8">Waiting for agent activity…</p>';
   lucide.createIcons()}
 
 // --- 7. Bottom row
