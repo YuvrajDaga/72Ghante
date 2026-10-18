@@ -677,6 +677,22 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .wxa.high{border-color:rgba(255,70,90,.7);background:linear-gradient(90deg,rgba(200,30,58,.35),rgba(60,10,20,.3))}.wxa.medium{border-color:rgba(245,165,36,.7);background:linear-gradient(90deg,rgba(180,110,20,.35),rgba(60,40,10,.3))}
 .wxa svg{width:26px;height:26px;flex:none}.wxa b{display:block;font-size:13px}.wxa small{display:block;font-size:11.5px;color:#e6eeec}.wxa em{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:700;white-space:nowrap}
 #msv{position:absolute;left:14px;right:14px;top:44px;bottom:10px;display:flex;gap:14px;align-items:center}
+
+/* Agent Logs page */
+#lgTop{position:absolute;left:760px;right:10px;top:66px;height:94px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;z-index:2}
+.lin{height:30px;min-width:150px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 12.5px "Inter Tight",sans-serif;outline:0}
+.lchips{display:flex;gap:6px;flex-wrap:wrap;align-self:center;margin-left:6px}.lchips span{padding:4px 9px;border-radius:12px;font-size:11px;border:1px solid rgba(255,255,255,.18);background:rgba(10,30,40,.6);white-space:nowrap}
+.kd{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:6px;font-size:10.5px;font-weight:700;color:#fff}.kd svg{width:12px;height:12px}
+#lgTbl td{height:40px}#lgTbl td.out{max-width:220px;overflow:hidden;text-overflow:ellipsis;color:#cfdcd8;font-family:ui-monospace,Consolas,monospace;font-size:10.5px}
+#lgDet{position:absolute;left:12px;right:12px;top:44px;bottom:10px;overflow:hidden;display:flex;flex-direction:column;gap:8px}
+.lgHead{display:flex;gap:10px;align-items:center;padding:10px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.08)}
+.lgHead b{font-size:15px;font-family:ui-monospace,Consolas,monospace}.lgHead .kv{font-size:11px;color:#b9cac5;padding-left:10px;border-left:1px solid rgba(255,255,255,.1)}.lgHead .kv b{display:block;font-size:12.5px;color:#fff;font-family:inherit}
+.jbox{border-radius:9px;background:#071517;border:1px solid rgba(255,255,255,.08);overflow:hidden}.jbox small{display:block;padding:6px 10px;font-weight:700;font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.06)}
+.jbox pre{margin:0;padding:8px 10px;font-size:11px;line-height:15px;color:#bfe9d6;white-space:pre-wrap;word-break:break-all;max-height:150px;overflow:hidden}
+.lgTl{display:flex;align-items:flex-start;gap:0;padding:10px 4px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.lgTl div{flex:1;text-align:center;font-size:9.5px;color:#cfdcd8;position:relative;min-width:0}.lgTl div::before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;background:rgba(0,240,168,.3)}
+.lgTl i{position:relative;display:block;width:14px;height:14px;margin:0 auto 4px;border-radius:50%;background:#2fe08a;box-shadow:0 0 6px #2fe08a}.lgTl .bad i{background:#ff3b4e;box-shadow:0 0 6px #ff3b4e}.lgTl .cur i{outline:2px solid #fff}
+.lgTl span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 1px}
 </style>
 </head>
 <body>
@@ -964,6 +980,25 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <section class="card" style="left:calc(64% + 6px);top:632px;right:10px;height:212px"><h3>Weather Alerts <small id="mwReg"></small></h3><span class="cns y" style="position:absolute;right:12px;top:10px;font-size:10.5px">Live · Open-Meteo</span><div id="mwx"></div></section>
     <section class="card" style="left:calc(64% + 6px);top:854px;right:10px;bottom:10px"><h3>Surveyor Coverage <small id="msReg"></small></h3><div id="msv"></div></section>
   </div>
+  <div class="page" id="pg-logs">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Agent Logs</div><h1>Agent Logs – Trace Viewer</h1>
+      <p>See every step the AI agent takes. Debug, monitor and improve performance.</p>
+    </section>
+    <section id="lgTop"></section>
+    <section class="fbar" style="height:62px;top:174px">
+      <label>Case ID<input id="lgCase" class="lin" placeholder="Search case ID..."></label>
+      <label>Step Type<select id="lgKind"><option value="">All Types</option><option value="inbound">Voice / Inbound</option><option value="llm">AI Decision (LLM)</option><option value="tool">Tool Call</option><option value="decision">Agent Decision</option><option value="channel">Message Sent</option><option value="system">System</option></select></label>
+      <label>Status<select id="lgSt"><option value="">All Status</option><option value="ok">OK</option><option value="bad">Failed / Error</option></select></label>
+      <div id="lgChips" class="lchips"></div>
+      <span class="reset" id="lgRef"><i data-lucide="refresh-cw"></i>Refresh</span>
+    </section>
+    <section class="card" style="left:10px;top:246px;width:calc(62% - 12px);bottom:10px"><h3 id="lgTitle" style="font-size:18px">Agent Steps</h3>
+      <span class="reset" id="lgExp" style="position:absolute;right:12px;top:8px;height:28px"><i data-lucide="download"></i>Export Logs</span>
+      <table id="lgTbl" class="xtbl" style="top:46px;font-size:11.5px"></table>
+      <div class="pager"><span id="lgInfo"></span><div class="mid" id="lgPg"></div></div></section>
+    <section class="card" style="left:calc(62% + 6px);top:246px;right:10px;bottom:10px"><h3 style="font-size:18px">Step Details</h3><span id="lgPos" style="position:absolute;right:12px;top:14px;font-size:12px;color:#cfdcd8"></span><div id="lgDet"></div></section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1165,7 +1200,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1529,6 +1564,43 @@ document.querySelectorAll('.ltog').forEach(b=>b.addEventListener('click',()=>{co
 document.querySelectorAll('.mtype .pill').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mtype .pill').forEach(x=>x.classList.toggle('on',x===b));
   if(b.dataset.t==='sat'){MM.map.removeLayer(MM.dark);MM.tile.addTo(MM.map)}else{MM.map.removeLayer(MM.tile);MM.dark.addTo(MM.map)}MM.heat.bringToFront?.()}));
 $('mq').addEventListener('input',drawMap);
+
+// ===== Agent Logs page (real trace from /api/trace) =====
+const KD={inbound:['Voice / In','mic','#15803d'],llm:['AI Decision','brain','#7c3aed'],tool:['Tool Call','wrench','#1d4ed8'],decision:['Decision','git-branch','#b45309'],channel:['Message','send','#0e7490'],system:['System','settings','#334155']};
+let LG={all:[],page:1,sel:null};
+async function logsPage(){LG.all=await fetch('/api/trace?limit=5000').then(r=>r.json()).catch(()=>[]);LG.all.sort((a,b)=>b.id-a.id);
+  const ms=LG.all.filter(x=>x.ms!=null),avg=ms.length?ms.reduce((a,x)=>a+x.ms,0)/ms.length:0,llm=LG.all.filter(x=>x.kind==='llm').length;
+  $('lgTop').innerHTML=[['k1','list-checks',LG.all.length.toLocaleString('en-IN'),'Total Agent Steps'],['k2','timer',avg?(avg/1000).toFixed(2)+' s':'—','Avg Tool Step Time'],['k8','indian-rupee',llm?'—':'₹0.00',llm?'AI cost so far':'AI cost (no LLM calls yet)']]
+    .map(([k,ic,v,l])=>`<div class="kpi ${k}"><span class="ic" style="top:22px"><i data-lucide="${ic}"></i></span><b style="left:76px;top:18px">${v}</b><span class="lb" style="left:76px;top:48px;font-size:12.5px;white-space:normal;right:8px">${l}</span></div>`).join('');
+  const cnt={};LG.all.forEach(x=>cnt[x.kind]=(cnt[x.kind]||0)+1);const bad=LG.all.filter(x=>x.status!=='ok').length;
+  $('lgChips').innerHTML=Object.entries(cnt).map(([k,n])=>`<span>${(KD[k]||[k])[0]} (${n})</span>`).join('')+`<span style="border-color:#ff3b4e;color:#ff8a96">Failed (${bad})</span>`;
+  lucide.createIcons();drawLogs()}
+function lfilt(){const c=$('lgCase').value.trim().toLowerCase(),k=$('lgKind').value,st=$('lgSt').value;return LG.all.filter(x=>(!c||(x.case_id||'').toLowerCase().includes(c))&&(!k||x.kind===k)&&(!st||(st==='ok')===(x.status==='ok')))}
+function drawLogs(){const L=lfilt(),pages=Math.max(1,Math.ceil(L.length/13));LG.page=Math.min(LG.page,pages);const rows=L.slice((LG.page-1)*13,LG.page*13);if(!LG.sel||!L.find(x=>x.id===LG.sel))LG.sel=rows[0]?.id;
+  $('lgTitle').textContent=`Agent Steps (${L.length.toLocaleString('en-IN')})`;
+  $('lgTbl').innerHTML=`<tr><th>Time</th><th>Case ID</th><th>Type</th><th>Step Name</th><th>Status</th><th>Duration</th><th>Output Preview</th></tr>`+(rows.map(x=>{const[l,ic,c]=KD[x.kind]||[x.kind,'circle','#334155'];
+    return`<tr class="row ${x.id===LG.sel?'sel':''}" data-id="${x.id}"><td>${new Date(x.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</td><td>${esc(x.case_id||'—')}</td><td><span class="kd" style="background:${c}"><i data-lucide="${ic}"></i>${l}</span></td><td><b>${esc(x.name)}</b></td><td><span class="cns ${x.status==='ok'?'y':'n'}" ${x.status!=='ok'?'style="color:#ff8a96;border-color:#ff3b4e;background:rgba(120,20,40,.5)"':''}>${x.status==='ok'?'✓ OK':'✕ '+esc(x.status)}</span></td><td>${x.ms!=null?x.ms+' ms':'—'}</td><td class="out">${esc((x.output||x.input||'').slice(0,80))}</td></tr>`}).join('')||'<tr><td colspan="7" style="color:#cfdcd8">No steps yet — run a test on Failure Simulation or send a WhatsApp message.</td></tr>');
+  $('lgInfo').textContent=`Showing ${L.length?(LG.page-1)*13+1:0}–${Math.min(L.length,LG.page*13)} of ${L.length} steps`;
+  $('lgPg').innerHTML=`<span class="pg" data-p="${LG.page-1}">‹</span>`+Array.from({length:Math.min(pages,6)},(_,i)=>`<span class="pg ${i+1===LG.page?'on':''}" data-p="${i+1}">${i+1}</span>`).join('')+`<span class="pg" data-p="${LG.page+1}">›</span>`;
+  lucide.createIcons();drawStep()}
+function pretty(s){if(!s)return'—';try{return JSON.stringify(JSON.parse(s),null,2)}catch{return s}}
+function drawStep(){const x=LG.all.find(y=>y.id===LG.sel);if(!x){$('lgDet').innerHTML='';return}const[l,ic,c]=KD[x.kind]||[x.kind,'circle','#334155'];
+  const same=LG.all.filter(y=>y.case_id===x.case_id).sort((a,b)=>a.id-b.id),pos=same.findIndex(y=>y.id===x.id);$('lgPos').textContent=x.case_id?`Step ${pos+1} of ${same.length} in ${x.case_id}`:'';
+  $('lgDet').innerHTML=`<div class="lgHead"><span class="kd" style="background:${c};padding:7px"><i data-lucide="${ic}" style="width:18px;height:18px"></i></span><div style="flex:1;min-width:0"><b>${esc(x.name)}</b><br><span class="cns ${x.status==='ok'?'y':'n'}">${x.status==='ok'?'✓ OK':esc(x.status)}</span> <small style="color:#cfdcd8">${x.ms!=null?x.ms+' ms':''}</small></div><div class="kv">Case<b>${esc(x.case_id||'—')}</b></div><div class="kv">Time<b>${new Date(x.ts).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'})}</b></div><div class="kv">Type<b>${l}</b></div></div>
+    <div class="jbox"><small>Input</small><pre>${esc(pretty(x.input))}</pre></div><div class="jbox"><small>Output</small><pre>${esc(pretty(x.output))}</pre></div>
+    <div class="jbox"><small>Why this step</small><pre style="color:#e6eeec;font-family:inherit">${esc(WHY[x.name]||'Agent step recorded by the trace.')}</pre></div>
+    <div><small style="font-weight:700;font-size:12px">Case Timeline ${esc(x.case_id||'')}</small><div class="lgTl">${same.slice(Math.max(0,pos-5),pos+6).map(y=>`<div class="${y.status!=='ok'?'bad':''} ${y.id===x.id?'cur':''}" data-id="${y.id}" style="cursor:pointer"><i></i><span>${esc(y.name.replace(/^pmfby\./,''))}</span></div>`).join('')}</div></div>`;lucide.createIcons()}
+const WHY={'pmfby.submit_intimation':'File the loss intimation on the PMFBY portal. Never marked done until the status check confirms it.','pmfby.intimation_status':'Verify the docket really exists on the portal before telling the farmer it is done.',
+  'pmfby.health_check':'Check if the portal is up before retrying, so the agent does not waste the 72-hour window.','retry_backoff':'Portal failed: wait and retry with backoff instead of giving up.',
+  'background_retry':'Keep retrying in the background while the farmer is told: PENDING, NOT DONE.','verified_done':'Receipt verified: only now the case is marked done.','start_clock':'Start the 72-hour clock from the time of loss.',
+  'plan_route':'Choose the filing route (portal, helpline, bank, officer) based on what is up and the time left.','consent_received':'Farmer agreed to file; no filing happens without consent.',
+  'photo_admissibility':'Decide if the damage photo can be used as evidence.','photo.quality_check':'Pixel checks: too dark, blurry or reused photos are rejected with a reason.','sms.send':'Send the farmer an update by SMS (fails here because Twilio is not connected yet).'};
+['lgCase','lgKind','lgSt'].forEach(id=>$(id).addEventListener(id==='lgCase'?'input':'change',()=>{LG.page=1;drawLogs()}));
+$('lgPg').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p>=1){LG.page=p;drawLogs()}});
+$('lgTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r){LG.sel=+r.dataset.id;document.querySelectorAll('#lgTbl tr.row').forEach(x=>x.classList.toggle('sel',x===r));drawStep()}});
+$('lgDet').addEventListener('click',e=>{const d=e.target.closest('[data-id]');if(d){LG.sel=+d.dataset.id;drawLogs()}});
+$('lgRef').addEventListener('click',logsPage);
+$('lgExp').addEventListener('click',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(lfilt(),null,1)],{type:'application/json'}));a.download='72ghante-agent-trace.json';a.click()});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>
