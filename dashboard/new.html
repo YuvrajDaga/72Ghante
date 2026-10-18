@@ -33,9 +33,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .brand small{display:block;font-size:13.5px;color:#d6e4df;margin-top:5px;font-weight:500}
 .nav{list-style:none;padding:12px 14px 0}
 .nav li{height:38.6px;display:flex;align-items:center;gap:19px;padding:0 9px 0 11px;border-radius:9px;
-  font-size:13.4px;font-weight:400;color:#e3ece8;white-space:nowrap;cursor:pointer;border:1.5px solid transparent;transition:background .15s}
+  font-size:13.8px;font-weight:600;color:#fff;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.6);cursor:pointer;border:1.5px solid transparent;transition:background .15s}
 .nav li:hover{background:rgba(255,255,255,.04)}
-.nav li svg{width:21px;height:21px;stroke-width:2;flex:none;color:#f2f7f5}
+.nav li svg{width:21px;height:21px;stroke-width:2.3;flex:none;color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.9))}
 .nav li.on{height:38px;margin-bottom:5px;font-weight:700;color:#fff;
   background:linear-gradient(180deg,#2bc779 0%,#159a58 55%,#0f7a45 100%);border-color:#6dffb8;
   box-shadow:0 0 18px rgba(60,255,150,.75),0 0 4px rgba(120,255,190,.9),inset 0 1px 0 rgba(255,255,255,.35)}
@@ -62,6 +62,24 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .demo .dot{width:16px;height:16px;border-radius:50%;background:#00f0a8;margin-left:2px;display:grid;place-items:center;box-shadow:0 0 6px rgba(0,240,168,.6)}
 .demo .dot svg{width:12px;height:12px;color:#06301b;stroke-width:3}
 .ver{position:absolute;left:22px;bottom:10px;font-size:12px;color:#a9bbb6}
+
+/* Active menu item: flowing green + light sweep + breathing glow */
+.nav li.on{position:relative;overflow:hidden;isolation:isolate;
+  background:linear-gradient(110deg,#0f7a45 0%,#1fb46a 25%,#3fe596 50%,#1fb46a 75%,#0f7a45 100%) 0 0/250% 100%!important;
+  animation:flow 6s ease-in-out infinite,breathe 2.8s ease-in-out infinite}
+.nav li.on::after{content:"";position:absolute;top:-20%;bottom:-20%;width:38%;left:-45%;z-index:-1;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:sweep 3.2s ease-in-out infinite}
+.nav li.on>*{position:relative;z-index:1}
+.nav li.on::before{content:"";position:absolute;inset:0;border-radius:8px;padding:2px;z-index:0;pointer-events:none;filter:drop-shadow(0 0 4px #b8ffe6);
+  background:conic-gradient(from var(--a),transparent 0deg,transparent 160deg,rgba(220,255,240,.4) 230deg,#ffffff 330deg,#d9fff1 355deg,transparent 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:run 3s linear infinite}
+@keyframes flow{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+@keyframes breathe{0%,100%{box-shadow:0 0 14px rgba(60,255,150,.6),0 0 3px rgba(120,255,190,.9),inset 0 1px 0 rgba(255,255,255,.35)}
+  50%{box-shadow:0 0 26px rgba(60,255,150,.95),0 0 6px rgba(160,255,210,1),inset 0 1px 0 rgba(255,255,255,.45)}}
+@keyframes sweep{0%{left:-45%}55%,100%{left:120%}}
+
+/* Menu icon images (Yuvraj's) — shown whole */
+.nav li img.mi{width:27px;height:27px;flex:none;margin:0 -3px;object-fit:contain;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
 
 /* ---------- main area (sections come one by one) ---------- */
 .main{position:absolute;left:214px;top:0;right:0;bottom:0}
@@ -144,7 +162,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 /* ---------- 4. Six number cards ---------- */
 .kpis{position:absolute;left:12px;right:12px;top:260px;height:87px;display:flex;gap:11px}
 .kpi{flex:1;position:relative;border-radius:11px;overflow:hidden;cursor:pointer;
-  background:linear-gradient(135deg,rgba(var(--c),.30) 0%,rgba(var(--c),.10) 45%,rgba(6,20,22,.9) 100%);
+  background:radial-gradient(120% 140% at 10% 20%,rgba(var(--c),.42) 0%,rgba(var(--c),.16) 45%,rgba(6,20,22,.85) 100%);
   border:1.5px solid rgba(var(--c),.75);box-shadow:0 0 14px rgba(var(--c),.35),inset 0 0 18px rgba(var(--c),.12)}
 .kpi .ic{position:absolute;left:13px;top:19px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
   background:radial-gradient(circle at 35% 30%,rgba(var(--c),1),rgba(var(--c),.55));box-shadow:0 0 14px rgba(var(--c),.6)}
@@ -155,8 +173,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .kpi .tr{position:absolute;left:79px;bottom:9px;font-size:13px;font-weight:700;white-space:nowrap}
 .kpi .tr.up{color:#3dffa0} .kpi .tr.dn{color:#ff4d5e}
 .kpi .go{position:absolute;right:9px;top:9px;width:15px;height:15px;color:#e8eef0}
-.kpi .sp{position:absolute;right:9px;bottom:6px;height:52px;display:flex;align-items:flex-end;gap:2.5px}
-.kpi .sp i{width:4px;border-radius:1px 1px 0 0;background:linear-gradient(0deg,rgba(var(--c),.55),rgba(var(--c),1))}
+.kpi .sp{position:absolute;right:8px;bottom:7px;height:34px;display:flex;align-items:flex-end;gap:1.5px;z-index:0;opacity:.9}
+.kpi b,.kpi .lb,.kpi .tr{z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.kpi .sp i{width:3px;border-radius:1px 1px 0 0;background:linear-gradient(0deg,rgba(var(--c),.55),rgba(var(--c),1))}
 .k1{--c:31,212,126} .k2{--c:42,127,255} .k3{--c:245,166,35} .k4{--c:255,59,78} .k5{--c:34,209,160} .k6{--c:43,181,255}
 .k6 .lb{top:36px} .k5 .lb{top:36px}
 
@@ -173,10 +192,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <div><b>72 Ghante</b><small>Har Kisan Ke Saath</small></div>
   </div>
   <ul class="nav" id="nav">
-    <li class="on" data-p="dashboard"><i data-lucide="house"></i>Dashboard</li>
-    <li data-p="cases"><i data-lucide="image"></i>Cases<span class="badge" id="bCases"></span></li>
-    <li data-p="farmers"><i data-lucide="users"></i>Farmers<span class="badge" id="bFarmers"></span></li>
-    <li data-p="chat"><svg class="wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12.05 21.5h-.01a9.4 9.4 0 0 1-4.8-1.31l-.34-.2-3.57.93.95-3.48-.22-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43a9.4 9.4 0 0 1 9.42 9.44c0 5.2-4.23 9.43-9.43 9.43m8.03-17.46A11.3 11.3 0 0 0 12.05.7C5.8.7.7 5.79.7 12.05c0 2 .52 3.95 1.52 5.67L.6 23.6l6.02-1.58a11.3 11.3 0 0 0 5.42 1.38h.01c6.25 0 11.35-5.09 11.35-11.35 0-3.03-1.18-5.88-3.32-8.02"/></svg>WhatsApp Agent</li>
+    <li class="on" data-p="dashboard"><img class="mi" src="img/ic_dashboard.png" alt="">Dashboard</li>
+    <li data-p="cases"><img class="mi" src="img/ic_cases.png" alt="">Cases<span class="badge" id="bCases"></span></li>
+    <li data-p="farmers"><img class="mi" src="img/ic_farmers.png" alt="">Farmers<span class="badge" id="bFarmers"></span></li>
+    <li data-p="chat"><img class="mi" src="img/ic_whatsapp.png" alt="">WhatsApp Agent</li>
     <li data-p="maps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 2.5 20.2 7.25v9.5L12 21.5l-8.2-4.75v-9.5z"/><circle cx="12" cy="12" r="3.6"/></svg>Maps &amp; Regions</li>
     <li data-p="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="11" width="4.2" height="9" rx="2.1"/><rect x="9.9" y="7" width="4.2" height="13" rx="2.1"/><rect x="16.8" y="3.5" width="4.2" height="16.5" rx="2.1"/></svg>Analytics</li>
     <li data-p="logs"><i data-lucide="square-plus"></i>Agent Logs</li>
@@ -281,8 +300,8 @@ function loadKpis(){fetch('/api/stats').then(r=>r.json()).then(s=>{
   document.querySelectorAll('.kpi').forEach(el=>{const k=el.dataset.k,d=s.kpis?.[k];if(!d)return;
     el.querySelector('b').textContent=k==='avg_resolution_min'?`${Math.round(d.value)} min`:d.value.toLocaleString('en-IN');
     const t=d.trend||0,good=(t>=0)===GOOD_UP[k],tr=el.querySelector('.tr');
-    tr.className='tr '+(t===0?'up':good?'up':'dn');tr.textContent=`${t>=0?'↑':'↓'} ${Math.abs(t)}% vs last week`;
-    const sp=d.spark||[],mx=Math.max(1,...sp);el.querySelector('.sp').innerHTML=sp.map(v=>`<i style="height:${Math.max(3,Math.round(52*v/mx))}px"></i>`).join('')})
+    tr.className='tr '+(t===0?'up':good?'up':'dn');tr.textContent=`${t>=0?"↑":"↓"} ${Math.abs(t)}%`;
+    const sp=(d.spark||[]).slice(-10),mx=Math.max(1,...sp);el.querySelector('.sp').innerHTML=sp.map(v=>`<i style="height:${Math.max(2,Math.round(34*v/mx))}px"></i>`).join('')})
 }).catch(()=>{})}
 loadKpis();setInterval(loadKpis,30000);
 // 72-hour timer: the open (not yet verified) case closest to its deadline, on the app's clock
