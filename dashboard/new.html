@@ -657,6 +657,26 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .wsum{position:absolute;left:12px;right:12px;top:222px;padding:8px 10px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.08);font-size:12px}.wsum small{color:#cfdcd8}
 #waLang{position:absolute;left:14px;right:14px;top:46px;list-style:none;font-size:12.5px}
 #waLang li{display:flex;align-items:center;gap:10px;height:34px}#waLang u{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.08);position:relative}#waLang u i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;transform-origin:left;animation:fill 1s both}#waLang b{width:36px;text-align:right}
+
+/* Maps page */
+.mbar{position:absolute;left:10px;right:10px;top:172px;height:50px;display:flex;gap:10px;align-items:center}
+.rbtn{height:46px;padding:0 20px;border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;cursor:pointer;background:rgba(10,30,40,.85);border:1.5px solid rgba(110,170,210,.35)}
+.rbtn svg{width:20px;height:20px}.rbtn.on{border-color:#2fdc9f;background:rgba(10,70,45,.6);box-shadow:0 0 14px rgba(47,224,138,.45)}
+.ltog{height:40px;padding:0 14px;border-radius:9px;display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.3)}
+.ltog[data-l="risk"] .tog.on{background:#ff3b4e;box-shadow:0 0 10px rgba(255,59,78,.6)}.ltog[data-l="wx"] .tog.on{background:#f5a524;box-shadow:0 0 10px rgba(245,165,36,.6)}
+#bigMapN{position:absolute;inset:0;border-radius:12px;overflow:hidden;background:#061612}
+.mapq{left:12px!important;top:12px!important;width:300px!important;height:34px!important;z-index:500}
+.mleg{position:absolute;left:12px;bottom:56px;z-index:500;padding:9px 12px;border-radius:9px;background:rgba(6,20,18,.88);border:1px solid rgba(255,255,255,.12);font-size:12px}
+.mleg div{display:flex;align-items:center;gap:8px;height:22px}.mleg i{width:12px;height:12px;border-radius:50%}
+.mtype{position:absolute;left:12px;bottom:12px;z-index:500;display:flex;gap:4px}.mtype .pill{height:32px;font-size:12.5px}
+.mlab{transform:translate(26px,-50%);padding:4px 8px;border-radius:6px;background:rgba(6,20,18,.88);border:1px solid rgba(120,255,190,.4);white-space:nowrap;font:700 12px "Inter Tight",sans-serif;color:#fff}
+.mlab small{display:block;font-weight:600;font-size:11px}
+#mts td{height:30px}#mts td:nth-child(3){color:#ff6b78;font-weight:700}
+#mwx{position:absolute;left:12px;right:12px;top:42px;bottom:10px;overflow:hidden;display:flex;flex-direction:column;gap:7px}
+.wxa{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:9px;border:1px solid;animation:rise .5s both}
+.wxa.high{border-color:rgba(255,70,90,.7);background:linear-gradient(90deg,rgba(200,30,58,.35),rgba(60,10,20,.3))}.wxa.medium{border-color:rgba(245,165,36,.7);background:linear-gradient(90deg,rgba(180,110,20,.35),rgba(60,40,10,.3))}
+.wxa svg{width:26px;height:26px;flex:none}.wxa b{display:block;font-size:13px}.wxa small{display:block;font-size:11.5px;color:#e6eeec}.wxa em{margin-left:auto;font-style:normal;font-size:11.5px;font-weight:700;white-space:nowrap}
+#msv{position:absolute;left:14px;right:14px;top:44px;bottom:10px;display:flex;gap:14px;align-items:center}
 </style>
 </head>
 <body>
@@ -925,6 +945,25 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <ul id="waChL" class="alist" style="left:168px;top:60px;font-size:12.5px"></ul></section>
     <section class="card" style="left:calc(72% + 6px);top:778px;right:10px;bottom:10px"><h3>Languages</h3><ul id="waLang"></ul></section>
   </div>
+  <div class="page" id="pg-maps">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Maps &amp; Regions</div><h1>Maps &amp; Regions</h1>
+      <p>Visualize crop loss cases, risk zones, weather alerts and field coverage across regions.</p>
+    </section>
+    <section class="mbar">
+      <span class="rbtn on" data-r="mh"><i data-lucide="map"></i>Maharashtra – Nashik</span><span class="rbtn" data-r="rj"><i data-lucide="map"></i>Rajasthan – Jodhpur</span>
+      <span class="ltog" data-l="cases"><span class="tog on"></span>Cases</span><span class="ltog" data-l="risk"><span class="tog on"></span>At Risk</span><span class="ltog" data-l="wx"><span class="tog on"></span>Weather Alerts</span>
+    </section>
+    <section class="card" style="left:10px;top:232px;width:calc(64% - 12px);bottom:10px;padding:0">
+      <div id="bigMapN"></div>
+      <label class="srch2 mapq"><i data-lucide="search"></i><input id="mq" placeholder="Search taluka..."></label>
+      <div class="mleg"><div><i style="background:#ff3b4e"></i>High (top third by cases)</div><div><i style="background:#f5c518"></i>Medium</div><div><i style="background:#2fe08a"></i>Low</div><div><i style="border:2px solid #ff3b4e;background:none"></i>Has at-risk cases</div></div>
+      <div class="mtype"><span class="pill on" data-t="sat">Satellite</span><span class="pill" data-t="dark">Dark</span></div>
+    </section>
+    <section class="card" style="left:calc(64% + 6px);top:232px;right:10px;height:390px"><h3>Taluka Summary <small id="mtsReg"></small></h3><table id="mts" class="xtbl" style="top:44px"></table></section>
+    <section class="card" style="left:calc(64% + 6px);top:632px;right:10px;height:212px"><h3>Weather Alerts <small id="mwReg"></small></h3><span class="cns y" style="position:absolute;right:12px;top:10px;font-size:10.5px">Live · Open-Meteo</span><div id="mwx"></div></section>
+    <section class="card" style="left:calc(64% + 6px);top:854px;right:10px;bottom:10px"><h3>Surveyor Coverage <small id="msReg"></small></h3><div id="msv"></div></section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1126,7 +1165,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1452,6 +1491,44 @@ $('waQ').addEventListener('input',drawConvs);
 $('waSend').addEventListener('click',()=>toast('Sending needs WhatsApp (Twilio) keys — sample chat only'));
 $('waSideBtns').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: works once WhatsApp is connected`)});
 $('waChips').addEventListener('click',e=>{if(e.target.closest('.chip.b')){CP.sel=WA.list[WA.sel].c.id;document.querySelector('.nav li[data-p="cases"]').click()}});
+
+// ===== Maps & Regions page (real cases per taluka, real weather forecast) =====
+let MM={map:null,reg:'mh',heat:null,tile:null,dark:null,rj:null,lay:{cases:true,risk:true,wx:true},wx:[]};
+const RD={mh:'Nashik',rj:'Jodhpur'};
+function mapsPage(){if(!CASES.length){setTimeout(mapsPage,500);return}
+  if(!MM.map){MM.map=L.map('bigMapN',{zoomControl:true,attributionControl:false,zoomSnap:.25});MM.map.zoomControl.setPosition('bottomright');
+    MM.tile=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:15,className:'sat'}).addTo(MM.map);
+    MM.dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:15});MM.heat=L.layerGroup().addTo(MM.map);
+    fetch('geo/rajasthan_districts.geojson').then(r=>r.json()).then(g=>{MM.rj=L.geoJSON(g,{style:{color:'#7dffb8',weight:1.2,fillColor:'#1aa364',fillOpacity:.18},className:'rjglow'})}).catch(()=>{})}
+  setTimeout(()=>{MM.map.invalidateSize();drawMap()},60);loadWx()}
+function mapStats(){const d=RD[MM.reg],L=CASES.filter(c=>c.district===d),now=Date.now()+skew,w=7*864e5,by={};
+  L.forEach(c=>{const k=c.taluka||'—',b=by[k]=by[k]||{n:0,risk:0,ver:0,a:0,p:0};b.n++;if(['at_risk','escalated'].includes(c.status_key))b.risk++;if(['acknowledged','closed'].includes(c.status_key))b.ver++;const age=now-new Date(c.created);if(age<=w)b.a++;else if(age<=2*w)b.p++});
+  return Object.entries(by).sort((a,b)=>b[1].n-a[1].n)}
+function drawMap(){const S=mapStats(),q=$('mq').value.toLowerCase(),mx=Math.max(1,...S.map(x=>x[1].n));MM.heat.clearLayers();
+  if(MM.rj)MM.reg==='rj'?MM.rj.addTo(MM.map):MM.map.removeLayer(MM.rj);
+  const pts=[];S.forEach(([k,b])=>{const ll=PL[k];if(!ll||(q&&!k.toLowerCase().includes(q)))return;pts.push(ll);const f=b.n/mx,rk=S.findIndex(x=>x[0]===k)/Math.max(1,S.length-1),col=rk<.34?'#ff3b4e':rk<.67?'#f5c518':'#2fe08a';
+    if(MM.lay.cases){[34,22,10].forEach((r,i)=>L.circleMarker(ll,{radius:r*(.5+f*.7),stroke:false,fillColor:col,fillOpacity:[.13,.26,.95][i],className:i<2?'hotspot':''}).addTo(MM.heat));
+      L.marker(ll,{icon:L.divIcon({className:'',html:`<div class="mlab">${esc(k)}<small style="color:${col}">${b.n} cases</small></div>`})}).addTo(MM.heat)}
+    if(MM.lay.risk&&b.risk)L.circleMarker(ll,{radius:18,color:'#ff3b4e',weight:2.5,fill:false,className:'hotspot'}).bindTooltip(`${k}: ${b.risk} at risk / escalated`).addTo(MM.heat)});
+  if(MM.lay.wx)MM.wx.forEach(a=>{const ll=PL[a.place]||{Nashik:[20.0,73.79],Jodhpur:[26.24,73.02]}[a.place];if(ll)L.marker(ll,{icon:L.divIcon({className:'',html:`<div style="transform:translate(-50%,-140%);font-size:22px;filter:drop-shadow(0 0 6px #f5a524)">${a.level==='high'?'⛈️':'🌧️'}</div>`})}).bindTooltip(`${a.place}: ${a.kind}`).addTo(MM.heat)});
+  if(pts.length)MM.map.fitBounds(L.latLngBounds(pts).pad(MM.reg==='rj'?.6:.35));
+  $('mtsReg').textContent=$('mwReg').textContent=$('msReg').textContent=`(${RD[MM.reg]})`;
+  $('mts').innerHTML=`<tr><th>Taluka</th><th>Total Cases</th><th>At Risk</th><th>Verified %</th><th>Trend</th></tr>`+S.slice(0,10).map(([k,b])=>{const t=b.p?Math.round(100*(b.a-b.p)/b.p):0;
+    return`<tr><td>${esc(k)}</td><td>${b.n}</td><td>${b.risk}</td><td>${Math.round(100*b.ver/b.n)}%</td><td class="${t>=0?'up':'dn'}">${t>=0?'↑':'↓'} ${Math.abs(t)}%</td></tr>`}).join('');
+  const L2=CASES.filter(c=>c.district===RD[MM.reg]),need=L2.filter(c=>['acknowledged','closed'].includes(c.status_key)).length,asg=0;
+  $('msv').innerHTML=`<div style="width:96px;height:96px;position:relative"><canvas id="msvC"></canvas><b style="position:absolute;inset:0;display:grid;place-items:center;font-size:20px">${need?Math.round(100*asg/need):0}%</b></div>
+    <div style="flex:1;font-size:12.5px"><b style="font-size:18px;display:block">${asg} / ${need}</b><span style="color:#cfdcd8">verified cases with a surveyor assigned</span>
+    <div class="kv2" style="margin-top:8px"><i class="dot live"></i><span style="width:auto">Surveyor visits are tracked once the insurer shares assignments (not available in the demo data).</span></div></div>`;
+  chart('msvC',{type:'doughnut',data:{datasets:[{data:[asg,Math.max(1,need-asg)],backgroundColor:['#2fe08a','#22343a'],borderWidth:0}]},options:{cutout:'76%',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}}}})}
+async function loadWx(){$('mwx').innerHTML='<small style="color:#cfdcd8">Checking the 3-day forecast…</small>';const d=await fetch('/api/weather/alerts?region='+MM.reg).then(r=>r.json()).catch(()=>null);MM.wx=d?.alerts||[];
+  $('mwx').innerHTML=MM.wx.slice(0,3).map(a=>`<div class="wxa ${a.level}"><i data-lucide="${a.level==='high'?'cloud-lightning':'cloud-rain'}" style="color:${a.level==='high'?'#ff6b78':'#ffc04d'}"></i><div><b>${esc(a.kind)} · ${esc(a.place)}</b><small>${esc(a.detail)}</small></div><em>${new Date(a.day).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})}</em></div>`).join('')
+    ||`<div class="wxa medium" style="border-color:rgba(60,220,150,.6);background:rgba(10,60,40,.35)"><i data-lucide="sun" style="color:#3dffa0"></i><div><b>No weather alerts in the next 3 days</b><small>Real Open-Meteo forecast for ${RD[MM.reg]} talukas · checked ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</small></div></div>`;
+  lucide.createIcons();drawMap()}
+document.querySelectorAll('.rbtn').forEach(b=>b.addEventListener('click',()=>{MM.reg=b.dataset.r;document.querySelectorAll('.rbtn').forEach(x=>x.classList.toggle('on',x===b));drawMap();loadWx()}));
+document.querySelectorAll('.ltog').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.l;MM.lay[k]=!MM.lay[k];b.querySelector('.tog').classList.toggle('on',MM.lay[k]);drawMap()}));
+document.querySelectorAll('.mtype .pill').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mtype .pill').forEach(x=>x.classList.toggle('on',x===b));
+  if(b.dataset.t==='sat'){MM.map.removeLayer(MM.dark);MM.tile.addTo(MM.map)}else{MM.map.removeLayer(MM.tile);MM.dark.addTo(MM.map)}MM.heat.bringToFront?.()}));
+$('mq').addEventListener('input',drawMap);
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>

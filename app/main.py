@@ -369,3 +369,28 @@ async def team_perm(body: dict):
     t["log"].insert(0, {"ts": clock.now().isoformat(), "who": "Yuvraj Daga", "what": f"{'Allowed' if on else 'Removed'} '{_PERMS[i]}'", "detail": f"For role {role}"})
     _team_save(t)
     return {"ok": True}
+
+
+@app.get("/api/weather/alerts")
+async def weather_alerts(region: str = "mh"):
+    """Real 3-day forecast alerts (Open-Meteo) for the region's talukas: hail/thunder, heavy rain, strong wind."""
+    spots = {"mh": {"Nashik": (20.0, 73.79), "Malegaon": (20.55, 74.53), "Niphad": (20.08, 74.11), "Sinnar": (19.85, 74.0), "Yeola": (20.04, 74.49)},
+             "rj": {"Jodhpur": (26.24, 73.02), "Osian": (26.72, 72.92), "Phalodi": (27.13, 72.36), "Bilara": (26.18, 73.7)}}.get(region, {})
+    out = []
+    async with httpx.AsyncClient(timeout=8) as http:
+        for name, (lat, lon) in spots.items():
+            try:
+                r = await http.get("https://api.open-meteo.com/v1/forecast", params={"latitude": lat, "longitude": lon, "timezone": "Asia/Kolkata", "forecast_days": 3,
+                                   "daily": "weather_code,precipitation_sum,wind_gusts_10m_max"})
+                d = r.json()["daily"]
+            except Exception:  # noqa: BLE001
+                continue
+            for i, day in enumerate(d["time"]):
+                code, rain, gust = d["weather_code"][i], d["precipitation_sum"][i] or 0, d["wind_gusts_10m_max"][i] or 0
+                if code in (95, 96, 99):
+                    out.append({"place": name, "day": day, "kind": "Thunderstorm / hail risk", "level": "high", "detail": f"Weather code {code}, gusts up to {gust:.0f} km/h, rain {rain:.0f} mm"})
+                elif rain >= 20:
+                    out.append({"place": name, "day": day, "kind": "Heavy rainfall", "level": "medium", "detail": f"{rain:.0f} mm expected, gusts {gust:.0f} km/h"})
+                elif gust >= 45:
+                    out.append({"place": name, "day": day, "kind": "Strong wind", "level": "medium", "detail": f"Gusts up to {gust:.0f} km/h"})
+    return {"region": region, "alerts": out, "checked": clock.now().isoformat(), "source": "Open-Meteo 3-day forecast"}
