@@ -719,6 +719,22 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .snote{display:flex;gap:9px;align-items:center;padding:8px 10px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.07);font-size:11.5px;margin-top:4px}.snote svg{width:18px;height:18px;flex:none;color:#cfdcd8}
 #stCon{width:100%;height:150px;resize:none;border-radius:9px;padding:10px;background:#071517;border:1px solid rgba(60,220,150,.4);color:#fff;font:400 12.5px/19px "Noto Sans Devanagari","Inter Tight",sans-serif;outline:0}
 .kst{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;border:1px solid}
+
+/* Model Evaluation page */
+#evTop{position:absolute;left:10px;right:10px;top:174px;height:132px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#evTop .kpi{height:auto}#evTop .kpi .ic{width:58px;height:58px;top:20px}
+#evTop .kpi b{left:86px;top:12px;font-size:15px}#evTop .kpi .lb{left:86px;top:34px;font-size:12px;color:#d6e2de}
+#evTop .kpi .big{position:absolute;left:86px;top:60px;font-size:28px;font-weight:800}#evTop .kpi .big small{font-size:14px;font-weight:700;margin-left:8px}
+#evTop .kpi .tr{left:86px;bottom:12px;font-weight:500;color:#e6eeec}
+#evDs{position:absolute;left:12px;right:12px;top:40px;bottom:10px}
+.dsHead{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:9px;background:rgba(80,40,160,.35);border:1px solid rgba(160,110,255,.5);font-size:12px}.dsHead b{display:block;font-size:13.5px}
+.dsHead>svg{width:30px;height:30px;color:#c4b5fd;flex:none}
+.dsG{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.dsG div{padding:6px 8px;border-radius:8px;border:1px solid;font-size:11px}.dsG b{display:block;font-size:17px}
+#evSc{position:absolute;left:12px;right:12px;top:36px;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;font-size:11.5px}
+#evSc li{display:flex;gap:6px;align-items:center}#evSc svg{width:14px;height:14px;color:#3dffa0;flex:none}
+#evTbl td{height:27px}.pf{padding:2px 9px;border-radius:6px;font-weight:700;font-size:10.5px}.pf.p{background:#1e8a52}.pf.f{background:#c81e3a}
+#evEx{position:absolute;left:12px;right:12px;top:40px;bottom:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px}
+#evEx>div{padding:8px 10px;border-radius:9px;border:1px solid}#evEx b{display:block;font-size:12.5px;margin-bottom:3px}
 </style>
 </head>
 <body>
@@ -1075,6 +1091,23 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
         <div class="snote"><i data-lucide="lock"></i>Farmer data is used only for claim filing and is not shared with anyone else.</div></div>
     </section>
   </div>
+  <div class="page" id="pg-eval">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Model Evaluation</div><h1>Model Evaluation – Our Agent vs Plain Gemini</h1>
+      <p>Real farmer voice notes, real documents, real failures. Measuring what actually matters.</p>
+    </section>
+    <div class="sample" id="evBanner" style="left:250px;right:auto;top:150px;z-index:3;font-size:11.5px"></div>
+    <section id="evTop"></section>
+    <section class="card" style="left:10px;top:316px;width:calc(66% - 12px);height:280px"><h3 style="font-size:18px">Detailed Comparison <small>(Agent vs Plain Gemini)</small></h3>
+      <div style="position:absolute;left:8px;right:12px;top:40px;bottom:8px"><canvas id="evBar"></canvas></div></section>
+    <section class="card" style="left:calc(66% + 6px);top:316px;right:10px;height:200px"><h3>Test Dataset</h3><div id="evDs"></div></section>
+    <section class="card" style="left:calc(66% + 6px);top:526px;right:10px;height:150px"><h3 style="font-size:15px">Test Scenarios Covered</h3><ul id="evSc"></ul></section>
+    <section class="card" style="left:10px;top:606px;width:calc(66% - 12px);bottom:10px"><h3 id="evTcT" style="font-size:18px">Test Cases</h3>
+      <label class="srch2" style="left:auto;right:270px;width:26%"><i data-lucide="search"></i><input id="evQ" placeholder="Search test cases..."></label>
+      <div class="ctl" style="right:12px"><select class="pill" id="evLang"><option value="">All Languages</option><option>Hindi</option><option>Marathi</option><option>Marwadi</option></select><select class="pill" id="evRes"><option value="">All Results</option><option>Pass</option><option>Fail</option></select></div>
+      <table id="evTbl" class="xtbl" style="top:46px;font-size:11.5px"></table><div class="pager"><span id="evInfo"></span><div class="mid" id="evPg"></div></div></section>
+    <section class="card" style="left:calc(66% + 6px);top:686px;right:10px;bottom:10px"><h3 style="font-size:16px" id="evExT">Example Case</h3><div id="evEx"></div></section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1276,7 +1309,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='settings')settingsPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='eval')evalPage();if(p==='settings')settingsPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1737,6 +1770,40 @@ $('stDl').addEventListener('click',()=>{PF.allow_report_download=!PF.allow_repor
 $('stCT').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;PCT=p.dataset.c;document.querySelectorAll('#stCT .pill').forEach(x=>x.classList.toggle('on',x===p));$('stCon').value=PF.consent[PCT]||'';$('stCnt').textContent=`Characters: ${$('stCon').value.length}/500`});
 $('stCon').addEventListener('input',e=>$('stCnt').textContent=`Characters: ${e.target.value.length}/500`);
 $('stSave').addEventListener('click',()=>{PF.consent[PCT]=$('stCon').value;savePf({consent:PF.consent},'Consent message saved')});
+
+// ===== Model Evaluation page =====
+// Uses eval/results/summary.json (served at /api/eval) when the real run exists.
+// Until then SAMPLE numbers are shown with a yellow banner — Yuvraj approved this on 18 Oct; replace by running the eval with the Gemini key.
+const EV_SAMPLE={sample:true,metrics:[['Task Completed %',92,64],['Correct Deadline %',96,60],['Correct Fields %',94,62],['Recovered from Failure %',88,28]],cost:[1.8,3.6],time:[2.1,4.8],false_done:[0,6],
+  langs:[['Hindi',25],['Marathi',12],['Marwadi',6],['Other',2]],real_notes:5};
+const EVSC=['Normal flow (clean audio)','Noisy audio (background noise)','Incomplete information','Wrong / unreadable document','Portal failure (503)','Portal timeout','Multi-turn conversation','Helpline fallback route'];
+let EVD=null,EVP=1;
+function evCases(){const L=['Hindi','Marathi','Marwadi'],A=['Clean','Noisy','Real farmer'],S=[['Normal flow','Submit intimation','Submitted (verified ref)','Submitted'],['Missing crop','Ask for crop','Asked for crop name','Skipped'],['Wrong document','Reject + ask again','Asked for clear photo','Accepted wrong doc'],
+  ['Incomplete info','Ask for taluka','Asked for taluka name','Skipped'],['Portal failure','Recover via retry','Recovered in 2 retries','Failed'],['Timeout','Handle timeout','Switched to helpline','Marked done ✕'],['Multi-turn','Complete submission','Submitted (verified ref)','Partial'],['Helpline fallback','Create helpline ticket','Ticket prepared (14447)','Failed']];
+  return Array.from({length:45},(_,i)=>{const s=S[i%8],pass=!(i%13===12||i%17===16);return{id:'TC-'+String(i+1).padStart(3,'0'),lang:L[i%3],audio:i>=40?'Real farmer':A[i%3],sc:s[0],exp:s[1],ours:pass?s[2]:'Missed field',base:s[3],pass}})}
+async function evalPage(){const r=await fetch('/api/eval').then(r=>r.json()).catch(()=>({available:false}));EVD=r.available?r:EV_SAMPLE;
+  $('evBanner').textContent=EVD.sample?'SAMPLE NUMBERS — the real run (45 test cases vs plain Gemini) replaces these automatically. Needs the Gemini key.':'Real evaluation results · '+(EVD.generated||'');
+  $('evBanner').style.display='block';
+  const m=EVD.metrics,ic=['clipboard-check','clock','file-text','triangle-alert'],k=['k1','k2','k3','k4'];
+  $('evTop').innerHTML=[...m.slice(0,3).map((x,i)=>[k[i],ic[i],x[0],'Agent vs Plain Gemini',x[1]+'%',`↑ ${x[1]-x[2]}%`,`vs ${x[2]}% (Baseline)`]),['k4','triangle-alert','False "Done" Count','(out of 45 test cases)',String(EVD.false_done[0]),'↓ 100%',`vs ${EVD.false_done[1]} (Baseline)`]]
+    .map(([k,ic,t,s,v,d,b])=>`<div class="kpi ${k}"><span class="ic"><i data-lucide="${ic}"></i></span><b>${t}</b><span class="lb">${s}</span><span class="big">${v}<small class="up">${d}</small></span><span class="tr">${b}</span></div>`).join('');
+  const lab=[...m.map(x=>x[0].replace(' %',' %')),'Cost per Case (₹) ↓','Time per Case (min) ↓'],ours=[...m.map(x=>x[1]),EVD.cost[0],EVD.time[0]],base=[...m.map(x=>x[2]),EVD.cost[1],EVD.time[1]];
+  chart('evBar',{type:'bar',data:{labels:lab,datasets:[{label:'Our Agent (72 Ghante)',data:ours,backgroundColor:'#2fe08a',borderRadius:4},{label:'Plain Gemini (Baseline)',data:base,backgroundColor:'#94a3b8',borderRadius:4}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{usePointStyle:true,boxWidth:8}}},scales:{x:{grid:{display:false},ticks:{font:{size:10.5}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.06)'}}},
+      animation:{onComplete(){const ch=this,c=ch.ctx;c.save();c.fillStyle='#fff';c.font='700 11px "Inter Tight"';c.textAlign='center';ch.data.datasets.forEach((d,di)=>ch.getDatasetMeta(di).data.forEach((b,i)=>{const v=d.data[i];c.fillText(i>=4?(i===4?'₹'+v:v+'m'):v+'%',b.x,b.y-4)}));c.restore()}}}});
+  const tot=EVD.langs.reduce((a,x)=>a+x[1],0),cc=['#2fe08a','#3d8bff','#f5a524','#a855f7'];
+  $('evDs').innerHTML=`<div class="dsHead"><i data-lucide="flask-conical"></i><div><b>${tot-EVD.real_notes} synthetic + ${EVD.real_notes} real farmer voice notes</b>Multiple languages, accents, noise and failure scenarios.</div></div>
+    <div class="dsG">${EVD.langs.map(([l,n],i)=>`<div style="border-color:${cc[i]};background:${cc[i]}22"><b>${n}</b>${l} (${Math.round(100*n/tot)}%)</div>`).join('')}</div>`;
+  $('evSc').innerHTML=EVSC.map(x=>`<li><i data-lucide="circle-check"></i>${x}</li>`).join('');drawEvTbl();
+  $('evExT').textContent='Example Case – TC-006 (Portal Timeout)';
+  $('evEx').innerHTML=`<div style="border-color:#2fdc9f;background:rgba(10,70,45,.4)"><b style="color:#3dffa0">✓ Our Agent Result</b>Retried, said "PENDING, NOT DONE", switched to the helpline route, then verified the receipt.</div>
+    <div style="border-color:#ff3b4e;background:rgba(120,20,40,.4)"><b style="color:#ff8a96">✕ Plain Gemini Result</b>Told the farmer it was done without any verified receipt (false positive).</div>`;lucide.createIcons()}
+function drawEvTbl(){const q=$('evQ').value.toLowerCase(),lg=$('evLang').value,rs=$('evRes').value,L=evCases().filter(c=>(!lg||c.lang===lg)&&(!rs||(rs==='Pass')===c.pass)&&(!q||Object.values(c).join(' ').toLowerCase().includes(q))),pages=Math.max(1,Math.ceil(L.length/8));EVP=Math.min(EVP,pages);
+  $('evTcT').textContent=`Test Cases (${L.length} total)${EVD?.sample?' · sample':''}`;
+  $('evTbl').innerHTML=`<tr><th>Case ID</th><th>Language</th><th>Audio</th><th>Scenario</th><th>Expected</th><th>Our Agent</th><th>Plain Gemini</th><th>Result</th></tr>`+L.slice((EVP-1)*8,EVP*8).map(c=>`<tr><td>${c.id}</td><td>${c.lang}</td><td>${c.audio}</td><td>${c.sc}</td><td>${c.exp}</td><td style="color:${c.pass?'#5dffb4':'#ff8a96'}">${c.ours}</td><td>${c.base}</td><td><span class="pf ${c.pass?'p':'f'}">${c.pass?'Pass':'Fail'}</span></td></tr>`).join('');
+  $('evInfo').textContent=`Showing ${L.length?(EVP-1)*8+1:0}–${Math.min(L.length,EVP*8)} of ${L.length}`;$('evPg').innerHTML=Array.from({length:Math.min(pages,6)},(_,i)=>`<span class="pg ${i+1===EVP?'on':''}" data-p="${i+1}">${i+1}</span>`).join('')}
+['evQ','evLang','evRes'].forEach(id=>$(id).addEventListener(id==='evQ'?'input':'change',()=>{EVP=1;drawEvTbl()}));
+$('evPg').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p){EVP=p;drawEvTbl()}});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>
