@@ -597,6 +597,23 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #simRes .kpi b{font-size:20px}#simRes .kpi .lb,#simRes .kpi .tr{white-space:normal;line-height:13px;right:8px}#simRes .kpi .lb{font-size:11.5px!important}
 #rpStat{position:absolute;left:14px;right:14px;top:44px;display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px}
 #rpStat div{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:5px}#rpStat b{font-size:15px}
+
+/* Team page */
+#tmTbl td{height:56px}
+#pmTbl{position:absolute;left:12px;right:12px;top:66px;width:calc(100% - 24px);border-collapse:collapse;font-size:12.5px;border-radius:9px;overflow:hidden;background:rgba(10,30,34,.6)}
+#pmTbl th{height:58px;font-size:11.5px;font-weight:700;border:1px solid rgba(255,255,255,.07);text-align:center}#pmTbl th:first-child{text-align:left;padding-left:10px;font-size:13px}
+#pmTbl th svg{width:18px;height:18px;color:#3dffa0}
+#pmTbl td{height:38px;border:1px solid rgba(255,255,255,.07);text-align:center}#pmTbl td:first-child{text-align:left;padding-left:10px}
+.tog{display:inline-block;width:38px;height:20px;border-radius:10px;background:#3a4650;position:relative;cursor:pointer;transition:.2s}
+.tog::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#cfd8dc;transition:.2s}
+.tog.on{background:#1fbf72;box-shadow:0 0 10px rgba(47,224,138,.6)}.tog.on::after{left:21px;background:#fff}.tog.lock{opacity:.85;cursor:not-allowed}
+#tmLog{position:absolute;left:12px;right:12px;top:46px;bottom:8px;list-style:none;overflow:hidden}
+#tmLog li{display:flex;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);animation:slide .4s both}
+.lic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none}.lic svg{width:16px;height:16px;color:#fff}
+#tmLog time{font-size:11.5px;color:#cfdcd8;width:92px;flex:none}#tmLog p{min-width:0}#tmLog b{display:block;font-size:12.5px}#tmLog small{display:block;font-size:11.5px;color:#cfdcd8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#invDlg{margin:auto;border:1px solid #2fdc9f;border-radius:12px;background:#0a1f20;color:#fff;padding:20px;width:380px}
+#invDlg::backdrop{background:rgba(0,0,0,.6)}#invDlg h3{margin-bottom:12px}
+#invDlg label{display:block;font-size:12.5px;margin-bottom:10px}#invDlg input,#invDlg select{display:block;width:100%;margin-top:4px;height:34px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 13px "Inter Tight",sans-serif}
 </style>
 </head>
 <body>
@@ -822,6 +839,27 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     </section>
     <section class="card" style="left:calc(58% + 6px);top:838px;right:10px;bottom:10px"><h3>Step Gaps <small>(selected run)</small></h3><div id="rpStat"></div></section>
   </div>
+  <div class="page" id="pg-team">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Team &amp; Access</div><h1>Team &amp; Access</h1>
+      <p>Manage team members, roles and permissions across districts and operations.</p>
+      <button class="pbtn new" id="tmInvite" style="left:640px"><i data-lucide="plus"></i>Invite Member</button>
+    </section>
+    <section class="card" style="left:10px;top:174px;width:calc(59% - 12px);bottom:10px"><h3 style="font-size:20px;top:14px">Team Members <small id="tmCount"></small></h3>
+      <label class="srch2" style="left:auto;right:290px;width:30%;top:12px;height:30px"><i data-lucide="search"></i><input id="tmQ" placeholder="Search members by name, role or district..."></label>
+      <div class="ctl" style="right:12px;top:14px"><select class="pill" id="tmRole"><option value="">All Roles</option><option>Admin</option><option>District Officer</option><option>Helpline Staff</option><option>Surveyor</option></select><select class="pill" id="tmDist"></select></div>
+      <table id="tmTbl" class="xtbl" style="top:58px;font-size:12.5px"></table>
+    </section>
+    <section class="card" style="left:calc(59% + 6px);top:174px;right:10px;height:440px"><h3 style="font-size:20px">Roles &amp; Permissions</h3>
+      <p style="position:absolute;left:14px;top:40px;font-size:12.5px;color:#cfdcd8">Click a switch to change what each role can do. Saved instantly.</p>
+      <table id="pmTbl"></table></section>
+    <section class="card" style="left:calc(59% + 6px);top:624px;right:10px;bottom:10px"><h3 style="font-size:20px">Activity Log</h3><ul id="tmLog"></ul></section>
+    <dialog id="invDlg"><form id="invForm"><h3>Invite Member</h3>
+      <label>Name<input name="name" required></label><label>Email<input name="email" type="email"></label>
+      <label>Role<select name="role"><option>District Officer</option><option>Helpline Staff</option><option>Surveyor</option><option>Admin</option></select></label>
+      <label>District<input name="district" placeholder="e.g. Nashik"></label><p id="invErr" style="color:#ff6b78;font-size:12px"></p>
+      <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="reset" onclick="this.closest('dialog').close()">Cancel</button><button class="pbtn new" style="position:static;height:36px">Add</button></div></form></dialog>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1023,7 +1061,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1275,6 +1313,31 @@ $('rpSpeed').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!
 $('rpFin').addEventListener('click',e=>{if(e.target.closest('#rpAgain'))replay(true)});
 $('rSearch').addEventListener('input',drawRuns);$('rKind').addEventListener('change',drawRuns);
 $('rPg').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p){FR.page=p;drawRuns()}});
+
+// ===== Team & Access page (real: /api/team, runs and case activity) =====
+let TM=null;
+const RC={'Admin':['sub','crown'],'District Officer':['prog','user'],'Helpline Staff':['ack','headset'],'Surveyor':['wait','hard-hat']};
+async function teamPage(){TM=await fetch('/api/team').then(r=>r.json()).catch(()=>null);if(!TM)return;
+  const ds=[...new Set(TM.members.map(m=>m.district))];$('tmDist').innerHTML='<option value="">All Districts</option>'+ds.map(d=>`<option>${esc(d)}</option>`).join('');drawTeam();drawPerms();drawLog()}
+function drawTeam(){const q=$('tmQ').value.toLowerCase(),r=$('tmRole').value,d=$('tmDist').value,L=TM.members.filter(m=>(!r||m.role===r)&&(!d||m.district===d)&&(!q||[m.name,m.role,m.district,m.email].join(' ').toLowerCase().includes(q)));
+  $('tmCount').textContent=`(${TM.members.length})`;
+  $('tmTbl').innerHTML=`<tr><th>#</th><th>Member</th><th>Role</th><th>District</th><th>Added</th><th>Status</th><th>Actions</th></tr>`+L.map((m,i)=>{const[k,ic]=RC[m.role]||['grey','user'];
+    return`<tr class="row"><td>${i+1}</td><td><span class="av" style="width:36px;height:36px;font-size:13px">${ini(m.name)}</span><b>${esc(m.name)}</b>${m.owner?' 👑':''}<br><small style="color:#c7d5d1;margin-left:43px">${esc(m.email||'—')}</small></td>
+      <td><span class="st ${k}"><i data-lucide="${ic}" style="width:12px;height:12px;vertical-align:-2px"></i> ${m.role}</span></td><td>${esc(m.district)}</td><td>${new Date(m.added).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+      <td><span class="cns ${m.status==='Active'?'y':'n'}">● ${m.status}</span></td><td><span class="mdot">···</span></td></tr>`}).join('');lucide.createIcons()}
+function drawPerms(){$('pmTbl').innerHTML=`<tr><th>Permission</th>${TM.roles.map(r=>`<th><i data-lucide="${RC[r][1]}"></i><br>${r}</th>`).join('')}</tr>`+TM.permissions.map((p,i)=>`<tr><td>${p}</td>${TM.roles.map(r=>`<td><span class="tog ${TM.perms[r][i]?'on':''} ${r==='Admin'?'lock':''}" data-r="${r}" data-i="${i}"></span></td>`).join('')}</tr>`).join('');lucide.createIcons()}
+async function drawLog(){const runs=(await fetch('/api/scenarios').then(r=>r.json()).catch(()=>({runs:[]}))).runs.slice(0,6).map(r=>({ts:r.started,who:'Yuvraj Daga',what:`Ran simulation: ${SN[r.kind]||r.kind}`,detail:r.outcome||r.status,ic:'flask-conical',c:'#a855f7'}));
+  const team=TM.log.map(l=>({...l,ic:/Invited/.test(l.what)?'user-plus':/Allowed|Removed/.test(l.what)?'square-pen':'settings',c:/Invited/.test(l.what)?'#2fe08a':'#3d8bff'}));
+  const all=[...team,...runs].sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,7);
+  $('tmLog').innerHTML=all.map(a=>`<li><span class="lic" style="background:${a.c}"><i data-lucide="${a.ic}"></i></span><time>${new Date(a.ts).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</time><p><b>${esc(a.who)} · ${esc(a.what)}</b><small>${esc(a.detail||'')}</small></p></li>`).join('');lucide.createIcons()}
+$('pmTbl').addEventListener('click',async e=>{const t=e.target.closest('.tog');if(!t)return;if(t.classList.contains('lock')){toast('Admin always has every permission');return}
+  const on=!t.classList.contains('on');t.classList.toggle('on',on);const r=await fetch('/api/team/perm',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({role:t.dataset.r,i:+t.dataset.i,on})});
+  if(!r.ok){t.classList.toggle('on',!on);toast('Could not save')}else{TM=await fetch('/api/team').then(r=>r.json());drawLog()}});
+['tmQ','tmRole','tmDist'].forEach(id=>$(id).addEventListener(id==='tmQ'?'input':'change',drawTeam));
+$('tmInvite').addEventListener('click',()=>$('invDlg').showModal());
+$('invForm').addEventListener('submit',async e=>{e.preventDefault();const f=new FormData(e.target),body=Object.fromEntries(f);
+  const r=await fetch('/api/team/member',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();
+  if(!r.ok){$('invErr').textContent=j.detail;return}$('invDlg').close();e.target.reset();toast('Member added (status: Invited)');teamPage()});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>

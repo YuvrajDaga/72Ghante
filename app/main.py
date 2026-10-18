@@ -320,3 +320,52 @@ async def tools_health():
                   "avg_ms": round(sum(x["ms"] for x in oks) / len(oks)) if oks else None, "last": h[-1], "history": list(h)}
     return {"probes": out, "configured": {"gemini": bool(_cfg.GEMINI_API_KEY), "twilio": bool(TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN),
             "pmfby_mock": "/mock" in _cfg.PMFBY_BASE_URL}, "agent_calls": len(calls), "agent_errors": sum(1 for c in calls if c.get("status") != "ok")}
+
+
+# ---- Team & Access: real members and role permissions, saved to data/team.json ----
+_TEAM_FILE = _cfg.DATA_DIR / "team.json"
+_PERMS = ["View cases", "Edit cases", "Escalate to higher authority", "Run simulations", "See farmer phone numbers",
+          "Manage team members", "Access reports & analytics", "Modify system settings"]
+_ROLES = ["Admin", "District Officer", "Helpline Staff", "Surveyor"]
+
+
+def _team_load() -> dict:
+    if _TEAM_FILE.exists():
+        return json.loads(_TEAM_FILE.read_text(encoding="utf-8"))
+    default = {r: [True] * len(_PERMS) if r == "Admin" else [i in {"District Officer": (0, 1, 2, 3, 4, 6), "Helpline Staff": (0, 2, 4), "Surveyor": (0,)}[r] for i in range(len(_PERMS))] for r in _ROLES}
+    return {"members": [{"name": "Yuvraj Daga", "email": "", "role": "Admin", "district": "All Districts", "status": "Active", "added": clock.now().isoformat(), "owner": True}],
+            "perms": default, "log": [{"ts": clock.now().isoformat(), "who": "System", "what": "Control room created", "detail": "Yuvraj Daga set as Admin"}]}
+
+
+def _team_save(t: dict) -> None:
+    _TEAM_FILE.write_text(json.dumps(t, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+@app.get("/api/team")
+async def team_get():
+    return {**_team_load(), "permissions": _PERMS, "roles": _ROLES}
+
+
+@app.post("/api/team/member")
+async def team_add(body: dict):
+    t = _team_load()
+    name = (body.get("name") or "").strip()
+    if not name or body.get("role") not in _ROLES:
+        return JSONResponse({"detail": "Name and a valid role are required"}, 422)
+    t["members"].append({"name": name, "email": (body.get("email") or "").strip(), "role": body["role"], "district": (body.get("district") or "All Districts").strip(),
+                         "status": "Invited", "added": clock.now().isoformat()})
+    t["log"].insert(0, {"ts": clock.now().isoformat(), "who": "Yuvraj Daga", "what": f"Invited {name}", "detail": f"Role: {body['role']}"})
+    _team_save(t)
+    return {"ok": True}
+
+
+@app.post("/api/team/perm")
+async def team_perm(body: dict):
+    t = _team_load()
+    role, i, on = body.get("role"), int(body.get("i", -1)), bool(body.get("on"))
+    if role not in _ROLES or not 0 <= i < len(_PERMS) or role == "Admin":
+        return JSONResponse({"detail": "Admin always has every permission"}, 422)
+    t["perms"][role][i] = on
+    t["log"].insert(0, {"ts": clock.now().isoformat(), "who": "Yuvraj Daga", "what": f"{'Allowed' if on else 'Removed'} '{_PERMS[i]}'", "detail": f"For role {role}"})
+    _team_save(t)
+    return {"ok": True}

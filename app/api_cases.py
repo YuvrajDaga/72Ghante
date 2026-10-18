@@ -157,6 +157,8 @@ async def farmers(q: str = ""):
     groups: dict[str, dict] = defaultdict(lambda: {"cases": 0, "verified": 0, "open": 0, "crops": set(), "last": ""})
     meta = {}
     for c in store.list_cases():
+        if c.get("scenario"):  # test-run farmers are synthetic; keep them off the Farmers page
+            continue
         key = c["phone"]
         g = groups[key]
         g["cases"] += 1
