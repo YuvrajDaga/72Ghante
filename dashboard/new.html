@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>72 Ghante – Control Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@600;700&display=swap" rel="stylesheet">
+<script src="vendor/lucide.min.js"></script>
+<style>
+/* Design is drawn at 1536×1024 (the reference picture) and scaled to fit the window. */
+:root{
+  --bg:#06140f; --side:#081a1d; --line:rgba(255,255,255,.07);
+  --txt:#eef6f2; --mut:#9fb4ad; --green:#2fe08a; --green2:#1fbf72;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter Tight",Inter,system-ui,sans-serif;overflow:hidden}
+#stage{position:fixed;inset:0;overflow:hidden}
+#frame{width:1536px;height:1024px;position:absolute;left:0;top:0;transform-origin:0 0;
+  background:radial-gradient(1200px 700px at 70% 40%,#0b2a1f 0%,#06140f 70%)}
+
+/* ---------- 1. Sidebar ---------- */
+.side{position:absolute;left:0;top:0;bottom:0;width:214px;overflow:hidden;
+  background:linear-gradient(180deg,#0a1d22 0%,#0a1c22 40%,#0b1f22 100%);border-right:1px solid var(--line)}
+.side .photo{position:absolute;left:0;right:0;bottom:0;height:953px;background:#07130f url(img/sidebar.png) 0 0/138.3% auto no-repeat;}
+.side .photo::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,#0a1d22 0%,rgba(10,29,34,0) 12%,rgba(6,18,14,0) 72%,rgba(7,19,15,.55) 86%,#07130f 93%,#07130f 100%)}
+.brand,.nav{position:relative}
+.brand{height:66px;display:flex;align-items:center;gap:12px;padding:0 0 0 21px;border-bottom:1px solid var(--line)}
+.brand .logo{width:44px;height:44px;display:grid;place-items:center}
+.brand .logo img{width:44px;height:44px;object-fit:contain}
+.brand b{display:block;font-size:24.5px;font-weight:700;letter-spacing:-.2px;line-height:1}
+.brand small{display:block;font-size:13.5px;color:#d6e4df;margin-top:5px;font-weight:500}
+.nav{list-style:none;padding:12px 14px 0}
+.nav li{height:38.6px;display:flex;align-items:center;gap:19px;padding:0 9px 0 11px;border-radius:9px;
+  font-size:13.4px;font-weight:400;color:#e3ece8;white-space:nowrap;cursor:pointer;border:1.5px solid transparent;transition:background .15s}
+.nav li:hover{background:rgba(255,255,255,.04)}
+.nav li svg{width:21px;height:21px;stroke-width:2;flex:none;color:#f2f7f5}
+.nav li.on{height:38px;margin-bottom:5px;font-weight:700;color:#fff;
+  background:linear-gradient(180deg,#2bc779 0%,#159a58 55%,#0f7a45 100%);border-color:#6dffb8;
+  box-shadow:0 0 18px rgba(60,255,150,.75),0 0 4px rgba(120,255,190,.9),inset 0 1px 0 rgba(255,255,255,.35)}
+.nav li .wa{color:var(--green)}
+.nav li .badge{margin-left:auto;min-width:32px;height:22px;padding:0 8px;border-radius:11px;display:grid;place-items:center;
+  font-size:12.5px;font-weight:600;background:rgba(36,62,80,.85);color:#e8f1ee}
+.nav li .badge:empty{display:none}
+.tagline{position:absolute;left:22px;bottom:193px;font-size:19px;font-weight:700;line-height:21px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.ticks{position:absolute;left:23px;bottom:83px;list-style:none}
+.ticks li{height:25px;display:flex;align-items:center;gap:13px;font-size:13.3px;font-weight:400;color:#f1f6f4;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.ticks i{width:18px;height:18px;border-radius:50%;background:#27d27c;display:grid;place-items:center}
+.ticks i svg{width:12px;height:12px;stroke:#06301b;stroke-width:3.2}
+.demo{position:absolute;left:18px;bottom:34px;width:180px;height:40px;border-radius:8px;display:flex;align-items:center;gap:12px;padding-left:17px;
+  font:700 14px "Inter Tight",sans-serif;color:#fff;cursor:pointer;background:rgba(8,36,34,.72);border:1px solid rgba(70,220,165,.45)}
+.demo svg{width:20px;height:20px;stroke-width:1.8}
+.demo .dot{width:16px;height:16px;border-radius:50%;background:var(--green);margin-left:2px;display:grid;place-items:center;box-shadow:0 0 6px var(--green)}
+.demo .dot svg{width:12px;height:12px;color:#06301b;stroke-width:3}
+.ver{position:absolute;left:22px;bottom:10px;font-size:12px;color:#a9bbb6}
+
+/* ---------- main area (sections come one by one) ---------- */
+.main{position:absolute;left:214px;top:0;right:0;bottom:0}
+.main::before{content:"";position:absolute;left:0;right:0;top:0;height:64px;
+  background:radial-gradient(260px 60px at 1010px 70px,rgba(255,150,60,.5),transparent 70%),radial-gradient(500px 80px at 300px 70px,rgba(40,110,150,.35),transparent 70%),linear-gradient(180deg,#0b1a26,#0c2026)}
+
+/* ---------- 2. Top bar ---------- */
+.top{position:absolute;left:0;right:0;top:0;height:62px}
+.top>*{position:absolute;display:flex;align-items:center}
+.glass{background:rgba(10,32,48,.62);border:1px solid rgba(110,170,210,.28);border-radius:8px;backdrop-filter:blur(6px)}
+.srch{left:13px;top:13px;width:422px;height:37px;padding:0 6px 0 12px;gap:10px;font-size:13px;color:#c9d6de}
+.srch svg{width:17px;height:17px;color:#e6eef3}
+.srch input{flex:1;background:none;border:0;outline:0;color:#fff;font:400 13px "Inter Tight",sans-serif}
+.srch input::placeholder{color:#c9d6de}
+.srch kbd{font:700 12px "Inter Tight",sans-serif;color:#fff;background:#2d5d86;border-radius:5px;padding:4px 8px;letter-spacing:.5px}
+.flt{top:13px;height:37px;padding:0 24px 0 10px;gap:8px;font-size:13.5px;color:#f1f5f7;cursor:pointer;border-color:rgba(120,190,170,.3)}
+.flt select{appearance:none;background:none;border:0;outline:0;color:#f1f5f7;font:400 13px "Inter Tight",sans-serif;cursor:pointer;padding:0;text-overflow:clip}
+.flt select option{background:#0c2430}
+.flt>svg{position:absolute;right:9px;width:16px;height:16px;pointer-events:none}
+.flt select{width:100%}
+#fReg{left:447px;width:109px} #fCrop{left:566px;width:95px}
+#fDate{left:671px;width:204px;justify-content:space-between;font-weight:500;white-space:nowrap;font-size:13.2px}
+#fDate>svg{position:static;width:18px!important;height:18px!important;flex:none}
+.wx{right:277px;top:7px;width:137px;height:50px;gap:10px;padding-left:14px;border-radius:10px;border-color:rgba(90,200,190,.35);background:rgba(8,40,44,.6)}
+.wx .sun{width:30px;height:30px;color:#ffc93a;fill:#ffc93a;filter:drop-shadow(0 0 6px rgba(255,190,40,.7))}
+.wx b{display:block;font-size:13.5px;font-weight:700}
+.wx span{display:block;font-size:13px;margin-top:3px;color:#eef3f2}
+.bell{right:208px;top:0;width:69px;height:62px;justify-content:center;background:rgba(8,22,32,.55);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.bell svg{width:26px;height:26px;color:#fff;fill:#fff}
+.bell em{position:absolute;left:39px;top:15px;min-width:14px;height:14px;border-radius:7px;background:#ff3b4e;font:700 9px/14px "Inter Tight",sans-serif;font-style:normal;text-align:center;padding:0 3px}
+.bell em:empty{display:none}
+.me{right:13px;top:11px;height:40px;gap:12px;cursor:pointer;width:180px}
+.me .av{width:40px;height:40px;border-radius:50%;background:#27c97d;display:grid;place-items:center;font:700 15px "Inter Tight",sans-serif;color:#fff}
+.me b{display:block;font-size:13.5px;font-weight:700}
+.me span{display:block;font-size:13px;color:#b9c8c6;margin-top:3px}
+.me svg{width:18px;height:18px;margin-left:auto}
+
+/* ---------- 3. Hero banner + 72-hour timer ---------- */
+.hero{position:absolute;left:10px;right:240px;top:62px;height:188px;border-radius:12px;overflow:hidden;
+  background:#0a1a14 url(img/hero.png) right center/auto 100% no-repeat;border:1px solid rgba(90,220,170,.28)}
+.hero .himg{right:230px;top:0;height:100%;width:auto}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(4,16,12,.85) 0%,rgba(4,16,12,.6) 22%,rgba(4,16,12,0) 36%)}
+.hero>*{position:absolute;z-index:2}
+.hero>.hbg,.hero>.himg{z-index:0}
+.chip26{left:38px;top:10px;height:21px;padding:0 9px 0 7px;display:flex;align-items:center;gap:7px;border-radius:6px;font-size:12.5px;color:#e9f5ef;
+  background:rgba(8,40,30,.7);border:1px solid rgba(80,230,160,.45)}
+.chip26 b{color:#3ff0a0;font-weight:800;font-size:13px}
+.hero h1{left:41px;top:34px;font-size:27.6px;line-height:30px;font-weight:700;letter-spacing:-.2px;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.hero h1 em{font-style:normal;color:#3ff0b4}
+.hero p{left:41px;top:100px;font-size:13.4px;line-height:16px;color:#f2f7f4;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.hbtn{top:140px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;gap:10px;font:600 13.3px "Inter Tight",sans-serif;cursor:pointer;color:#fff;
+  background:rgba(10,34,52,.7);border:1px solid rgba(110,180,220,.4)}
+.hbtn svg{width:19px;height:19px}
+.hbtn.new{left:35px;width:129px;color:#05281a;font-weight:700;border:0;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);box-shadow:0 0 14px rgba(63,240,170,.45)}
+.hbtn.live{left:175px;width:151px}
+.hbtn.how{left:337px;width:133px}
+.hfade{right:704px;top:0;bottom:0;width:100px;background:linear-gradient(90deg,#0a1a14,rgba(10,26,20,0))}
+.wave{display:none;width:24px;height:22px;color:#fff}
+.bubble{right:588px;top:96px;width:190px;height:53px;border-radius:12px;background:#f3f8e8;display:flex;align-items:center;gap:8px;padding:0 10px;
+  font:700 14.5px/19px "Noto Sans Devanagari",Inter,sans-serif;color:#13261c;box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.bubble::before{content:"";position:absolute;right:-7px;top:20px;border:7px solid transparent;border-left-color:#f3f8e8;border-right:0}
+.bubble svg{width:26px;height:26px;color:#20c46c;flex:none}
+.feats{right:580px;top:12px;width:350px;height:44px;border-radius:9px;display:flex;align-items:center;background:rgba(8,26,24,.72);border:1px solid rgba(120,200,170,.25)}
+.feats div{flex:auto;display:flex;align-items:center;gap:6px;padding:0 8px;height:30px}
+.feats div+div{border-left:1px solid rgba(255,255,255,.14)}
+.feats svg{width:22px;height:22px;color:#2fe08a;flex:none}
+.feats b{display:block;font-size:10.8px;font-weight:700;white-space:nowrap}
+.feats span{display:block;font-size:10px;color:#d0ddd8;margin-top:2px;white-space:nowrap}
+.timer{position:absolute;right:12px;top:62px;width:220px;height:188px;border-radius:12px;background:rgba(6,24,22,.86);border:1px solid rgba(80,230,170,.4);box-shadow:0 0 18px rgba(47,224,138,.18)}
+.timer svg.ring{position:absolute;left:10px;top:10px;width:76px;height:76px}
+.timer .lbl{position:absolute;left:98px;top:16px;font-size:11.5px;font-weight:600;color:#eef5f2}
+.timer .clk{position:absolute;left:97px;top:37px;font-size:21px;font-weight:700;color:#ffd23f;letter-spacing:.3px;white-space:nowrap}
+.timer .sub{position:absolute;left:98px;top:67px;font-size:12px;color:#eef5f2}
+.timer ul{position:absolute;left:20px;top:100px;list-style:none}
+.timer li{height:21px;display:flex;align-items:center;gap:11px;font-size:12.8px;color:#f1f6f4}
+.timer li i{width:17px;height:17px;border-radius:50%;background:#27d27c;display:grid;place-items:center}
+.timer li i svg{width:11px;height:11px;stroke:#06301b;stroke-width:3.2}
+
+/* ---------- 4. Six number cards ---------- */
+.kpis{position:absolute;left:12px;right:12px;top:260px;height:87px;display:flex;gap:11px}
+.kpi{flex:1;position:relative;border-radius:11px;overflow:hidden;cursor:pointer;
+  background:linear-gradient(135deg,rgba(var(--c),.30) 0%,rgba(var(--c),.10) 45%,rgba(6,20,22,.9) 100%);
+  border:1.5px solid rgba(var(--c),.75);box-shadow:0 0 14px rgba(var(--c),.35),inset 0 0 18px rgba(var(--c),.12)}
+.kpi .ic{position:absolute;left:13px;top:19px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,rgba(var(--c),1),rgba(var(--c),.55));box-shadow:0 0 14px rgba(var(--c),.6)}
+.kpi .ic svg{width:24px;height:24px;color:#fff;stroke-width:2}
+.kpi b{position:absolute;left:79px;top:13px;font-size:22px;font-weight:700;color:#fff;white-space:nowrap}
+.kpi .lb{position:absolute;left:79px;top:41px;font-size:13.5px;color:#eef4f2;line-height:15px;white-space:nowrap}
+.kpi .lb small{display:block;font-size:12px;color:rgba(var(--c),1)}
+.kpi .tr{position:absolute;left:79px;bottom:9px;font-size:13px;font-weight:700;white-space:nowrap}
+.kpi .tr.up{color:#3dffa0} .kpi .tr.dn{color:#ff4d5e}
+.kpi .go{position:absolute;right:9px;top:9px;width:15px;height:15px;color:#e8eef0}
+.kpi .sp{position:absolute;right:9px;bottom:6px;height:52px;display:flex;align-items:flex-end;gap:2.5px}
+.kpi .sp i{width:4px;border-radius:1px 1px 0 0;background:linear-gradient(0deg,rgba(var(--c),.55),rgba(var(--c),1))}
+.k1{--c:31,212,126} .k2{--c:42,127,255} .k3{--c:245,166,35} .k4{--c:255,59,78} .k5{--c:34,209,160} .k6{--c:43,181,255}
+.k6 .lb{top:36px} .k5 .lb{top:36px}
+
+.todo{position:absolute;inset:362px 20px 20px;border:1px dashed rgba(255,255,255,.12);border-radius:14px;display:grid;place-items:center;color:var(--mut);font-size:15px}
+</style>
+</head>
+<body>
+<div id="stage"><div id="frame">
+
+<aside class="side">
+  <div class="photo"></div>
+  <div class="brand">
+    <div class="logo" id="logo"></div>
+    <div><b>72 Ghante</b><small>Har Kisan Ke Saath</small></div>
+  </div>
+  <ul class="nav" id="nav">
+    <li class="on" data-p="dashboard"><i data-lucide="house"></i>Dashboard</li>
+    <li data-p="cases"><i data-lucide="image"></i>Cases<span class="badge" id="bCases"></span></li>
+    <li data-p="farmers"><i data-lucide="users"></i>Farmers<span class="badge" id="bFarmers"></span></li>
+    <li data-p="chat"><svg class="wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.79-1.47-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35M12.05 21.5h-.01a9.4 9.4 0 0 1-4.8-1.31l-.34-.2-3.57.93.95-3.48-.22-.36a9.4 9.4 0 0 1-1.44-5.02c0-5.2 4.23-9.43 9.44-9.43a9.4 9.4 0 0 1 9.42 9.44c0 5.2-4.23 9.43-9.43 9.43m8.03-17.46A11.3 11.3 0 0 0 12.05.7C5.8.7.7 5.79.7 12.05c0 2 .52 3.95 1.52 5.67L.6 23.6l6.02-1.58a11.3 11.3 0 0 0 5.42 1.38h.01c6.25 0 11.35-5.09 11.35-11.35 0-3.03-1.18-5.88-3.32-8.02"/></svg>WhatsApp Agent</li>
+    <li data-p="maps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 2.5 20.2 7.25v9.5L12 21.5l-8.2-4.75v-9.5z"/><circle cx="12" cy="12" r="3.6"/></svg>Maps &amp; Regions</li>
+    <li data-p="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="11" width="4.2" height="9" rx="2.1"/><rect x="9.9" y="7" width="4.2" height="13" rx="2.1"/><rect x="16.8" y="3.5" width="4.2" height="16.5" rx="2.1"/></svg>Analytics</li>
+    <li data-p="logs"><i data-lucide="square-plus"></i>Agent Logs</li>
+    <li data-p="tools"><i data-lucide="cog"></i>Tools &amp; Integrations</li>
+    <li data-p="failure"><i data-lucide="triangle-alert"></i>Failure Simulation</li>
+    <li data-p="reports"><i data-lucide="file-chart-line"></i>Reports</li>
+    <li data-p="eval"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5.2" r="2.2"/><circle cx="12" cy="3.6" r="2.2"/><circle cx="19" cy="5.2" r="2.2"/><rect x="2.8" y="9" width="4.4" height="12" rx="1"/><rect x="9.8" y="7.4" width="4.4" height="13.6" rx="1"/><rect x="16.8" y="9" width="4.4" height="12" rx="1"/></svg>Model Evaluation</li>
+    <li data-p="team"><i data-lucide="users-round"></i>Team &amp; Access</li>
+    <li data-p="settings"><i data-lucide="settings"></i>Settings</li>
+  </ul>
+
+  <div class="tagline">Technology<br>That Stands<br>With Farmers</div>
+  <ul class="ticks">
+    <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Voice First (Hindi)</li>
+    <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>In Local Language</li>
+    <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>End-to-End Support</li>
+    <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Transparent Tracking</li>
+  </ul>
+  <button class="demo"><i data-lucide="circle-play"></i>Watch Demo<span class="dot"><i data-lucide="chevron-right"></i></span></button>
+  <div class="ver">v1.0.1 &nbsp;|&nbsp; SARCathon 2026</div>
+</aside>
+
+<main class="main">
+  <header class="top">
+    <label class="srch glass"><i data-lucide="search"></i><input id="q" placeholder="Search by Case ID, Farmer, Mobile No., District…"><kbd>⌘ K</kbd></label>
+    <div class="flt glass" id="fReg"><select><option>All Regions</option><option>Rajasthan</option><option>Maharashtra</option></select><i data-lucide="chevron-down"></i></div>
+    <div class="flt glass" id="fCrop"><select><option>All Crops</option><option>Wheat</option><option>Paddy</option><option>Cotton</option><option>Soybean</option><option>Maize</option></select><i data-lucide="chevron-down"></i></div>
+    <div class="flt glass" id="fDate"><span id="dateTxt"></span><i data-lucide="calendar-days"></i></div>
+    <div class="wx glass"><i class="sun" data-lucide="sun"></i><div><b id="wxT">—°C</b><span id="wxP">Jodhpur, RJ</span></div></div>
+    <div class="bell"><i data-lucide="bell"></i><em id="bellN"></em></div>
+    <div class="me"><div class="av">YD</div><div><b>Yuvraj Daga</b><span>Admin</span></div><i data-lucide="chevron-down"></i></div>
+  </header>
+  <section class="hero">
+    
+    <div class="chip26"><b>Y</b>SARCathon 2026</div>
+    <h1>From Crop Loss to Claim Support<br>Within <em>72 Hours.</em></h1>
+    <p>An AI agent helping farmers report crop damage, complete insurance intimation<br>and track their case — in their own language.</p>
+    <button class="hbtn new" id="bNew"><i data-lucide="plus"></i>New Case</button>
+    <button class="hbtn live" id="bLive"><i data-lucide="circle-play"></i>Watch Live Demo</button>
+    <button class="hbtn how" id="bHow"><i data-lucide="settings"></i>How it Works</button>
+    <i class="wave" data-lucide="audio-lines"></i>
+    <div class="bubble"><i data-lucide="audio-lines"></i><span>मेरी फसल को नुकसान<br>हुआ है, मदद कीजिए…</span></div>
+    <div class="feats">
+      <div><i data-lucide="sprout"></i><p><b>AI Agent</b><span>Real Impact</span></p></div>
+      <div><i data-lucide="phone"></i><p><b>WhatsApp + Voice</b><span>Multi-Language</span></p></div>
+      <div><i data-lucide="shield-check"></i><p><b>DPDP Compliant</b><span>Secure &amp; Private</span></p></div>
+    </div>
+  </section>
+    <div class="timer">
+      <svg class="ring" viewBox="0 0 100 100">
+        <defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd23f"/><stop offset="1" stop-color="#2fe08a"/></linearGradient></defs>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#1d3a3c" stroke-width="9"/>
+        <circle id="ringArc" cx="50" cy="50" r="42" fill="none" stroke="url(#rg)" stroke-width="9" stroke-dasharray="0 264" transform="rotate(-90 50 50)"/>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#06181a" stroke-width="10" stroke-dasharray="1.6 9.4" transform="rotate(-90 50 50)"/>
+        <circle cx="50" cy="50" r="31" fill="#071a1b"/>
+        <line id="needle" x1="50" y1="50" x2="50" y2="27" stroke="#2fe8a0" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="50" cy="50" r="4" fill="#2fe8a0"/>
+      </svg>
+      <div class="lbl">72 Hour Window</div>
+      <div class="clk" id="clk">-- : -- : --</div>
+      <div class="sub" id="clkSub">Most urgent case</div>
+      <ul>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Faster Intimation</li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Verified Receipt</li>
+        <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>No Farmer Missed</li>
+      </ul>
+    </div>
+  <section class="kpis" id="kpis">
+    <div class="kpi k1" data-k="total"><span class="ic"><i data-lucide="file-text"></i></span><b>—</b><span class="lb">Total Cases</span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
+    <div class="kpi k2" data-k="submitted"><span class="ic"><i data-lucide="send"></i></span><b>—</b><span class="lb">Submitted</span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
+    <div class="kpi k3" data-k="in_progress"><span class="ic"><i data-lucide="alarm-clock"></i></span><b>—</b><span class="lb">In Progress</span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
+    <div class="kpi k4" data-k="at_risk"><span class="ic"><i data-lucide="triangle-alert"></i></span><b>—</b><span class="lb">At Risk (&lt; 12h left)</span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
+    <div class="kpi k5" data-k="acknowledged"><span class="ic"><i data-lucide="shield-check"></i></span><b>—</b><span class="lb">Acknowledged<small>(Verified Receipt)</small></span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
+    <div class="kpi k6" data-k="avg_resolution_min"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 13c2.5-5 5.5-5 8 0s5.5 5 10-1"/></svg></span><b>—</b><span class="lb">Avg. Time to<br>Verified Receipt</span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
+  </section>
+  <div class="todo">Section 5 (charts row) comes next</div>
+</main>
+
+</div></div>
+<script>
+lucide.createIcons();
+// Logo: uses img/logo.png once Yuvraj sends it; empty until then.
+(()=>{const i=new Image();i.onload=()=>document.getElementById('logo').appendChild(i);i.src='img/logo.png'})();
+// Fit the 1536×1024 design to the window.
+function fit(){const W=innerWidth,H=innerHeight,s=Math.min(H/1024,W/1300),f=document.getElementById('frame');f.style.width=(W/s)+'px';f.style.height=Math.max(1024,H/s)+'px';f.style.transform=`scale(${s})`}
+addEventListener('resize',fit);fit();
+// Menu
+document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(!li)return;
+  document.querySelectorAll('.nav li').forEach(x=>x.classList.toggle('on',x===li))});
+// Real counts from the app (badges stay hidden if the API is not running)
+fetch('/api/cases?limit=1').then(r=>r.json()).then(d=>{if(d.total!=null)document.getElementById('bCases').textContent=d.total}).catch(()=>{});
+fetch('/api/farmers').then(r=>r.json()).then(f=>{document.getElementById('bFarmers').textContent=f.length}).catch(()=>{});
+// Top bar: date range = last 15 days, live weather, bell = cases at risk
+(()=>{const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});const t=new Date(),s=new Date(t-14*864e5);
+  document.getElementById('dateTxt').textContent=`${f(s)} - ${f(t)}`})();
+fetch('/api/weather?place=jodhpur').then(r=>r.json()).then(w=>{if(w.available){document.getElementById('wxT').textContent=Math.round(w.temp_c)+'°C';document.getElementById('wxP').textContent=w.place+', RJ'}}).catch(()=>{});
+// Bell + 6 number cards, all from /api/stats (real case data)
+// "Good" direction per card: more submitted/verified is good; more in-progress/at-risk/minutes is bad.
+const GOOD_UP={total:true,submitted:true,in_progress:false,at_risk:false,acknowledged:true,avg_resolution_min:false};
+function loadKpis(){fetch('/api/stats').then(r=>r.json()).then(s=>{
+  const n=s.kpis?.at_risk?.value;document.getElementById('bellN').textContent=n||'';
+  document.querySelectorAll('.kpi').forEach(el=>{const k=el.dataset.k,d=s.kpis?.[k];if(!d)return;
+    el.querySelector('b').textContent=k==='avg_resolution_min'?`${Math.round(d.value)} min`:d.value.toLocaleString('en-IN');
+    const t=d.trend||0,good=(t>=0)===GOOD_UP[k],tr=el.querySelector('.tr');
+    tr.className='tr '+(t===0?'up':good?'up':'dn');tr.textContent=`${t>=0?'↑':'↓'} ${Math.abs(t)}% vs last week`;
+    const sp=d.spark||[],mx=Math.max(1,...sp);el.querySelector('.sp').innerHTML=sp.map(v=>`<i style="height:${Math.max(3,Math.round(52*v/mx))}px"></i>`).join('')})
+}).catch(()=>{})}
+loadKpis();setInterval(loadKpis,30000);
+// 72-hour timer: the open (not yet verified) case closest to its deadline, on the app's clock
+let urgent=null,skew=0;
+async function loadUrgent(){try{
+  const [clk,list]=await Promise.all([fetch('/api/clock').then(r=>r.json()),fetch('/api/cases?limit=900').then(r=>r.json())]);
+  skew=new Date(clk.now)-Date.now();const now=new Date(clk.now);
+  const open=(list.items||list).filter(c=>c.deadline&&c.intimation?.status!=='verified'&&new Date(c.deadline)>now);
+  open.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));urgent=open[0]||null;
+  document.getElementById('clkSub').textContent=urgent?'Most urgent case':'No open case';
+}catch(e){}}
+function drawTimer(){if(!urgent)return;const left=Math.max(0,new Date(urgent.deadline)-(Date.now()+skew)),h=left/36e5;
+  const p=n=>String(n).padStart(2,'0');
+  document.getElementById('clk').textContent=`${p(Math.floor(h))} : ${p(Math.floor(left/6e4)%60)} : ${p(Math.floor(left/1e3)%60)}`;
+  const f=Math.min(1,h/72);document.getElementById('ringArc').setAttribute('stroke-dasharray',`${(f*264).toFixed(1)} 264`);
+  document.getElementById('needle').setAttribute('transform',`rotate(${f*360} 50 50)`)}
+loadUrgent();setInterval(loadUrgent,30000);setInterval(drawTimer,1000);
+</script>
+</body>
+</html>

@@ -68,7 +68,7 @@ def compute() -> dict:
         "total": {"value": len(cases), "trend": _trend(cases, lambda c: True, now), "spark": _spark(cases, lambda c: True, now)},
         "submitted": {"value": sum(map(_submitted, cases)), "trend": _trend(cases, _submitted, now), "spark": _spark(cases, _submitted, now)},
         "in_progress": {"value": sum(map(_in_progress, cases)), "trend": _trend(cases, _in_progress, now), "spark": _spark(cases, _in_progress, now)},
-        "at_risk": {"value": sum(map(_at_risk, cases)), "trend": _trend(cases, _at_risk, now), "spark": _spark(cases, _in_progress, now)},
+        "at_risk": {"value": sum(map(_at_risk, cases)), "trend": _trend(cases, _at_risk, now), "spark": _spark(cases, _at_risk, now)},
         "acknowledged": {"value": sum(map(_acknowledged, cases)), "trend": _trend(cases, _acknowledged, now), "spark": _spark(cases, _acknowledged, now)},
         "avg_resolution_min": {"value": round(avg_res, 1), "trend": res_trend, "spark": _spark(cases, _acknowledged, now)},
     }
