@@ -275,10 +275,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .dTabs span{padding:6px 9px;font-size:12px;color:#d6e2de;cursor:pointer;white-space:nowrap}
 .dTabs span.on{color:#fff;font-weight:700;background:rgba(42,120,255,.25);border-radius:6px 6px 0 0;box-shadow:inset 0 -2px 0 #3d8bff}
 #dBody{position:absolute;left:12px;right:12px;top:72px;bottom:6px}
-.dRow{display:flex;gap:12px;align-items:flex-start;height:44px}
+.dRow{display:flex;gap:12px;align-items:flex-start;height:47px}
 .dRow .big{width:40px;height:40px;font-size:13px}
 .dRow .who b{display:block;font-size:13.5px}
-.dRow .who small{display:block;font-size:11.5px;color:#d3dfdb;margin-top:2px;white-space:nowrap}
+.dRow .who small{display:block;font-size:11px;line-height:13px;color:#d3dfdb;margin-top:1px;white-space:nowrap}
 .dRow .kv{font-size:11px;color:#b9cac5;white-space:nowrap;padding-left:10px;border-left:1px solid rgba(255,255,255,.1)}
 .dRow .kv b{display:block;font-size:12.5px;color:#fff;margin-top:2px}
 .dTime{margin-top:4px;height:42px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 10px;
@@ -344,6 +344,71 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .simb:disabled{opacity:.6;cursor:wait}
 .simb svg{width:16px;height:16px;flex:none}
 .s1{--c:31,212,126}.s2{--c:245,166,35}.s3{--c:255,59,78}.s4{--c:140,90,255}
+
+/* ---------- Animations (dashboard content only; sidebar untouched) ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.hero,.timer,.kpi,.card{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.timer{animation-delay:.08s}
+.kpi:nth-child(1){animation-delay:.12s}.kpi:nth-child(2){animation-delay:.18s}.kpi:nth-child(3){animation-delay:.24s}
+.kpi:nth-child(4){animation-delay:.30s}.kpi:nth-child(5){animation-delay:.36s}.kpi:nth-child(6){animation-delay:.42s}
+#cTrend{animation-delay:.48s}#cCrop{animation-delay:.54s}#cMap{animation-delay:.60s}#cTop{animation-delay:.66s}
+#cRecent{animation-delay:.72s}#cDetail{animation-delay:.78s}#cLive{animation-delay:.84s}
+#cRes{animation-delay:.90s}#cSucc{animation-delay:.96s}#cFail{animation-delay:1.02s}#cSim{animation-delay:1.08s}
+/* hover lift */
+.kpi,.card{transition:transform .25s,box-shadow .25s,border-color .25s}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 0 24px rgba(var(--c),.6),inset 0 0 22px rgba(var(--c),.2)}
+.card:hover{transform:translateY(-2px);border-color:rgba(90,240,190,.55);box-shadow:0 0 20px rgba(0,240,168,.18),inset 0 1px 0 rgba(255,255,255,.06)}
+/* KPI icon breathing glow + shine sweep on cards */
+@keyframes icglow{0%,100%{box-shadow:0 0 10px rgba(var(--c),.5)}50%{box-shadow:0 0 22px rgba(var(--c),.95)}}
+.kpi .ic{animation:icglow 2.6s ease-in-out infinite}
+.kpi::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.12),transparent);transform:skewX(-20deg);animation:ksweep 6s ease-in-out infinite;pointer-events:none}
+.kpi:nth-child(2)::after{animation-delay:1s}.kpi:nth-child(3)::after{animation-delay:2s}.kpi:nth-child(4)::after{animation-delay:3s}.kpi:nth-child(5)::after{animation-delay:4s}.kpi:nth-child(6)::after{animation-delay:5s}
+@keyframes ksweep{0%{left:-60%}25%,100%{left:130%}}
+/* At Risk card pulses red */
+@keyframes riskpulse{0%,100%{box-shadow:0 0 12px rgba(255,59,78,.35)}50%{box-shadow:0 0 26px rgba(255,59,78,.8)}}
+.k4{animation:rise .7s cubic-bezier(.2,.8,.2,1) .30s both,riskpulse 2s ease-in-out 1s infinite}
+/* sparkline bars grow */
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.kpi .sp i{transform-origin:bottom;animation:grow .6s cubic-bezier(.2,.8,.2,1) both}
+.kpi .sp i:nth-child(n){animation-delay:calc(.6s + var(--i,0)*40ms)}
+/* timer ring glow + digits */
+@keyframes ringglow{0%,100%{filter:drop-shadow(0 0 2px rgba(255,210,63,.4))}50%{filter:drop-shadow(0 0 8px rgba(255,210,63,.9))}}
+.timer svg.ring{animation:ringglow 2s ease-in-out infinite}
+.timer .clk{text-shadow:0 0 10px rgba(255,210,63,.55)}
+/* hero chips + bubble float */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.bubble{animation:float 3.5s ease-in-out infinite}
+.hbtn.new{animation:icglow2 2.4s ease-in-out infinite}
+@keyframes icglow2{0%,100%{box-shadow:0 0 10px rgba(63,240,170,.4)}50%{box-shadow:0 0 22px rgba(63,240,170,.85)}}
+/* map hot spots pulse */
+@keyframes hot{0%,100%{opacity:.9}50%{opacity:.35}}
+.hotspot{animation:hot 1.8s ease-in-out infinite}
+/* table rows + feed items slide in */
+@keyframes slide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+#recentTbl tr.row{animation:slide .45s ease both}
+#recentTbl tr.row:nth-child(2){animation-delay:.05s}#recentTbl tr.row:nth-child(3){animation-delay:.1s}#recentTbl tr.row:nth-child(4){animation-delay:.15s}#recentTbl tr.row:nth-child(5){animation-delay:.2s}#recentTbl tr.row:nth-child(6){animation-delay:.25s}
+.ev{animation:slide .45s ease both}
+.ev:nth-child(2){animation-delay:.07s}.ev:nth-child(3){animation-delay:.14s}.ev:nth-child(4){animation-delay:.21s}.ev:nth-child(5){animation-delay:.28s}.ev:nth-child(6){animation-delay:.35s}.ev:nth-child(7){animation-delay:.42s}
+.ev:first-child .ic2{animation:icglow3 1.6s ease-in-out infinite}
+@keyframes icglow3{0%,100%{box-shadow:0 0 6px rgba(0,240,168,.4)}50%{box-shadow:0 0 16px rgba(0,240,168,1)}}
+/* status pills + time-left */
+.st.risk{animation:riskpulse 1.6s ease-in-out infinite}
+.tl.r{animation:hot 1.4s ease-in-out infinite}
+/* case details: time box + current step pulse */
+.dTime:not(.ok){animation:riskpulse 2.2s ease-in-out infinite}
+@keyframes stepring{0%{box-shadow:0 0 0 0 rgba(255,107,120,.7)}100%{box-shadow:0 0 0 9px rgba(255,107,120,0)}}
+.steps .wait:first-of-type i,.steps .ok+.wait i,.steps .fail i{animation:stepring 1.6s ease-out infinite}
+/* failure bars fill */
+@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+#failList li u i{transform-origin:left;animation:fill 1s cubic-bezier(.2,.8,.2,1) 1.1s both}
+/* simulation buttons shine */
+.simb{position:relative;overflow:hidden}
+.simb::after{content:"";position:absolute;top:0;bottom:0;width:35%;left:-50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.25),transparent);transform:skewX(-20deg);animation:ksweep 4s ease-in-out infinite;pointer-events:none}
+.s2::after{animation-delay:1s}.s3::after{animation-delay:2s}.s4::after{animation-delay:3s}
+/* live pill already blinks; top bar bell rings when at-risk > 0 */
+@keyframes ring{0%,88%,100%{transform:rotate(0)}91%{transform:rotate(14deg)}94%{transform:rotate(-12deg)}97%{transform:rotate(8deg)}}
+.bell svg{animation:ring 4s ease-in-out infinite;transform-origin:50% 10%}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -362,12 +427,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <li data-p="chat"><img class="mi" src="img/ic_whatsapp.png" alt="">WhatsApp Agent</li>
     <li data-p="maps"><img class="mi" src="img/ic_maps.png" alt="">Maps &amp; Regions</li>
     <li data-p="analytics"><img class="mi" src="img/ic_analytics.png" alt="">Analytics</li>
-    <li data-p="logs"><i data-lucide="square-plus"></i>Agent Logs</li>
+    <li data-p="logs"><img class="mi" src="img/ic_logs.png" alt="">Agent Logs</li>
     <li data-p="tools"><i data-lucide="cog"></i>Tools &amp; Integrations</li>
     <li data-p="failure"><img class="mi" src="img/ic_failure.png" alt="">Failure Simulation</li>
-    <li data-p="reports"><i data-lucide="file-chart-line"></i>Reports</li>
+    <li data-p="reports"><img class="mi" src="img/ic_reports.png" alt="">Reports</li>
     <li data-p="eval"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5.2" r="2.2"/><circle cx="12" cy="3.6" r="2.2"/><circle cx="19" cy="5.2" r="2.2"/><rect x="2.8" y="9" width="4.4" height="12" rx="1"/><rect x="9.8" y="7.4" width="4.4" height="13.6" rx="1"/><rect x="16.8" y="9" width="4.4" height="12" rx="1"/></svg>Model Evaluation</li>
-    <li data-p="team"><i data-lucide="users-round"></i>Team &amp; Access</li>
+    <li data-p="team"><img class="mi" src="img/ic_team.png" alt="">Team &amp; Access</li>
     <li data-p="settings"><img class="mi" src="img/ic_settings.png" alt="">Settings</li>
   </ul>
 
@@ -504,14 +569,16 @@ fetch('/api/farmers').then(r=>r.json()).then(f=>{document.getElementById('bFarme
 fetch('/api/weather?place=jodhpur').then(r=>r.json()).then(w=>{if(w.available){document.getElementById('wxT').textContent=Math.round(w.temp_c)+'°C';document.getElementById('wxP').textContent=w.place+', RJ'}}).catch(()=>{});
 // Bell + 6 number cards, all from /api/stats (real case data)
 // "Good" direction per card: more submitted/verified is good; more in-progress/at-risk/minutes is bad.
+function countUp(el,to,suf){const from=+(el.dataset.v||0);if(from===to&&el.dataset.v){return}el.dataset.v=to;const t0=performance.now(),D=900;
+  (function f(t){const p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,3);el.textContent=Math.round(from+(to-from)*e).toLocaleString('en-IN')+suf;if(p<1)requestAnimationFrame(f)})(t0)}
 const GOOD_UP={total:true,submitted:true,in_progress:false,at_risk:false,acknowledged:true,avg_resolution_min:false};
 function loadKpis(){fetch('/api/stats').then(r=>r.json()).then(s=>{
   const n=s.kpis?.at_risk?.value;document.getElementById('bellN').textContent=n||'';
   document.querySelectorAll('.kpi').forEach(el=>{const k=el.dataset.k,d=s.kpis?.[k];if(!d)return;
-    el.querySelector('b').textContent=k==='avg_resolution_min'?`${Math.round(d.value)} min`:d.value.toLocaleString('en-IN');
+    countUp(el.querySelector('b'),Math.round(d.value),k==='avg_resolution_min'?' min':'');
     const t=d.trend||0,good=(t>=0)===GOOD_UP[k],tr=el.querySelector('.tr');
     tr.className='tr '+(t===0?'up':good?'up':'dn');tr.textContent=`${t>=0?"↑":"↓"} ${Math.abs(t)}%`;
-    const sp=(d.spark||[]).slice(-10),mx=Math.max(1,...sp);el.querySelector('.sp').innerHTML=sp.map(v=>`<i style="height:${Math.max(2,Math.round(34*v/mx))}px"></i>`).join('')})
+    const sp=(d.spark||[]).slice(-10),mx=Math.max(1,...sp);el.querySelector('.sp').innerHTML=sp.map((v,j)=>`<i style="--i:${j};height:${Math.max(2,Math.round(34*v/mx))}px"></i>`).join('')})
 }).catch(()=>{})}
 loadKpis();setInterval(loadKpis,30000);
 // 72-hour timer: the open (not yet verified) case closest to its deadline, on the app's clock
@@ -577,7 +644,7 @@ function setRegion(){if(!MAP)return;const v=$('mapReg').value;MAP.invalidateSize
 function drawHeat(){if(!MAP)return;HEAT.clearLayers();const v=$('mapReg').value,cnt={};
   CASES.forEach(c=>{if(PL[c.taluka]&&(v==='mh'?c.district==='Nashik':c.district==='Jodhpur'))cnt[c.taluka]=(cnt[c.taluka]||0)+1});const mx=Math.max(1,...Object.values(cnt));
   Object.entries(cnt).forEach(([k,n])=>{const f=n/mx,col=f>.66?'#ff3b4e':f>.33?'#f5c518':'#2fe08a';
-    [26,16,7].forEach((r,i)=>L.circleMarker(PL[k],{radius:r*(.55+f*.6),stroke:false,fillColor:col,fillOpacity:[.14,.28,.95][i]}).addTo(HEAT));
+    [26,16,7].forEach((r,i)=>L.circleMarker(PL[k],{radius:r*(.55+f*.6),stroke:false,fillColor:col,fillOpacity:[.14,.28,.95][i],className:i<2?'hotspot':''}).addTo(HEAT));
     L.circleMarker(PL[k],{radius:16,opacity:0,fillOpacity:0}).bindTooltip(`${k}: ${n} cases`).addTo(HEAT)})}
 $('mapReg').addEventListener('change',setRegion);
 $('satBtn').addEventListener('click',()=>{SAT=!SAT;SAT?TILE.addTo(MAP):MAP.removeLayer(TILE);$('satBtn').classList.toggle('g',SAT)});
@@ -605,7 +672,7 @@ async function loadDetail(){if(!SEL)return;const d=await fetch('/api/cases/'+SEL
   const ms=d.milestones||[],at=k=>ms.find(m=>m.key===k),failed=(c.attempts||[]).some(a=>a.result==='failed');
   const fmt=x=>x?new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false}):'';
   const step=(l,ok,ts,bad)=>`<div class="${ok?'ok':bad?'fail':'wait'}"><i>${ok?'✓':bad?'!':''}</i>${l}<small>${ok?fmt(ts):'Pending'}</small></div>`;
-  $('dBody').innerHTML=`<div class="dRow"><span class="av big">${ini(c.farmer_name)}</span><div class="who"><b>${esc(c.farmer_name||'—')}</b><small>${esc(c.phone||'')}</small><small>${esc([f.village,f.taluka,f.district].filter(Boolean).join(', '))}</small></div>
+  $('dBody').innerHTML=`<div class="dRow"><span class="av big">${ini(c.farmer_name)}</span><div class="who"><b>${esc(c.farmer_name||'—')}</b><small>${esc(c.phone||'')}</small><small>${esc([...new Set([f.village,f.taluka,f.district].filter(Boolean))].join(', '))}</small></div>
       <div class="kv">Crop<b>${cap(f.crop)}</b></div><div class="kv">Damage Type<b>${cap(f.peril)}</b></div><div class="kv">Application No.<b>${esc(f.application_no||'—')}</b></div></div>
     <div class="dTime ${done?'ok':''}"><i data-lucide="${done?'shield-check':'alarm-clock'}"></i><div><small>${done?'Verified receipt':'Time remaining'}</small><b>${done?esc(c.intimation.reference||'Verified'):(h>0?t+' remaining':'Window closed')}</b><small>Event: ${fmt(c.event_time)||'—'}</small></div>${!done&&h!=null&&h<12?'<span class="pri">▲ High Priority</span>':''}</div>
     <div class="steps">${step('Report Received',!!at('received')?.at,at('received')?.at)}${step('Info Extracted',at('extracted')?.done,at('extracted')?.at||c.created)}${step('Consent',!!at('consent')?.at||done,at('consent')?.at)}${step('Submission',!!at('confirmed')?.at,at('confirmed')?.at,failed&&!at('confirmed')?.at)}${step('Verification',done,c.intimation.verified_at)}</div>
