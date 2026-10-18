@@ -518,6 +518,20 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .sList li{padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.07)}
 .sList li small{display:block;color:#c7d5d1;font-size:11px}
 .toast{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);padding:10px 18px;border-radius:9px;background:rgba(8,30,30,.95);border:1px solid #2fdc9f;font-size:13px;z-index:50;animation:rise .3s both}
+
+/* Farmers page */
+.xtbl{position:absolute;left:4px;top:52px;width:calc(100% - 8px);border-collapse:collapse;font-size:11.5px}
+.xtbl th{text-align:left;font-weight:600;color:#e6eeec;height:34px;padding:0 5px;border-bottom:1px solid rgba(255,255,255,.08);border-top:1px solid rgba(255,255,255,.08);white-space:nowrap}
+.xtbl td{height:44px;padding:0 5px;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap;line-height:13px}
+.xtbl tr.row{cursor:pointer;animation:slide .4s ease both}.xtbl tr.row:hover td{background:rgba(255,255,255,.03)}.xtbl tr.row.sel td{background:rgba(0,240,168,.07)}
+.xtbl input{accent-color:#00f0a8}
+#fBody .xtbl td{height:30px}#fBody .xtbl th{height:26px}
+.lang{padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);font-size:11px}
+.cns{padding:4px 9px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid}
+.cns.y{color:#5dffb4;border-color:rgba(60,220,150,.6);background:rgba(10,70,45,.5)}.cns.n{color:#ffc04d;border-color:rgba(255,180,60,.6);background:rgba(120,70,10,.45)}
+.k4b{--c:140,90,255}
+#fkpis .kpi .tr{font-size:12px}
+.fbar label.srch2{flex-direction:row;align-items:center;font-weight:400}
 </style>
 </head>
 <body>
@@ -657,6 +671,35 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <button class="simb s4" data-k="invalid_document"><i data-lucide="file-x"></i>Simulate Invalid<br>Document</button>
     </div>
   </section>
+  </div>
+  <div class="page" id="pg-farmers">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Farmers</div><h1>Farmers</h1>
+      <p>Manage farmer profiles, policies, consent and track all cases.</p>
+      <button class="pbtn new" id="fAdd" style="left:660px"><i data-lucide="plus"></i>Add Farmer</button>
+    </section>
+    <section class="ckpis" id="fkpis" style="right:calc(10% + 10px)"></section>
+    <section class="fbar" style="height:62px">
+      <label class="srch2" style="position:static;width:30%;height:36px;margin-bottom:-2px"><i data-lucide="search"></i><input id="fq" placeholder="Search farmers by name, phone, village..."></label>
+      <label>Village/Taluka<select id="ffTa"><option value="">All Talukas</option></select></label>
+      <label>Crop<select id="ffCr"><option value="">All Crops</option></select></label>
+      <label>Policy Status<select id="ffPo"><option value="">All</option><option value="y">Policy found</option><option value="n">No policy</option></select></label>
+      <label>Consent Status<select id="ffCo"><option value="">All</option><option value="y">Given</option><option value="n">Pending</option></select></label>
+      <label>Language<select id="ffLa"><option value="">All</option><option value="mr">Marathi</option><option value="hi">Hindi</option><option value="mwr">Marwadi</option></select></label>
+    </section>
+    <section class="card" id="fTable" style="left:10px;top:342px;width:calc(66% - 12px);bottom:10px"><h3 id="ftTitle" style="font-size:20px;top:12px">Farmers</h3>
+      <table id="farmTbl" class="xtbl"></table>
+      <div class="pager"><span id="fpInfo"></span><div class="mid" id="fpBtns"></div><span>Rows per page</span><select id="fpSize"><option>10</option><option>25</option><option>50</option></select></div>
+    </section>
+    <section class="card" id="fSide" style="left:calc(66% + 6px);top:342px;right:10px;bottom:10px">
+      <div class="sFarm" style="top:14px"><span class="av" id="fAv" style="width:72px;height:72px;border-radius:12px;font-size:22px"></span><div>
+        <b id="fName"></b><small style="color:#c7d5d1" id="fId"></small><small><i data-lucide="phone"></i><span id="fPhone"></span></small><small><i data-lucide="map-pin"></i><span id="fPlace"></span></small><small><i data-lucide="languages"></i><span id="fLang"></span></small></div></div>
+      <span class="st sub" id="fBadge" style="position:absolute;left:230px;top:20px">Active Farmer</span>
+      <span class="sTop" style="left:auto;width:28px"><span class="nav2" id="fClose"><i data-lucide="x"></i></span></span>
+      <div class="sTabs" id="fTabs" style="top:132px"><span class="on" data-t="ov">Overview</span><span data-t="pol">Policy &amp; Docs</span><span data-t="past">Past Cases</span><span data-t="con">Consent</span><span data-t="act">Activity</span></div>
+      <div id="fBody" style="position:absolute;left:10px;right:10px;top:172px;bottom:56px;overflow:hidden"></div>
+      <div class="sBtns" style="position:absolute;left:10px;right:10px;bottom:10px;margin:0"><span class="b1" data-a="Call"><i data-lucide="phone"></i>Call Farmer</span><span class="b3" data-a="WhatsApp"><i data-lucide="message-circle"></i>WhatsApp</span><span class="b2" data-a="Edit"><i data-lucide="square-pen"></i>Edit Profile</span><span class="b4" data-a="New case"><i data-lucide="plus"></i>New Case</span></div>
+    </section>
   </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
@@ -859,7 +902,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -935,6 +978,55 @@ $('cExp').addEventListener('click',()=>{const L=filtered(),h=['id','farmer','pho
   const csv=[h.join(','),...L.map(c=>h.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='72ghante-cases.csv';a.click()});
 // sidebar Cases badge = open cases
 setInterval(()=>{if(CASES.length)$('bCases').textContent=CASES.filter(c=>!['acknowledged','closed','area_based'].includes(c.status_key)).length},2000);
+
+// ===== Farmers page (real data from /api/farmers + case details) =====
+const LANG={mr:'Marathi',hi:'Hindi',mwr:'Marwadi'};
+let FARM=[],FP={page:1,size:10,sel:null,tab:'ov'};
+async function farmersPage(){if(!CASES.length){setTimeout(farmersPage,500);return}FARM=await fetch('/api/farmers').then(r=>r.json()).catch(()=>[]);if(!FARM.length)return;
+  const fill=(id,vals)=>{const s=$(id),cur=s.value;s.innerHTML=s.options[0].outerHTML+vals.map(v=>`<option value="${esc(v)}">${esc(cap(v))}</option>`).join('');s.value=cur};
+  fill('ffTa',[...new Set(FARM.map(f=>f.taluka).filter(Boolean))].sort());fill('ffCr',[...new Set(FARM.flatMap(f=>f.crops))].sort());
+  const n=FARM.length,pol=FARM.filter(f=>f.application_no).length,full=FARM.filter(f=>f.name&&f.name!=='Unknown'&&f.taluka&&f.language&&f.application_no).length,con=FARM.filter(f=>f.consent).length;
+  const now=Date.now()+skew,w=7*864e5,tr=L=>{const a=L.filter(f=>now-new Date(f.last)<=w).length,b=L.filter(f=>{const d=now-new Date(f.last);return d>w&&d<=2*w}).length;return b?Math.round(100*(a-b)/b):0};
+  const K=[['Total Farmers',n.toLocaleString('en-IN'),'users','k1',tr(FARM)],['With Active Policy',pol.toLocaleString('en-IN'),'shield-check','k2',tr(FARM.filter(f=>f.application_no))],
+    ['Profile Complete',Math.round(100*full/n)+'%','file-check','k3',null],['Consent Given',Math.round(100*con/n)+'%','badge-check','k4b',null]];
+  $('fkpis').innerHTML=K.map(([l,v,ic,k,t])=>`<div class="kpi ${k}"><span class="ic"><i data-lucide="${ic}"></i></span><b>${v}</b><span class="lb">${l}</span><span class="tr up">${t==null?'of all farmers':(t>=0?'↑ ':'↓ ')+Math.abs(t)+'% vs last week'}</span><i class="go" data-lucide="chevron-right"></i></div>`).join('');
+  lucide.createIcons();drawFarmers()}
+function ffiltered(){const q=$('fq').value.toLowerCase(),ta=$('ffTa').value,cr=$('ffCr').value,po=$('ffPo').value,co=$('ffCo').value,la=$('ffLa').value;
+  return FARM.filter(f=>(!ta||f.taluka===ta)&&(!cr||f.crops.includes(cr))&&(!po||(po==='y')===!!f.application_no)&&(!co||(co==='y')===!!f.consent)&&(!la||f.language===la)
+    &&(!q||[f.name,f.phone,f.village,f.taluka,f.district].join(' ').toLowerCase().includes(q)))}
+function drawFarmers(){const L=ffiltered(),pages=Math.max(1,Math.ceil(L.length/FP.size));FP.page=Math.min(FP.page,pages);const rows=L.slice((FP.page-1)*FP.size,FP.page*FP.size);
+  if(!FP.sel||!L.find(f=>f.phone===FP.sel))FP.sel=rows[0]?.phone||null;$('ftTitle').textContent=`Farmers (${L.length.toLocaleString('en-IN')})`;
+  $('farmTbl').innerHTML=`<tr><th><input type="checkbox"></th><th>Farmer</th><th>Phone</th><th>Village / Taluka</th><th>Language</th><th>Policy No.</th><th>Crops</th><th>Cases</th><th>Consent</th><th>Actions</th></tr>`+
+    rows.map((f,i)=>`<tr class="row ${f.phone===FP.sel?'sel':''}" data-p="${esc(f.phone)}" style="animation-delay:${i*30}ms"><td><input type="checkbox"></td><td><span class="av">${ini(f.name)}</span>${esc(f.name)}</td><td>${esc(f.phone.replace(/^x+/,'••••'))}</td>
+      <td>${esc(f.village||'—')}<br><small style="color:#c7d5d1">${esc(f.taluka||'')}</small></td><td><span class="lang">${LANG[f.language]||esc(f.language||'—')}</span></td><td>${esc(f.application_no||'—')}</td><td>${f.crops.map(cap).join(', ')}</td><td style="text-align:center">${f.cases}</td>
+      <td><span class="cns ${f.consent?'y':'n'}">${f.consent?'✓ Given':'⏳ Pending'}</span></td><td><span class="mdot">···</span></td></tr>`).join('');
+  const s=L.length?(FP.page-1)*FP.size+1:0,e=Math.min(L.length,FP.page*FP.size);$('fpInfo').textContent=`Showing ${s}–${e} of ${L.length.toLocaleString('en-IN')} farmers`;
+  const nums=[...new Set([1,2,3,4,5,FP.page-1,FP.page,FP.page+1,pages].filter(n=>n>=1&&n<=pages))].sort((a,b)=>a-b);let h=`<span class="pg" data-p="${FP.page-1}">‹</span>`,pv=0;
+  nums.forEach(n=>{if(n-pv>1)h+=`<span class="pg" style="cursor:default">…</span>`;h+=`<span class="pg ${n===FP.page?'on':''}" data-p="${n}">${n}</span>`;pv=n});$('fpBtns').innerHTML=h+`<span class="pg" data-p="${FP.page+1}">›</span>`;
+  lucide.createIcons();farmSide()}
+async function farmSide(){const f=FARM.find(x=>x.phone===FP.sel);if(!f){$('fBody').innerHTML='';return}
+  $('fAv').textContent=ini(f.name);$('fName').textContent=f.name;$('fId').textContent='Latest case '+f.latest_case;$('fPhone').textContent=f.phone.replace(/^x+/,'••••');
+  $('fPlace').textContent=[...new Set([f.village,f.taluka,f.district])].filter(Boolean).join(', ');$('fLang').textContent=LANG[f.language]||f.language||'—';
+  $('fBadge').textContent=f.open?'Open case':'Active Farmer';$('fBadge').className='st '+(f.open?'wait':'sub');
+  const past=CASES.filter(c=>c.farmer===f.name&&c.phone===f.phone);document.querySelectorAll('#fTabs span').forEach(x=>{if(x.dataset.t==='past')x.textContent=`Past Cases (${past.length})`;x.classList.toggle('on',x.dataset.t===FP.tab)});
+  const d=await fetch('/api/cases/'+f.latest_case).then(r=>r.json()).catch(()=>null);if(!d||FP.sel!==f.phone)return;const c=d.case,fl=c.fields||{};
+  const fmt=x=>x?new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}):'—';
+  const pastT=`<table class="xtbl" style="position:static;width:100%"><tr><th>Case ID</th><th>Crop</th><th>Damage</th><th>Date</th><th>Status</th></tr>${past.map(p=>`<tr><td>${p.id}</td><td>${cap(p.crop)}</td><td>${cap(p.peril)}</td><td>${new Date(p.created).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td><td>${badge(p)}</td></tr>`).join('')}</table>`;
+  const policy=`<div class="sBox" style="height:auto"><h4 style="font-size:13.5px;margin-bottom:8px"><i data-lucide="file-badge" style="width:15px;height:15px;vertical-align:-2px"></i> Policy <small style="font-weight:400;color:#c7d5d1">(from case record)</small></h4>
+      ${[['Application No.',fl.application_no],['Crop',cap(fl.crop)],['Survey No.',fl.survey_no],['Area',fl.area_acres!=null?fl.area_acres+' acres':null],['Village',fl.village],['Sum insured / Insurer','Not collected yet']].map(([k,v])=>`<div class="kv2"><span style="width:130px">${k}</span><b>${esc(v||'—')}</b></div>`).join('')}</div>`;
+  const consent=`<div class="sBox" style="height:auto;margin-top:8px;display:flex;gap:12px;align-items:center"><i data-lucide="${f.consent?'shield-check':'shield-alert'}" style="width:34px;height:34px;color:${f.consent?'#3dffa0':'#ffc04d'}"></i><div><small style="color:#c7d5d1">Consent Status</small><b style="display:block;font-size:16px;color:${f.consent?'#3dffa0':'#ffc04d'}">${f.consent?'Given':'Pending'}</b><small style="color:#c7d5d1">${c.consent_at?fmt(c.consent_at):f.consent?'Given before filing (case verified)':'Agent asks before filing'}</small></div></div>`;
+  const body={ov:policy+consent+`<h4 style="font-size:13.5px;margin:10px 0 6px">Past Cases (${past.length})</h4>`+pastT,pol:policy+`<div class="sBox" style="height:auto;margin-top:8px"><small style="color:#c7d5d1">Documents</small>${(c.evidence||[]).map(e=>`<div class="kv2"><b>${esc(e.kind||'Photo')}</b><span style="width:auto;margin-left:auto">${e.accepted?'Accepted':'Rejected'}</span></div>`).join('')||'<div class="kv2"><b>No documents uploaded yet</b></div>'}</div>`,
+    past:pastT,con:consent,act:`<ul class="sList">${(c.action_log||[]).map(a=>`<li><b>${esc(fmt(a.ts))}</b><small>${esc(a.text)}</small></li>`).join('')||'<li><small>No activity yet.</small></li>'}</ul>`}[FP.tab];
+  $('fBody').innerHTML=body;lucide.createIcons()}
+['ffTa','ffCr','ffPo','ffCo','ffLa'].forEach(id=>$(id).addEventListener('change',()=>{FP.page=1;drawFarmers()}));
+$('fq').addEventListener('input',()=>{FP.page=1;drawFarmers()});
+$('fpBtns').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p>=1){FP.page=p;drawFarmers()}});
+$('fpSize').addEventListener('change',e=>{FP.size=+e.target.value;FP.page=1;drawFarmers()});
+$('farmTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r&&e.target.type!=='checkbox'){FP.sel=r.dataset.p;FP.tab='ov';document.querySelectorAll('#farmTbl tr.row').forEach(x=>x.classList.toggle('sel',x===r));farmSide()}});
+$('fTabs').addEventListener('click',e=>{const t=e.target.closest('span');if(t){FP.tab=t.dataset.t;farmSide()}});
+$('fClose').addEventListener('click',()=>document.querySelector('.nav li[data-p="dashboard"]').click());
+$('fSide').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: not connected yet — needs WhatsApp/Twilio keys`)});
+$('fAdd').addEventListener('click',()=>toast('Add Farmer form comes next'));
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>

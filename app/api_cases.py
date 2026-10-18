@@ -167,7 +167,8 @@ async def farmers(q: str = ""):
         g["last"] = max(g["last"], c.get("created") or "")
         meta[key] = {"name": c.get("farmer_name") or "Unknown", "phone": store.mask_phone(c["phone"]), "district": c["fields"].get("district"),
                      "taluka": c["fields"].get("taluka") or c["fields"].get("village"), "demo": bool(c.get("demo")), "language": c.get("language"),
-                     "latest_case": c["id"]}
+                     "latest_case": c["id"], "application_no": c["fields"].get("application_no"), "village": c["fields"].get("village"),
+                     "consent": bool(c.get("consent_at")) or c["intimation"]["status"] == "verified"}
     out = [{**meta[k], **{**g, "crops": sorted(g["crops"])}} for k, g in groups.items()]
     if q:
         ql = q.lower()
