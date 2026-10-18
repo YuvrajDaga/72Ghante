@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@600;700&display=swap" rel="stylesheet">
 <script src="vendor/lucide.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
+<script src="vendor/leaflet.js"></script>
+<link rel="stylesheet" href="vendor/leaflet.css">
 <style>
 /* Design is drawn at 1536×1024 (the reference picture) and scaled to fit the window. */
 :root{
@@ -177,9 +180,170 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .kpi b,.kpi .lb,.kpi .tr{z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 .kpi .sp i{width:3px;border-radius:1px 1px 0 0;background:linear-gradient(0deg,rgba(var(--c),.55),rgba(var(--c),1))}
 .k1{--c:31,212,126} .k2{--c:42,127,255} .k3{--c:245,166,35} .k4{--c:255,59,78} .k5{--c:34,209,160} .k6{--c:43,181,255}
-.k6 .lb{top:36px} .k5 .lb{top:36px}
+.k5 b,.k6 b{top:8px}
+.k5 .lb,.k6 .lb{top:35px;font-size:12.8px;line-height:13.5px}
+.k5 .lb small{font-size:11.5px}
+.k5 .tr,.k6 .tr{bottom:6px;font-size:12.5px}
 
-.todo{position:absolute;inset:362px 20px 20px;border:1px dashed rgba(255,255,255,.12);border-radius:14px;display:grid;place-items:center;color:var(--mut);font-size:15px}
+/* ---------- 5–7. Charts, cases, activity, bottom row ---------- */
+.card{position:absolute;border-radius:12px;background:linear-gradient(160deg,rgba(14,40,40,.82),rgba(7,22,24,.9));
+  border:1px solid rgba(90,210,180,.28);box-shadow:0 0 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden}
+.card>h3{position:absolute;left:14px;top:11px;font-size:15.5px;font-weight:700;color:#fff;white-space:nowrap}
+.card>h3 small{font-weight:500;color:#cfe0da;font-size:14px}
+.ctl{position:absolute;top:8px;height:26px;display:flex;align-items:center;gap:6px;font-size:12px;color:#e8f0ee}
+.pill{height:26px;padding:0 10px;border-radius:7px;display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap;
+  background:rgba(12,34,48,.75);border:1px solid rgba(110,170,210,.3);color:#eef4f6;font:500 12px "Inter Tight",sans-serif}
+.pill svg{width:13px;height:13px}
+.pill.on{background:rgba(42,120,255,.35);border-color:rgba(90,160,255,.75);color:#fff;font-weight:700}
+.pill.g{background:rgba(8,60,40,.7);border-color:rgba(60,220,150,.6)}
+.tabs{display:flex;border-radius:7px;overflow:hidden;border:1px solid rgba(110,170,210,.3)}
+.tabs .pill{border:0;border-radius:0;background:rgba(12,34,48,.6)}
+.tabs .pill.on{background:rgba(42,120,255,.4)}
+/* row 5 */
+#cTrend{left:12px;top:357px;width:calc(37% - 14px);height:240px}
+#cCrop{left:calc(37% + 6px);top:357px;width:calc(24% - 8px);height:240px}
+#cMap{left:calc(61% + 6px);top:357px;width:calc(25% - 8px);height:240px}
+#cTop{left:calc(86% + 6px);top:357px;right:12px;height:240px}
+#trendBox{position:absolute;left:8px;right:12px;top:42px;bottom:34px}
+.leg{position:absolute;left:14px;right:10px;bottom:9px;display:flex;gap:16px;font-size:12px;color:#e6eeec;white-space:nowrap}
+.leg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 6px currentColor}
+#cropPlants{position:absolute;left:0;top:34px;height:150px;width:auto;opacity:.95;pointer-events:none}
+#donutBox{position:absolute;left:46px;top:40px;width:138px;height:138px}
+#donutMid{position:absolute;left:46px;top:40px;width:138px;height:138px;display:grid;place-items:center;text-align:center;pointer-events:none}
+#donutMid b{display:block;font-size:24px;font-weight:800}
+#donutMid span{font-size:12px;color:#e2ecea}
+#cropList{position:absolute;left:200px;right:12px;top:44px;list-style:none;font-size:12.5px}
+#cropList li{height:22px;display:flex;align-items:center;gap:8px}
+#cropList li i{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 6px currentColor}
+#cropList li span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cropList li em{font-style:normal;width:34px;text-align:right;color:#dfe9e6}
+#cropList li b{width:30px;text-align:right;font-weight:600}
+#cropTiles{position:absolute;left:10px;right:10px;bottom:8px;height:44px;display:flex;gap:6px}
+#cropTiles div{flex:1;display:flex;align-items:center;gap:6px;padding-left:6px;border-left:1px solid rgba(255,255,255,.08)}
+#cropTiles div:first-child{border-left:0}
+#cropTiles .dot{width:22px;height:22px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px}
+#cropTiles b{display:block;font-size:15px}
+#cropTiles small{display:block;font-size:11.5px;font-weight:700}
+.up{color:#3dffa0}.dn{color:#ff4d5e}
+#mapBox{position:absolute;left:8px;right:8px;top:42px;bottom:8px;border-radius:9px;overflow:hidden;background:#061612}
+#mapBox .leaflet-container{background:#061612}
+.sat{filter:brightness(.55) saturate(.85)}
+.rjglow{filter:drop-shadow(0 0 6px #25e08a)}
+.mlabel{transform:translate(-50%,-50%);padding:2px 7px;border-radius:5px;background:rgba(6,20,18,.82);border:1px solid rgba(120,255,190,.4);
+  color:#fff;font:700 11px "Inter Tight",sans-serif;white-space:nowrap}
+.heatleg{position:absolute;right:16px;bottom:16px;z-index:500;padding:6px 8px;border-radius:7px;background:rgba(6,20,18,.85);border:1px solid rgba(255,255,255,.12);
+  display:flex;gap:6px;font-size:10.5px;color:#e6eeec}
+.heatleg i{width:8px;height:52px;border-radius:4px;background:linear-gradient(#ff3b4e,#f5c518,#2fe08a)}
+.heatleg div{display:flex;flex-direction:column;justify-content:space-between}
+#topList{position:absolute;left:10px;right:10px;top:44px;list-style:none}
+#topList li{height:29px;display:flex;align-items:center;gap:8px;font-size:12.5px}
+#topList li u{text-decoration:none;width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;
+  background:rgba(60,140,255,.35);border:1px solid rgba(110,170,255,.6)}
+#topList li span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#topList li b{font-weight:600}
+#topList li small{width:38px;text-align:right;font-size:11.5px;font-weight:700}
+#terrain{position:absolute;left:8px;right:8px;bottom:6px;height:56px;background:url(img/terrain.png) center bottom/contain no-repeat;pointer-events:none}
+/* row 6 */
+#cRecent{left:12px;top:607px;width:calc(40.5% - 14px);height:262px}
+#cDetail{left:calc(40.5% + 6px);top:607px;width:calc(35% - 8px);height:262px}
+#cLive{left:calc(75.5% + 6px);top:607px;right:12px;height:262px}
+.srch2{position:absolute;left:44%;top:8px;width:34%;height:26px;display:flex;align-items:center;gap:7px;padding:0 9px;border-radius:7px;
+  background:rgba(12,34,48,.7);border:1px solid rgba(110,170,210,.3);font-size:12px;color:#cdd9df}
+.srch2 svg{width:14px;height:14px}
+.srch2 input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:400 12px "Inter Tight",sans-serif}
+.viewall{position:absolute;right:14px;top:13px;font-size:12.5px;font-weight:700;color:#3dffa0;cursor:pointer;display:flex;gap:4px;align-items:center}
+.viewall svg{width:14px;height:14px}
+#recentTbl{position:absolute;left:10px;right:10px;top:44px;border-collapse:collapse;font-size:12.5px}
+#recentTbl th{text-align:left;font-weight:600;color:#e6eeec;height:24px;padding:0 6px;border-bottom:1px solid rgba(255,255,255,.08)}
+#recentTbl td{height:38px;padding:0 6px;border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap}
+#recentTbl tr.row{cursor:pointer}
+#recentTbl tr.row:hover td,#recentTbl tr.row.sel td{background:rgba(255,255,255,.04)}
+#recentTbl td.id{font-weight:700}
+.av{width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;vertical-align:middle;margin-right:7px;
+  font:700 10px "Inter Tight",sans-serif;color:#fff;background:linear-gradient(135deg,#2f9d6b,#1c5f86)}
+.st{display:inline-block;padding:4px 9px;border-radius:6px;font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap}
+.st.sub{background:#1e8a52;box-shadow:0 0 8px rgba(30,180,100,.5)}
+.st.prog{background:#2563eb;box-shadow:0 0 8px rgba(40,110,255,.5)}
+.st.wait{background:#b7791f;box-shadow:0 0 8px rgba(230,150,30,.5)}
+.st.ack{background:#7c3aed;box-shadow:0 0 8px rgba(130,70,240,.5)}
+.st.risk{background:#c81e3a;box-shadow:0 0 8px rgba(230,40,70,.55)}
+.st.grey{background:#41505a}
+.tl.r{color:#ff4d5e;font-weight:700}.tl.o{color:#ffb020;font-weight:600}.tl.g{color:#d9e6e2}
+.dots{color:#e6eeec;font-weight:900;letter-spacing:1px}
+#dTitle .st{margin-left:10px;vertical-align:1px}
+.dTabs{position:absolute;left:10px;right:10px;top:40px;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
+.dTabs span{padding:6px 9px;font-size:12px;color:#d6e2de;cursor:pointer;white-space:nowrap}
+.dTabs span.on{color:#fff;font-weight:700;background:rgba(42,120,255,.25);border-radius:6px 6px 0 0;box-shadow:inset 0 -2px 0 #3d8bff}
+#dBody{position:absolute;left:12px;right:12px;top:72px;bottom:6px}
+.dRow{display:flex;gap:12px;align-items:flex-start;height:44px}
+.dRow .big{width:40px;height:40px;font-size:13px}
+.dRow .who b{display:block;font-size:13.5px}
+.dRow .who small{display:block;font-size:11.5px;color:#d3dfdb;margin-top:2px;white-space:nowrap}
+.dRow .kv{font-size:11px;color:#b9cac5;white-space:nowrap;padding-left:10px;border-left:1px solid rgba(255,255,255,.1)}
+.dRow .kv b{display:block;font-size:12.5px;color:#fff;margin-top:2px}
+.dTime{margin-top:4px;height:42px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 10px;
+  background:linear-gradient(90deg,rgba(200,30,58,.35),rgba(120,20,40,.25));border:1px solid rgba(255,70,90,.6)}
+.dTime.ok{background:linear-gradient(90deg,rgba(30,160,90,.3),rgba(20,90,60,.2));border-color:rgba(60,220,150,.55)}
+.dTime svg{width:24px;height:24px;color:#ff5a6a}.dTime.ok svg{color:#3dffa0}
+.dTime small{display:block;font-size:11px;color:#f0d6da}
+.dTime b{display:block;font-size:14px;color:#ff5a6a}.dTime.ok b{color:#3dffa0}
+.dTime .pri{margin-left:auto;padding:5px 9px;border-radius:6px;font-size:11.5px;font-weight:700;color:#ff8a96;border:1px solid rgba(255,90,110,.6);background:rgba(120,20,40,.5);white-space:nowrap}
+.steps{display:flex;margin-top:7px;position:relative}
+.steps::before{content:"";position:absolute;left:10%;right:10%;top:9px;height:2px;background:rgba(255,255,255,.18)}
+.steps div{flex:1;text-align:center;position:relative;font-size:10.5px;font-weight:600;line-height:12px}
+.steps i{display:grid;place-items:center;width:20px;height:20px;margin:0 auto 4px;border-radius:50%;background:#0b1e20;border:2px solid #7d8c88;font-style:normal;font-size:11px}
+.steps .ok i{background:#00f0a8;border-color:#00f0a8;color:#06301b;box-shadow:0 0 8px rgba(0,240,168,.6)}
+.steps .fail i{background:#ff3b4e;border-color:#ff3b4e;color:#fff;box-shadow:0 0 8px rgba(255,59,78,.6)}
+.steps small{display:block;font-weight:400;color:#c5d3cf;font-size:10px}
+.steps .fail small,.steps .wait small{color:#ff6b78;font-weight:700}
+.dBtns{display:flex;gap:7px;margin-top:6px}
+.dBtns .pill{height:26px!important}
+.dBtns .pill{height:28px}
+.dBtns .pill.g{margin-left:auto;color:#3dffa0;font-weight:700}
+.livePill{position:absolute;right:12px;top:10px;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:700;color:#3dffa0;background:rgba(10,70,45,.75);border:1px solid rgba(60,220,150,.6)}
+.livePill::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#3dffa0;margin-right:6px;box-shadow:0 0 6px #3dffa0;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.3}}
+#feed{position:absolute;left:12px;right:10px;top:42px;bottom:8px;overflow:hidden}
+.ev{display:flex;gap:9px;position:relative;min-height:30px;padding-bottom:4px}
+.ev::before{content:"";position:absolute;left:12px;top:24px;bottom:-2px;width:2px;background:rgba(0,240,168,.35)}
+.ev:last-child::before{display:none}
+.ev .ic2{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;background:#0f8a5a;box-shadow:0 0 8px rgba(0,240,168,.45)}
+.ev .ic2 svg{width:14px;height:14px;color:#fff}
+.ev.bad .ic2{background:#c81e3a;box-shadow:0 0 8px rgba(255,59,78,.55)}
+.ev.warn .ic2{background:#b7791f}
+.ev time{font-size:11px;color:#c9d6d2;width:52px;flex:none;padding-top:5px}
+.ev p{font-size:12px;line-height:14px;padding-top:4px}
+.ev p small{display:block;color:#c2d0cc;font-size:11px}
+.ev.bad p small{color:#ff6b78}.ev.good p b{color:#3dffa0}
+/* row 7 */
+#cRes{left:12px;top:879px;width:calc(25% - 14px);bottom:10px}
+#cSucc{left:calc(25% + 6px);top:879px;width:calc(25% - 8px);bottom:10px}
+#cFail{left:calc(50% + 6px);top:879px;width:calc(25.5% - 8px);bottom:10px}
+#cSim{left:calc(75.5% + 6px);top:879px;right:12px;bottom:10px}
+#resBox{position:absolute;left:6px;right:10px;top:40px;bottom:6px}
+#succBox{position:absolute;left:16px;top:42px;width:88px;height:88px}
+#succMid{position:absolute;left:16px;top:42px;width:88px;height:88px;display:grid;place-items:center;text-align:center;pointer-events:none}
+#succMid b{display:block;font-size:19px;font-weight:800}
+#succMid small{display:block;font-size:9.5px;color:#e2ecea}
+#succMid em{display:block;font-style:normal;font-size:10px;font-weight:700}
+#succLeg{position:absolute;left:122px;right:12px;top:48px;list-style:none;font-size:12.5px}
+#succLeg li{height:26px;display:flex;align-items:center;gap:8px}
+#succLeg li i{width:11px;height:11px;border-radius:50%;box-shadow:0 0 6px currentColor}
+#succLeg li span{flex:1}#succLeg li b{width:40px;text-align:right;font-weight:600}#succLeg li em{font-style:normal;width:46px;text-align:right;color:#cfdcd8}
+#failList{position:absolute;left:14px;right:12px;top:38px;list-style:none;font-size:12px}
+#failList li{height:14.5px;display:flex;align-items:center;gap:8px}
+#failList li span{width:112px;white-space:nowrap}
+#failList li u{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,.08);position:relative}
+#failList li u i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+#failList li b{width:30px;text-align:right;font-weight:500}
+#cSim p{position:absolute;left:14px;top:32px;font-size:11.5px;color:#cfdcd8}
+#simGrid{position:absolute;left:12px;right:12px;top:52px;bottom:10px;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.simb{border-radius:8px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:#fff;font:600 12px "Inter Tight",sans-serif;
+  border:1.5px solid rgba(var(--c),.8);background:linear-gradient(180deg,rgba(var(--c),.35),rgba(var(--c),.15));box-shadow:0 0 10px rgba(var(--c),.35);line-height:13px;text-align:left}
+.simb:hover{filter:brightness(1.2)}
+.simb:disabled{opacity:.6;cursor:wait}
+.simb svg{width:16px;height:16px;flex:none}
+.s1{--c:31,212,126}.s2{--c:245,166,35}.s3{--c:255,59,78}.s4{--c:140,90,255}
 </style>
 </head>
 <body>
@@ -196,15 +360,15 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <li data-p="cases"><img class="mi" src="img/ic_cases.png" alt="">Cases<span class="badge" id="bCases"></span></li>
     <li data-p="farmers"><img class="mi" src="img/ic_farmers.png" alt="">Farmers<span class="badge" id="bFarmers"></span></li>
     <li data-p="chat"><img class="mi" src="img/ic_whatsapp.png" alt="">WhatsApp Agent</li>
-    <li data-p="maps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 2.5 20.2 7.25v9.5L12 21.5l-8.2-4.75v-9.5z"/><circle cx="12" cy="12" r="3.6"/></svg>Maps &amp; Regions</li>
-    <li data-p="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="11" width="4.2" height="9" rx="2.1"/><rect x="9.9" y="7" width="4.2" height="13" rx="2.1"/><rect x="16.8" y="3.5" width="4.2" height="16.5" rx="2.1"/></svg>Analytics</li>
+    <li data-p="maps"><img class="mi" src="img/ic_maps.png" alt="">Maps &amp; Regions</li>
+    <li data-p="analytics"><img class="mi" src="img/ic_analytics.png" alt="">Analytics</li>
     <li data-p="logs"><i data-lucide="square-plus"></i>Agent Logs</li>
     <li data-p="tools"><i data-lucide="cog"></i>Tools &amp; Integrations</li>
-    <li data-p="failure"><i data-lucide="triangle-alert"></i>Failure Simulation</li>
+    <li data-p="failure"><img class="mi" src="img/ic_failure.png" alt="">Failure Simulation</li>
     <li data-p="reports"><i data-lucide="file-chart-line"></i>Reports</li>
     <li data-p="eval"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="5.2" r="2.2"/><circle cx="12" cy="3.6" r="2.2"/><circle cx="19" cy="5.2" r="2.2"/><rect x="2.8" y="9" width="4.4" height="12" rx="1"/><rect x="9.8" y="7.4" width="4.4" height="13.6" rx="1"/><rect x="16.8" y="9" width="4.4" height="12" rx="1"/></svg>Model Evaluation</li>
     <li data-p="team"><i data-lucide="users-round"></i>Team &amp; Access</li>
-    <li data-p="settings"><i data-lucide="settings"></i>Settings</li>
+    <li data-p="settings"><img class="mi" src="img/ic_settings.png" alt="">Settings</li>
   </ul>
 
   <div class="tagline">Technology<br>That Stands<br>With Farmers</div>
@@ -271,7 +435,53 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <div class="kpi k5" data-k="acknowledged"><span class="ic"><i data-lucide="shield-check"></i></span><b>—</b><span class="lb">Acknowledged<small>(Verified Receipt)</small></span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
     <div class="kpi k6" data-k="avg_resolution_min"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 13c2.5-5 5.5-5 8 0s5.5 5 10-1"/></svg></span><b>—</b><span class="lb">Avg. Time to<br>Verified Receipt</span><span class="tr"></span><i class="go" data-lucide="chevron-right"></i><span class="sp"></span></div>
   </section>
-  <div class="todo">Section 5 (charts row) comes next</div>
+  <!-- 5. Charts row -->
+  <section class="card" id="cTrend"><h3>Case Trends &amp; Forecast</h3>
+    <div class="ctl" style="left:196px"><div class="tabs" id="trTabs"><span class="pill on" data-r="d">Daily</span><span class="pill" data-r="w">Weekly</span><span class="pill" data-r="m">Monthly</span></div></div>
+    <div class="ctl" style="right:12px"><select class="pill" id="trReg"><option value="">All Regions</option><option>Nashik</option><option>Jodhpur</option></select></div>
+    <div id="trendBox"><canvas id="trend"></canvas></div>
+    <div class="leg"><span style="color:#2fe08a"><i style="background:#2fe08a"></i><b style="color:#e6eeec;font-weight:400">Submitted</b></span><span style="color:#3d8bff"><i style="background:#3d8bff"></i><b style="color:#e6eeec;font-weight:400">In Progress</b></span><span style="color:#ff3b4e"><i style="background:#ff3b4e"></i><b style="color:#e6eeec;font-weight:400">At Risk</b></span><span style="color:#a855f7"><i style="background:#a855f7"></i><b style="color:#e6eeec;font-weight:400">Acknowledged</b></span><span style="color:#5eead4"><i style="background:none;border:2px dashed #5eead4;box-shadow:none"></i><b style="color:#e6eeec;font-weight:400">Forecast (7d)</b></span></div>
+  </section>
+  <section class="card" id="cCrop"><h3>Crop-wise Distribution</h3>
+    <div class="ctl" style="right:12px"><span class="pill">All Crops <i data-lucide="chevron-down"></i></span></div>
+    <img id="cropPlants" src="img/donut_plants.png" alt="">
+    <div id="donutBox"><canvas id="donut"></canvas></div><div id="donutMid"><div><b id="dTotal">—</b><span>Total Cases</span></div></div>
+    <ul id="cropList"></ul><div id="cropTiles"></div>
+  </section>
+  <section class="card" id="cMap"><h3>Geographical Heatmap</h3>
+    <div class="ctl" style="right:12px"><select class="pill" id="mapReg"><option value="rj">Rajasthan</option><option value="mh">Maharashtra</option></select><span class="pill g" id="satBtn">Satellite <i data-lucide="target"></i></span></div>
+    <div id="mapBox"></div>
+    <div class="heatleg"><i></i><div><span>High</span><span>Medium</span><span>Low</span></div></div>
+  </section>
+  <section class="card" id="cTop"><h3>Top Talukas</h3><ul id="topList"></ul><div id="terrain"></div></section>
+
+  <!-- 6. Cases row -->
+  <section class="card" id="cRecent"><h3>Recent Cases</h3>
+    <label class="srch2"><i data-lucide="search"></i><input id="rq" placeholder="Search cases..."></label>
+    <span class="viewall">View All <i data-lucide="arrow-right"></i></span>
+    <table id="recentTbl"></table>
+  </section>
+  <section class="card" id="cDetail"><h3 id="dTitle">Case Details</h3>
+    <div class="ctl" style="right:12px"><span class="pill" style="color:#3dffa0"><i data-lucide="user-plus"></i>Assign <i data-lucide="chevron-down"></i></span><span class="pill"><b class="dots">···</b></span></div>
+    <div class="dTabs"><span class="on">Overview</span><span>Documents</span><span>Conversation</span><span>Tool Trace</span><span>Timeline</span><span>Logs</span></div>
+    <div id="dBody"></div>
+  </section>
+  <section class="card" id="cLive"><h3>Live Agent Activity <small>(Real-time)</small></h3><span class="livePill">Live</span><div id="feed"></div></section>
+
+  <!-- 7. Bottom row -->
+  <section class="card" id="cRes"><h3>Resolution Time Analysis</h3><div class="ctl" style="right:12px"><span class="pill" id="resAvg">Avg: —</span></div><div id="resBox"><canvas id="res"></canvas></div></section>
+  <section class="card" id="cSucc"><h3>Success Rate &amp; Failure Analysis</h3>
+    <div id="succBox"><canvas id="succ"></canvas></div><div id="succMid"><div><b id="succPct">—</b><small>Success Rate</small></div></div><ul id="succLeg"></ul>
+  </section>
+  <section class="card" id="cFail"><h3>Failure Reasons</h3><ul id="failList"></ul></section>
+  <section class="card" id="cSim"><h3>Simulation &amp; Testing</h3><p>Test agent's failure handling and recovery</p>
+    <div id="simGrid">
+      <button class="simb s1" data-k="success"><i data-lucide="circle-check"></i>Simulate Success</button>
+      <button class="simb s2" data-k="timeout"><i data-lucide="clock"></i>Simulate Timeout</button>
+      <button class="simb s3" data-k="server_failure"><i data-lucide="triangle-alert"></i>Simulate Server Failure</button>
+      <button class="simb s4" data-k="invalid_document"><i data-lucide="file-x"></i>Simulate Invalid<br>Document</button>
+    </div>
+  </section>
 </main>
 
 </div></div>
@@ -319,6 +529,120 @@ function drawTimer(){if(!urgent)return;const left=Math.max(0,new Date(urgent.dea
   const f=Math.min(1,h/72);document.getElementById('ringArc').setAttribute('stroke-dasharray',`${(f*264).toFixed(1)} 264`);
   document.getElementById('needle').setAttribute('transform',`rotate(${f*360} 50 50)`)}
 loadUrgent();setInterval(loadUrgent,30000);setInterval(drawTimer,1000);
+
+// ===== Sections 5–7: everything below reads real data from the app =====
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s?String(s).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()):'';
+Chart.defaults.color='#cfdcd8';Chart.defaults.font.family='"Inter Tight",sans-serif';Chart.defaults.font.size=11;
+const CHARTS={};
+function chart(id,cfg){if(CHARTS[id]){CHARTS[id].data=cfg.data;CHARTS[id].update('none');return}CHARTS[id]=new Chart($(id),cfg)}
+const fade=(ctx,c)=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,ctx.chart.height);g.addColorStop(0,c+'55');g.addColorStop(1,c+'00');return g};
+let STATS=null,CASES=[],SEL=null,TR='d';
+
+// --- 5a. Trend + forecast
+function drawTrend(){if(!STATS)return;let days=STATS.daily.slice(-15);const fc=STATS.forecast||[];
+  const keys=['submitted','in_progress','at_risk','acknowledged'],col=['#2fe08a','#3d8bff','#ff3b4e','#a855f7'],lab=['Submitted','In Progress','At Risk','Acknowledged'];
+  let labels,series,fcast;
+  if(TR==='d'){labels=days.map(d=>new Date(d.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}));series=keys.map(k=>days.map(d=>d[k]));
+    fcast=[...days.map((d,i)=>i===days.length-1?d.total:null)];
+    fc.forEach(f=>{labels.push(new Date(f.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}));series.forEach(s=>s.push(null));fcast.push(f.total)})}
+  else{const all=STATS.daily,grp={};all.forEach(d=>{const t=new Date(d.date),k=TR==='w'?`Wk ${Math.ceil(t.getDate()/7)} ${t.toLocaleDateString('en-IN',{month:'short'})}`:t.toLocaleDateString('en-IN',{month:'short',year:'numeric'});
+      grp[k]=grp[k]||{};keys.forEach(x=>grp[k][x]=(grp[k][x]||0)+d[x])});labels=Object.keys(grp);series=keys.map(k=>labels.map(l=>grp[l][k]));fcast=[]}
+  chart('trend',{type:'line',data:{labels,datasets:[...series.map((d,i)=>({label:lab[i],data:d,borderColor:col[i],backgroundColor:c=>fade(c,col[i]),fill:true,tension:.35,borderWidth:2,pointRadius:2.5,pointBackgroundColor:col[i]})),
+      {label:'Forecast (7d)',data:fcast,borderColor:'#5eead4',borderDash:[5,4],borderWidth:2,pointRadius:2,fill:false,tension:.3}]},
+    options:{maintainAspectRatio:false,animation:{duration:600},interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(8,24,30,.95)',borderColor:'rgba(90,200,255,.4)',borderWidth:1}},
+      scales:{x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{maxTicksLimit:8}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.06)'},ticks:{maxTicksLimit:5}}}}})}
+$('trTabs').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;TR=p.dataset.r;document.querySelectorAll('#trTabs .pill').forEach(x=>x.classList.toggle('on',x===p));drawTrend()});
+
+// --- 5b. Crop donut
+const CC=['#2fe08a','#22d3ee','#facc15','#a78bfa','#f472b6','#60a5fa'];
+function drawCrops(){const cr=STATS.crops,tot=cr.reduce((a,c)=>a+c.n,0),top=cr.slice(0,5),oth=cr.slice(5).reduce((a,c)=>a+c.n,0);
+  const rows=[...top.map(c=>[cap(c.crop),c.n,c.trend]),...(oth?[['Others',oth,null]]:[])];$('dTotal').textContent=tot.toLocaleString('en-IN');
+  chart('donut',{type:'doughnut',data:{labels:rows.map(r=>r[0]),datasets:[{data:rows.map(r=>r[1]),backgroundColor:CC,borderWidth:2,borderColor:'#0a1f20',hoverOffset:4}]},
+    options:{cutout:'66%',maintainAspectRatio:false,plugins:{legend:{display:false}},animation:{duration:700}}});
+  $('cropList').innerHTML=rows.map((r,i)=>`<li><i style="background:${CC[i]};color:${CC[i]}"></i><span>${esc(r[0])}</span><em>${Math.round(100*r[1]/tot)}%</em><b>${r[1]}</b></li>`).join('');
+  $('cropTiles').innerHTML=top.slice(0,4).map((c,i)=>`<div><span class="dot" style="background:${CC[i]}33;border:1px solid ${CC[i]}"></span><p><b>${c.n}</b><small class="${c.trend>=0?'up':'dn'}">${c.trend>=0?'↑':'↓'} ${Math.abs(c.trend)}%</small></p></div>`).join('')}
+
+// --- 5c. Map (Leaflet, real taluka counts)
+const PL={Niphad:[20.08,74.11],Lasalgaon:[20.15,74.23],Dindori:[20.2,73.83],Mohadi:[20.17,73.86],Satana:[20.6,74.2],Malegaon:[20.55,74.53],Chandwad:[20.33,74.25],Sinnar:[19.85,74],Yeola:[20.04,74.49],Osian:[26.72,72.92],Tinwari:[26.53,72.96],Bilara:[26.18,73.7],Phalodi:[27.13,72.36],Bhopalgarh:[26.65,73.43]};
+let MAP,HEAT,RJ,TILE,SAT=true;
+function initMap(){MAP=L.map('mapBox',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,zoomSnap:.25}).setView([26.6,73.8],6);
+  TILE=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:14,className:'sat'}).addTo(MAP);
+  HEAT=L.layerGroup().addTo(MAP);
+  fetch('geo/rajasthan_districts.geojson').then(r=>r.json()).then(g=>{RJ=L.geoJSON(g,{style:{color:'rgba(140,255,190,.8)',weight:.9,fillColor:'#1aa364',fillOpacity:.35}}).addTo(MAP);
+    L.geoJSON(g,{style:{color:'#7dffb8',weight:1.5,fill:false,opacity:.9},className:'rjglow'}).addTo(MAP);HEAT.bringToFront?.();setRegion()}).catch(()=>setRegion())}
+function setRegion(){if(!MAP)return;const v=$('mapReg').value;MAP.invalidateSize();
+  if(v==='rj'&&RJ)MAP.fitBounds(RJ.getBounds(),{padding:[4,4]});else if(v==='mh')MAP.setView([20.25,74.15],8.5);drawHeat()}
+function drawHeat(){if(!MAP)return;HEAT.clearLayers();const v=$('mapReg').value,cnt={};
+  CASES.forEach(c=>{if(PL[c.taluka]&&(v==='mh'?c.district==='Nashik':c.district==='Jodhpur'))cnt[c.taluka]=(cnt[c.taluka]||0)+1});const mx=Math.max(1,...Object.values(cnt));
+  Object.entries(cnt).forEach(([k,n])=>{const f=n/mx,col=f>.66?'#ff3b4e':f>.33?'#f5c518':'#2fe08a';
+    [26,16,7].forEach((r,i)=>L.circleMarker(PL[k],{radius:r*(.55+f*.6),stroke:false,fillColor:col,fillOpacity:[.14,.28,.95][i]}).addTo(HEAT));
+    L.circleMarker(PL[k],{radius:16,opacity:0,fillOpacity:0}).bindTooltip(`${k}: ${n} cases`).addTo(HEAT)})}
+$('mapReg').addEventListener('change',setRegion);
+$('satBtn').addEventListener('click',()=>{SAT=!SAT;SAT?TILE.addTo(MAP):MAP.removeLayer(TILE);$('satBtn').classList.toggle('g',SAT)});
+
+// --- 5d. Top talukas
+function drawTop(){$('topList').innerHTML=STATS.talukas.slice(0,5).map((t,i)=>`<li><u>${i+1}</u><span>${esc(t.taluka)}</span><b>${t.n}</b><small class="${t.trend>=0?'up':'dn'}">${t.trend>=0?'↑':'↓'}${Math.abs(t.trend)}%</small></li>`).join('')}
+
+// --- 6a. Recent cases
+const ST={acknowledged:['Acknowledged','ack'],closed:['Closed','grey'],escalated:['Escalated','risk'],area_based:['Area-based','grey'],awaiting_info:['Awaiting Info','wait'],
+  pending:['Pending','wait'],in_progress:['In Progress','prog'],at_risk:['At Risk','risk'],submitted:['Submitted','sub']};
+const badge=c=>{const[l,k]=ST[c.status_key]||[cap(c.status_key),'grey'];return`<span class="st ${k}">${l}</span>`};
+const ini=n=>String(n||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+function left(c){if(c.status==='verified'||!c.deadline)return['—','g'];const h=(new Date(c.deadline)-(Date.now()+skew))/36e5;if(h<=0)return['Expired','r'];
+  const d=Math.floor(h/24),hh=Math.floor(h%24),m=Math.floor(h*60%60);return[d?`${d}d ${hh}h`:`${hh}h ${m}m`,h<12?'r':h<24?'o':'g']}
+function drawRecent(){const q=$('rq').value.toLowerCase();const list=CASES.filter(c=>!q||[c.id,c.farmer,c.crop,c.taluka,c.district].join(' ').toLowerCase().includes(q)).slice(0,5);
+  $('recentTbl').innerHTML=`<tr><th>Case ID</th><th>Farmer</th><th>Crop</th><th>Location</th><th>Status</th><th>Time Left</th><th>Actions</th></tr>`+list.map(c=>{const[t,k]=left(c);
+    return`<tr class="row ${c.id===SEL?'sel':''}" data-id="${c.id}"><td class="id">${c.id}</td><td><span class="av">${ini(c.farmer)}</span>${esc(c.farmer)}</td><td>${cap(c.crop)}</td><td>${esc(c.taluka||c.district||'—')}</td><td>${badge(c)}</td><td class="tl ${k}">${t}</td><td class="dots">···</td></tr>`}).join('')}
+$('recentTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r){SEL=r.dataset.id;drawRecent();loadDetail()}});
+$('rq').addEventListener('input',drawRecent);
+
+// --- 6b. Case details
+async function loadDetail(){if(!SEL)return;const d=await fetch('/api/cases/'+SEL).then(r=>r.ok?r.json():null).catch(()=>null);if(!d)return;const c=d.case,f=c.fields||{},sum=CASES.find(x=>x.id===SEL)||{};
+  $('dTitle').innerHTML=`Case Details – ${esc(c.id)} ${badge(sum)}`;
+  const done=c.intimation.status==='verified',h=c.deadline?(new Date(c.deadline)-(Date.now()+skew))/36e5:null,[t]=left(sum);
+  const ms=d.milestones||[],at=k=>ms.find(m=>m.key===k),failed=(c.attempts||[]).some(a=>a.result==='failed');
+  const fmt=x=>x?new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false}):'';
+  const step=(l,ok,ts,bad)=>`<div class="${ok?'ok':bad?'fail':'wait'}"><i>${ok?'✓':bad?'!':''}</i>${l}<small>${ok?fmt(ts):'Pending'}</small></div>`;
+  $('dBody').innerHTML=`<div class="dRow"><span class="av big">${ini(c.farmer_name)}</span><div class="who"><b>${esc(c.farmer_name||'—')}</b><small>${esc(c.phone||'')}</small><small>${esc([f.village,f.taluka,f.district].filter(Boolean).join(', '))}</small></div>
+      <div class="kv">Crop<b>${cap(f.crop)}</b></div><div class="kv">Damage Type<b>${cap(f.peril)}</b></div><div class="kv">Application No.<b>${esc(f.application_no||'—')}</b></div></div>
+    <div class="dTime ${done?'ok':''}"><i data-lucide="${done?'shield-check':'alarm-clock'}"></i><div><small>${done?'Verified receipt':'Time remaining'}</small><b>${done?esc(c.intimation.reference||'Verified'):(h>0?t+' remaining':'Window closed')}</b><small>Event: ${fmt(c.event_time)||'—'}</small></div>${!done&&h!=null&&h<12?'<span class="pri">▲ High Priority</span>':''}</div>
+    <div class="steps">${step('Report Received',!!at('received')?.at,at('received')?.at)}${step('Info Extracted',at('extracted')?.done,at('extracted')?.at||c.created)}${step('Consent',!!at('consent')?.at||done,at('consent')?.at)}${step('Submission',!!at('confirmed')?.at,at('confirmed')?.at,failed&&!at('confirmed')?.at)}${step('Verification',done,c.intimation.verified_at)}</div>
+    <div class="dBtns"><span class="pill"><i data-lucide="user"></i>Send Reminder</span><span class="pill"><i data-lucide="phone"></i>Call Farmer</span><span class="pill g">Open Full Case <i data-lucide="arrow-right"></i></span></div>`;
+  lucide.createIcons();drawFeed(c,d.trace||[])}
+
+// --- 6c. Live activity: real agent trace if any, else this case's own action log
+const FI={inbound:'mic',llm:'brain',tool:'wrench',decision:'git-branch',channel:'send',system:'settings',done:'shield-check',pending:'clock',fail:'triangle-alert',info:'file-text'};
+const evOf=c=>[{ts:c.created,ic:'mic',title:`Report received (${cap(c.channel)})`,sub:`${c.id} · ${cap(c.fields?.crop)} · ${cap(c.fields?.peril)}`},
+    ...(c.attempts||[]).map(a=>({ts:a.at,ic:a.result==='failed'?'triangle-alert':'send',title:a.result==='failed'?'Submission failed':'Submission accepted',sub:`${c.id} · ${cap(a.route)}${a.error?' · '+a.error:''}`,bad:a.result==='failed'})),
+    ...(c.action_log||[]).filter(a=>a.kind==='done').map(a=>({ts:a.ts,ic:'shield-check',title:'Submission verified',sub:'Ref: '+(c.intimation.reference||''),good:true}))];
+async function drawFeed(c,caseTrace){let t=await fetch('/api/trace?limit=8').then(r=>r.json()).catch(()=>[]);
+  let ev=t.length?t.map(x=>({ts:x.ts,ic:FI[x.kind]||'circle',title:cap(x.name),sub:(x.output||x.input||x.status||'').slice(0,60),bad:x.status!=='ok'})):[];
+  if(!ev.length){const ds=await Promise.all(CASES.slice(0,4).map(x=>fetch('/api/cases/'+x.id).then(r=>r.json()).catch(()=>null)));
+    ev=ds.filter(Boolean).flatMap(d=>evOf(d.case)).filter(e=>e.ts).sort((a,b)=>new Date(b.ts)-new Date(a.ts))}
+  $('feed').innerHTML=ev.slice(0,7).map(e=>`<div class="ev ${e.bad?'bad':''} ${e.good?'good':''}"><span class="ic2"><i data-lucide="${e.ic}"></i></span><time>${e.ts?new Date(e.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''}</time><p><b>${esc(e.title)}</b><small>${esc(e.sub)}</small></p></div>`).join('')||'<p style="font-size:12px;color:#cfdcd8">Waiting for agent activity…</p>';
+  lucide.createIcons()}
+
+// --- 7. Bottom row
+function drawBottom(){const b=STATS.resolution_bands,lbl=['< 15 min','15 - 30 min','30 - 60 min','1 - 4 hours','> 4 hours'],bc=['#2fe08a','#3d8bff','#f59e0b','#ff4d5e','#f472b6'];
+  $('resAvg').textContent=`Avg: ${Math.round(STATS.kpis.avg_resolution_min.value)} min`;
+  chart('res',{type:'bar',data:{labels:lbl,datasets:[{data:b.map(x=>x[1]),backgroundColor:bc,borderRadius:3,barPercentage:.7}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false}},layout:{padding:{top:14}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(255,255,255,.06)'},ticks:{maxTicksLimit:4}}},animation:{onComplete(){const ch=this,ctx=ch.ctx;ctx.save();ctx.fillStyle='#fff';ctx.font='700 11px "Inter Tight"';ctx.textAlign='center';
+      ch.getDatasetMeta(0).data.forEach((bar,i)=>ctx.fillText(ch.data.datasets[0].data[i],bar.x,bar.y-4));ctx.restore()}}}});
+  const s=STATS.success,all=s.successful+s.failed+s.pending||1,pct=Math.round(100*s.successful/all);$('succPct').textContent=pct+'%';
+  chart('succ',{type:'doughnut',data:{datasets:[{data:[s.successful,s.failed,s.pending],backgroundColor:['#2fe08a','#ff3b4e','#f5a524'],borderWidth:0}]},options:{cutout:'76%',maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+  $('succLeg').innerHTML=[['Successful',s.successful,'#2fe08a'],['Failed',s.failed,'#ff3b4e'],['Pending',s.pending,'#f5a524']].map(([l,v,c])=>`<li><i style="background:${c};color:${c}"></i><span>${l}</span><b>${v}</b><em>(${Math.round(100*v/all)}%)</em></li>`).join('');
+  const fr=STATS.failure_reasons,ft=fr.reduce((a,r)=>a+r[1],0)||1,fc=['#ff3b4e','#ff3b4e','#f59e0b','#f5c518','#3d8bff','#3d8bff'];
+  $('failList').innerHTML=fr.slice(0,6).map(([r,n],i)=>`<li><span>${esc(r)}</span><u><i style="width:${100*n/fr[0][1]}%;background:${fc[i]};box-shadow:0 0 6px ${fc[i]}"></i></u><b>${Math.round(100*n/ft)}%</b></li>`).join('')}
+document.querySelectorAll('.simb').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;const o=b.innerHTML;b.innerHTML='Running…';
+  try{await fetch('/api/scenarios/'+b.dataset.k,{method:'POST'});setTimeout(loadAll,2500)}finally{setTimeout(()=>{b.innerHTML=o;b.disabled=false;lucide.createIcons()},2500)}}));
+
+// --- load
+async function loadAll(){try{const[s,l]=await Promise.all([fetch('/api/stats').then(r=>r.json()),fetch('/api/cases?limit=2000').then(r=>r.json())]);
+  STATS=s;CASES=l.items||l;if(!SEL&&CASES.length){const open=CASES.filter(c=>c.status!=='verified'&&c.deadline&&new Date(c.deadline)>Date.now()+skew).sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));SEL=(open[0]||CASES[0]).id}
+  drawTrend();drawCrops();drawTop();drawRecent();drawBottom();if(!MAP)initMap();else drawHeat();loadDetail()}catch(e){console.warn(e)}}
+loadAll();setInterval(loadAll,30000);
 </script>
 </body>
 </html>
