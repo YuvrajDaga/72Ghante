@@ -46,12 +46,20 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .tagline{position:absolute;left:22px;bottom:193px;font-size:19px;font-weight:700;line-height:21px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6)}
 .ticks{position:absolute;left:23px;bottom:83px;list-style:none}
 .ticks li{height:25px;display:flex;align-items:center;gap:13px;font-size:13.3px;font-weight:400;color:#f1f6f4;text-shadow:0 1px 6px rgba(0,0,0,.7)}
-.ticks i{width:18px;height:18px;border-radius:50%;background:#27d27c;display:grid;place-items:center}
+.ticks i{width:18px;height:18px;border-radius:50%;background:#00f0a8;box-shadow:0 0 6px rgba(0,240,168,.55);display:grid;place-items:center}
 .ticks i svg{width:12px;height:12px;stroke:#06301b;stroke-width:3.2}
 .demo{position:absolute;left:18px;bottom:34px;width:180px;height:40px;border-radius:8px;display:flex;align-items:center;gap:12px;padding-left:17px;
-  font:700 14px "Inter Tight",sans-serif;color:#fff;cursor:pointer;background:rgba(8,36,34,.72);border:1px solid rgba(70,220,165,.45)}
+  font:800 14.5px "Inter Tight",sans-serif;color:#fff;cursor:pointer;background:rgba(8,36,34,.72);border:1px solid rgba(70,220,165,.3);box-shadow:0 0 12px rgba(0,240,168,.25);overflow:hidden;isolation:isolate}
+@property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
+.demo::before{content:"";position:absolute;inset:-1px;border-radius:8px;padding:2.5px;z-index:-1;filter:drop-shadow(0 0 4px #00f0a8);
+  background:conic-gradient(from var(--a),rgba(0,240,168,.12) 0deg,rgba(0,240,168,.12) 150deg,rgba(0,240,168,.5) 220deg,#00f0a8 320deg,#d9fff1 355deg,rgba(0,240,168,.12) 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:run 3s linear infinite}
+@keyframes run{to{--a:360deg}}
+.demo .shine{background:linear-gradient(100deg,#fff 0%,#fff 40%,#b8ffe6 47%,#ffffff 50%,#7dffd0 53%,#fff 60%,#fff 100%);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 10px rgba(0,240,168,.35);animation:shine 2.6s linear infinite}
+@keyframes shine{from{background-position:120% 0}to{background-position:-130% 0}}
 .demo svg{width:20px;height:20px;stroke-width:1.8}
-.demo .dot{width:16px;height:16px;border-radius:50%;background:var(--green);margin-left:2px;display:grid;place-items:center;box-shadow:0 0 6px var(--green)}
+.demo .dot{width:16px;height:16px;border-radius:50%;background:#00f0a8;margin-left:2px;display:grid;place-items:center;box-shadow:0 0 6px rgba(0,240,168,.6)}
 .demo .dot svg{width:12px;height:12px;color:#06301b;stroke-width:3}
 .ver{position:absolute;left:22px;bottom:10px;font-size:12px;color:#a9bbb6}
 
@@ -187,7 +195,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>End-to-End Support</li>
     <li><i><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>Transparent Tracking</li>
   </ul>
-  <button class="demo"><i data-lucide="circle-play"></i>Watch Demo<span class="dot"><i data-lucide="chevron-right"></i></span></button>
+  <button class="demo"><i data-lucide="circle-play"></i><span class="shine">Watch Demo</span><span class="dot"><i data-lucide="check"></i></span></button>
   <div class="ver">v1.0.1 &nbsp;|&nbsp; SARCathon 2026</div>
 </aside>
 
