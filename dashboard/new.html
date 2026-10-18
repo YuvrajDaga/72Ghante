@@ -274,21 +274,21 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .dTabs{position:absolute;left:10px;right:10px;top:40px;display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.1)}
 .dTabs span{padding:6px 9px;font-size:12px;color:#d6e2de;cursor:pointer;white-space:nowrap}
 .dTabs span.on{color:#fff;font-weight:700;background:rgba(42,120,255,.25);border-radius:6px 6px 0 0;box-shadow:inset 0 -2px 0 #3d8bff}
-#dBody{position:absolute;left:12px;right:12px;top:76px;bottom:6px}
-.dRow{display:flex;gap:12px;align-items:flex-start;height:42px}
-.dRow .big{width:40px;height:40px;font-size:13px}
+#dBody{position:absolute;left:12px;right:12px;top:72px;bottom:6px}
+.dRow{display:flex;gap:12px;align-items:center;height:40px}
+.dRow .big{width:38px;height:38px;font-size:13px}
 .dRow .who b{display:block;font-size:13.5px}
 .dRow .who small{display:block;font-size:11px;line-height:13px;color:#d3dfdb;margin-top:1px;white-space:nowrap}
 .dRow .kv{font-size:11px;color:#b9cac5;white-space:nowrap;padding-left:10px;border-left:1px solid rgba(255,255,255,.1)}
 .dRow .kv b{display:block;font-size:12.5px;color:#fff;margin-top:2px}
-.dTime{margin-top:4px;height:52px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 10px;
+.dTime{margin-top:8px;height:46px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 10px;
   background:linear-gradient(90deg,rgba(200,30,58,.35),rgba(120,20,40,.25));border:1px solid rgba(255,70,90,.6)}
 .dTime.ok{background:linear-gradient(90deg,rgba(30,160,90,.3),rgba(20,90,60,.2));border-color:rgba(60,220,150,.55)}
 .dTime svg{width:24px;height:24px;color:#ff5a6a}.dTime.ok svg{color:#3dffa0}
 .dTime small{display:block;font-size:11px;line-height:13px;color:#f0d6da}
 .dTime b{display:block;font-size:14.5px;line-height:19px;color:#ff5a6a}.dTime.ok b{color:#3dffa0}
 .dTime .pri{margin-left:auto;padding:5px 9px;border-radius:6px;font-size:11.5px;font-weight:700;color:#ff8a96;border:1px solid rgba(255,90,110,.6);background:rgba(120,20,40,.5);white-space:nowrap}
-.steps{display:flex;margin-top:8px;position:relative}
+.steps{display:flex;margin-top:12px;position:relative}
 .steps::before{content:"";position:absolute;left:10%;right:10%;top:9px;height:2px;background:rgba(255,255,255,.18)}
 .steps div{flex:1;text-align:center;position:relative;font-size:10.5px;font-weight:600;line-height:12px}
 .steps i{display:grid;place-items:center;width:20px;height:20px;margin:0 auto 4px;border-radius:50%;background:#0b1e20;border:2px solid #7d8c88;font-style:normal;font-size:11px}
@@ -296,7 +296,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .steps .fail i{background:#ff3b4e;border-color:#ff3b4e;color:#fff;box-shadow:0 0 8px rgba(255,59,78,.6)}
 .steps small{display:block;font-weight:400;color:#c5d3cf;font-size:10px}
 .steps .fail small,.steps .wait small{color:#ff6b78;font-weight:700}
-.dBtns{display:flex;gap:7px;margin-top:7px}
+.dBtns{display:flex;gap:7px;margin-top:12px}
 .dBtns .pill{height:26px!important}
 .dBtns .pill{height:28px}
 .dBtns .pill.g{margin-left:auto;color:#3dffa0;font-weight:700}
@@ -672,9 +672,9 @@ async function loadDetail(){if(!SEL)return;const d=await fetch('/api/cases/'+SEL
   const ms=d.milestones||[],at=k=>ms.find(m=>m.key===k),failed=(c.attempts||[]).some(a=>a.result==='failed');
   const fmt=x=>x?new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false}):'';
   const step=(l,ok,ts,bad)=>`<div class="${ok?'ok':bad?'fail':'wait'}"><i>${ok?'✓':bad?'!':''}</i>${l}<small>${ok?fmt(ts):'Pending'}</small></div>`;
-  $('dBody').innerHTML=`<div class="dRow"><span class="av big">${ini(c.farmer_name)}</span><div class="who"><b>${esc(c.farmer_name||'—')}</b><small>${esc(c.phone||'')}</small><small>${esc([...new Set([f.village,f.taluka,f.district].filter(Boolean))].join(', '))}</small></div>
+  $('dBody').innerHTML=`<div class="dRow"><span class="av big">${ini(c.farmer_name)}</span><div class="who"><b>${esc(c.farmer_name||'—')}</b><small>${esc(c.phone||'')} · ${esc([...new Set([f.taluka,f.district].filter(Boolean))].join(', '))}</small></div>
       <div class="kv">Crop<b>${cap(f.crop)}</b></div><div class="kv">Damage Type<b>${cap(f.peril)}</b></div><div class="kv">Application No.<b>${esc(f.application_no||'—')}</b></div></div>
-    <div class="dTime ${done?'ok':''}"><i data-lucide="${done?'shield-check':'alarm-clock'}"></i><div><small>${done?'Verified receipt':'Time remaining'}</small><b>${done?esc(c.intimation.reference||'Verified'):(h>0?t+' remaining':'Window closed')}</b><small>Event: ${fmt(c.event_time)||'—'}</small></div>${!done&&h!=null&&h<12?'<span class="pri">▲ High Priority</span>':''}</div>
+    <div class="dTime ${done?'ok':''}"><i data-lucide="${done?'shield-check':'alarm-clock'}"></i><div><small>${done?'Verified receipt':'Time remaining'} · Event ${fmt(c.event_time)||'—'}</small><b>${done?esc(c.intimation.reference||'Verified'):(h>0?t+' remaining':'Window closed')}</b></div>${!done&&h!=null&&h<12?'<span class="pri">▲ High Priority</span>':''}</div>
     <div class="steps">${step('Report Received',!!at('received')?.at,at('received')?.at)}${step('Info Extracted',at('extracted')?.done,at('extracted')?.at||c.created)}${step('Consent',!!at('consent')?.at||done,at('consent')?.at)}${step('Submission',!!at('confirmed')?.at,at('confirmed')?.at,failed&&!at('confirmed')?.at)}${step('Verification',done,c.intimation.verified_at)}</div>
     <div class="dBtns"><span class="pill"><i data-lucide="user"></i>Send Reminder</span><span class="pill"><i data-lucide="phone"></i>Call Farmer</span><span class="pill g">Open Full Case <i data-lucide="arrow-right"></i></span></div>`;
   lucide.createIcons();drawFeed(c,d.trace||[])}
