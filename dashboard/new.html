@@ -706,6 +706,19 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .rbox h4{position:absolute;left:10px;top:7px;font-size:13.5px}.rbox h4 small{font-weight:400;color:#cfdcd8}
 #rpTk td,#rpTk th{height:18px}#rpSaved td,#rpRuns td{height:30px}
 @media print{body *{visibility:hidden}#rpDoc,#rpDoc *{visibility:visible}#rpDoc{position:fixed!important;left:0!important;top:0!important;width:100%!important;height:100%!important}}
+
+/* Settings page */
+#setGrid{position:absolute;left:10px;right:10px;top:174px;bottom:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr 1fr;gap:12px}
+.scard{border-radius:12px;padding:12px 14px;background:linear-gradient(160deg,rgba(14,40,40,.85),rgba(7,22,24,.92));border:1px solid rgba(90,210,180,.35);box-shadow:0 0 14px rgba(0,240,168,.1);overflow:hidden;animation:rise .6s both;min-width:0}
+.sh{display:flex;gap:12px;align-items:center;margin-bottom:10px}.sh>span{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:#1fbf72;box-shadow:0 0 12px rgba(47,224,138,.6);flex:none}.sh svg{width:24px;height:24px;color:#fff}
+.sh b{display:block;font-size:18px}.sh small{display:block;font-size:12px;color:#d6e2de;margin-top:2px}
+.srow{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.07)}
+.srow>div{flex:1;min-width:0}.srow b{display:block;font-size:13px}.srow small{display:block;font-size:11px;color:#cfdcd8}
+.sval{padding:6px 10px;border-radius:7px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);font-weight:700;font-size:13px;white-space:nowrap}
+.lg2{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:#1fbf72;font-weight:800;font-size:18px;flex:none;font-family:"Noto Sans Devanagari",sans-serif}
+.snote{display:flex;gap:9px;align-items:center;padding:8px 10px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.07);font-size:11.5px;margin-top:4px}.snote svg{width:18px;height:18px;flex:none;color:#cfdcd8}
+#stCon{width:100%;height:150px;resize:none;border-radius:9px;padding:10px;background:#071517;border:1px solid rgba(60,220,150,.4);color:#fff;font:400 12.5px/19px "Noto Sans Devanagari","Inter Tight",sans-serif;outline:0}
+.kst{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;border:1px solid}
 </style>
 </head>
 <body>
@@ -1036,6 +1049,32 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <div style="position:absolute;left:14px;right:14px;top:44px;font-size:12px;display:flex;gap:10px"><label style="flex:1">Frequency<select id="rpFreq" class="lin" style="width:100%;margin-top:4px"><option>Weekly (Every Monday)</option><option>Daily (8 AM)</option><option>Monthly (1st)</option></select></label><label style="flex:1">Email<input id="rpMail" class="lin" style="width:100%;margin-top:4px" value="yuvraj.daga.in@gmail.com"></label></div>
       <p style="position:absolute;left:14px;right:14px;bottom:10px;font-size:11px;color:#ffd23f">Saved here. Emails start once an email service is connected.</p></section>
   </div>
+  <div class="page" id="pg-settings">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Settings</div><h1>Settings</h1>
+      <p>Configure system preferences, communication, security and integrations for 72 Ghante.</p>
+    </section>
+    <section id="setGrid">
+      <div class="scard"><div class="sh"><span><i data-lucide="languages"></i></span><div><b>Languages</b><small>Languages used for farmer communication via WhatsApp, voice and SMS.</small></div></div><div id="stLang"></div>
+        <div class="snote"><i data-lucide="info"></i>The agent detects the farmer's language from the first voice note and replies in it.</div></div>
+      <div class="scard"><div class="sh"><span><i data-lucide="clock"></i></span><div><b>Deadline &amp; Alerts</b><small>Claim deadline and alert thresholds for proactive follow-up.</small></div></div>
+        <div class="srow"><div><b>72 Hour Window</b><small>PMFBY rule for localised losses (fixed)</small></div><span class="sval">72 hours</span></div>
+        <div class="srow" style="flex-wrap:wrap"><div><b>At Risk Threshold</b><small>Alert when less than this time remains</small></div><span class="sval" id="stRiskV"></span><input type="range" id="stRisk" min="1" max="48" step="1" style="width:100%;accent-color:#2fe08a"></div>
+        <div class="srow"><div><b>Reminder Frequency</b><small>Remind farmers about pending actions</small></div><select id="stRem" class="lin"><option value="3">Every 3 hours</option><option value="6">Every 6 hours</option><option value="12">Every 12 hours</option></select></div>
+        <div class="srow"><div><b>Officer hand-off window</b><small>Escalate if not forwarded in time</small></div><span class="sval" id="stHand"></span></div></div>
+      <div class="scard"><div class="sh"><span><i data-lucide="file-text"></i></span><div><b>Consent Message</b><small>Shown to farmers before any information is used.</small></div></div>
+        <div class="tabs" id="stCT" style="margin:8px 0"><span class="pill on" data-c="whatsapp">WhatsApp</span><span class="pill" data-c="voice">Voice Call</span><span class="pill" data-c="sms">SMS</span></div>
+        <textarea id="stCon" maxlength="500"></textarea><div style="display:flex;align-items:center;margin-top:6px"><small id="stCnt" style="color:#cfdcd8"></small><span class="pbtn new" id="stSave" style="position:static;margin-left:auto;height:34px;font-size:13px">Save Changes</span></div></div>
+      <div class="scard"><div class="sh"><span><i data-lucide="share-2"></i></span><div><b>Channels</b><small>Enable or disable channels; status is checked live.</small></div></div><div id="stCh"></div>
+        <div class="snote"><i data-lucide="wifi"></i>Live status is on the Tools &amp; Integrations page.</div></div>
+      <div class="scard"><div class="sh"><span><i data-lucide="key-round"></i></span><div><b>API Keys</b><small>Keys live only in the server's .env file and are never shown here.</small></div></div><div id="stKeys"></div></div>
+      <div class="scard"><div class="sh"><span><i data-lucide="shield-check"></i></span><div><b>Data &amp; Privacy</b><small>Data retention, masking and privacy as per DPDP Act 2023.</small></div></div>
+        <div class="srow"><div><b>Data Retention Period</b><small>Delete farmer data after</small></div><select id="stRet" class="lin"><option value="30">30 days</option><option value="90">90 days (Recommended)</option><option value="180">180 days</option></select></div>
+        <div class="srow"><div><b>Mask Phone Numbers</b><small>Show masked numbers in the UI</small></div><span class="tog" id="stMask"></span></div>
+        <div class="srow"><div><b>Allow Download in Reports</b><small>Exports contain masked numbers only</small></div><span class="tog" id="stDl"></span></div>
+        <div class="snote"><i data-lucide="lock"></i>Farmer data is used only for claim filing and is not shared with anyone else.</div></div>
+    </section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1237,7 +1276,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='settings')settingsPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1674,6 +1713,30 @@ $('rpCsv').addEventListener('click',()=>{const L=rpCases(),h=['id','farmer','cro
 $('rpPdf').addEventListener('click',()=>{rpStore.add({at:Date.now(),name:$('rpTitle').textContent,type:'PDF'});window.print();reportsPage()});
 const saveSch=()=>{try{localStorage.setItem('72g_sched',JSON.stringify({on:$('rpSch').classList.contains('on'),freq:$('rpFreq').value,mail:$('rpMail').value}))}catch{}};
 $('rpSch').addEventListener('click',()=>{$('rpSch').classList.toggle('on');saveSch();toast('Schedule saved')});$('rpFreq').addEventListener('change',saveSch);$('rpMail').addEventListener('change',saveSch);
+
+// ===== Settings page (saved to /api/prefs; key status is real) =====
+let PF=null,PCT='whatsapp';
+const savePf=async(part,msg)=>{const r=await fetch('/api/prefs',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(part)});toast(r.ok?(msg||'Saved'):'Could not save')};
+async function settingsPage(){PF=await fetch('/api/prefs').then(r=>r.json()).catch(()=>null);if(!PF)return;
+  $('stLang').innerHTML=[['mr','म','Marathi (मराठी)','Default for Maharashtra'],['hi','ह','Hindi (हिन्दी)','Default for North India'],['mwr','म्ह','Marwadi (मारवाड़ी)','Default for Rajasthan']].map(([k,g,n,d])=>
+    `<div class="srow"><span class="lg2">${g}</span><div><b>${n}</b><small>${d}</small></div><span class="tog ${PF.languages[k]?'on':''}" data-lang="${k}"></span><span class="cns ${PF.languages[k]?'y':'n'}">${PF.languages[k]?'Enabled':'Off'}</span></div>`).join('');
+  $('stRisk').value=PF.at_risk_hours;$('stRiskV').textContent=PF.at_risk_hours+' hours';$('stRem').value=String(PF.reminder_hours);$('stHand').textContent=PF.handoff_window_hours+' hours';
+  $('stCon').value=PF.consent[PCT]||'';$('stCnt').textContent=`Characters: ${$('stCon').value.length}/500`;
+  const live={whatsapp:PF.keys.twilio,voice:PF.keys.twilio,sms:PF.keys.twilio};
+  $('stCh').innerHTML=[['whatsapp','message-circle','#25d366','WhatsApp (Twilio)','Messages, voice notes, photos'],['voice','phone','#3d8bff','Voice Calls (Twilio)','AI voice calls to farmers'],['sms','message-square-text','#f5a524','SMS (Twilio)','SMS alerts and updates']].map(([k,ic,c,n,d])=>
+    `<div class="srow"><span class="cico" style="background:${c};color:#fff;width:36px;height:36px"><i data-lucide="${ic}"></i></span><div><b>${n}</b><small>${d}</small></div><span class="tog ${PF.channels[k]?'on':''}" data-ch="${k}"></span><span class="tst ${live[k]?'live':'off'}">${live[k]?'Live':'Not connected'}</span></div>`).join('');
+  $('stKeys').innerHTML=[['Google Gemini','Voice, understanding, documents',PF.keys.gemini,'GEMINI_API_KEY'],['Twilio','WhatsApp, voice and SMS',PF.keys.twilio,'TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN']].map(([n,d,ok,env])=>
+    `<div class="srow" style="flex-wrap:wrap"><div><b>${n}</b><small>${d}</small></div><span class="sval" style="font-family:monospace;font-weight:400">${ok?'••••••••••••':'not set'}</span><span class="tst ${ok?'live':'off'}">${ok?'Configured':'Not configured'}</span><small style="width:100%;color:#cfdcd8">Set <code>${env}</code> in the server .env file, then restart.</small></div>`).join('')+`<div class="snote"><i data-lucide="shield"></i>For safety, keys can't be typed or viewed in the browser.</div>`;
+  $('stRet').value=String(PF.retention_days);$('stMask').classList.toggle('on',PF.mask_phones);$('stDl').classList.toggle('on',PF.allow_report_download);lucide.createIcons()}
+$('stLang').addEventListener('click',e=>{const t=e.target.closest('[data-lang]');if(!t)return;PF.languages[t.dataset.lang]=!PF.languages[t.dataset.lang];savePf({languages:PF.languages});settingsPage()});
+$('stCh').addEventListener('click',e=>{const t=e.target.closest('[data-ch]');if(!t)return;PF.channels[t.dataset.ch]=!PF.channels[t.dataset.ch];savePf({channels:PF.channels});settingsPage()});
+$('stRisk').addEventListener('input',e=>$('stRiskV').textContent=e.target.value+' hours');$('stRisk').addEventListener('change',e=>savePf({at_risk_hours:+e.target.value},'At Risk threshold saved'));
+$('stRem').addEventListener('change',e=>savePf({reminder_hours:+e.target.value}));$('stRet').addEventListener('change',e=>savePf({retention_days:+e.target.value}));
+$('stMask').addEventListener('click',()=>{PF.mask_phones=!PF.mask_phones;$('stMask').classList.toggle('on',PF.mask_phones);savePf({mask_phones:PF.mask_phones})});
+$('stDl').addEventListener('click',()=>{PF.allow_report_download=!PF.allow_report_download;$('stDl').classList.toggle('on',PF.allow_report_download);savePf({allow_report_download:PF.allow_report_download})});
+$('stCT').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;PCT=p.dataset.c;document.querySelectorAll('#stCT .pill').forEach(x=>x.classList.toggle('on',x===p));$('stCon').value=PF.consent[PCT]||'';$('stCnt').textContent=`Characters: ${$('stCon').value.length}/500`});
+$('stCon').addEventListener('input',e=>$('stCnt').textContent=`Characters: ${e.target.value.length}/500`);
+$('stSave').addEventListener('click',()=>{PF.consent[PCT]=$('stCon').value;savePf({consent:PF.consent},'Consent message saved')});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>

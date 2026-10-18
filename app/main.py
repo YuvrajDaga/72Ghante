@@ -394,3 +394,29 @@ async def weather_alerts(region: str = "mh"):
                 elif gust >= 45:
                     out.append({"place": name, "day": day, "kind": "Strong wind", "level": "medium", "detail": f"Gusts up to {gust:.0f} km/h"})
     return {"region": region, "alerts": out, "checked": clock.now().isoformat(), "source": "Open-Meteo 3-day forecast"}
+
+
+# ---- Settings page preferences, saved to data/prefs.json ----
+_PREFS_FILE = _cfg.DATA_DIR / "prefs.json"
+_PREFS_DEFAULT = {"languages": {"mr": True, "hi": True, "mwr": True}, "at_risk_hours": 12, "reminder_hours": 6,
+                  "channels": {"whatsapp": True, "voice": True, "sms": True}, "retention_days": 90, "mask_phones": True, "allow_report_download": True,
+                  "consent": {"whatsapp": "नमस्कार शेतकरी मित्रा,\nतुमच्या पीक नुकसान भरपाईचा अर्ज 72 तासांच्या आत भरण्यासाठी आम्ही तुमची माहिती वापरणार आहोत.\nही माहिती फक्त सरकारी पोर्टलवर अर्ज भरण्यासाठी वापरली जाईल. तुमची माहिती सुरक्षित आहे आणि इतर कोणत्याही उद्देशासाठी वापरली जाणार नाही.\nतुम्ही पुढे सुरु ठेवण्यासाठी \"होय\" असे उत्तर द्या.",
+                              "voice": "Namaste. Aapki fasal nuksan ki soochna 72 ghante mein darj karne ke liye hum aapki jaankari ka upyog karenge. Aage badhne ke liye 'haan' bolein.",
+                              "sms": "72 Ghante: We will use your details only to file your crop-loss intimation within 72 hours. Reply YES to continue."}}
+
+
+@app.get("/api/prefs")
+async def prefs_get():
+    saved = json.loads(_PREFS_FILE.read_text(encoding="utf-8")) if _PREFS_FILE.exists() else {}
+    return {**_PREFS_DEFAULT, **saved, "intimation_window_hours": 72, "handoff_window_hours": _cfg.HANDOFF_WINDOW_HOURS,
+            "keys": {"gemini": bool(_cfg.GEMINI_API_KEY), "twilio": bool(TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN)}}
+
+
+@app.post("/api/prefs")
+async def prefs_set(body: dict):
+    saved = json.loads(_PREFS_FILE.read_text(encoding="utf-8")) if _PREFS_FILE.exists() else {}
+    for k in _PREFS_DEFAULT:
+        if k in body:
+            saved[k] = body[k]
+    _PREFS_FILE.write_text(json.dumps(saved, ensure_ascii=False, indent=1), encoding="utf-8")
+    return {"ok": True}
