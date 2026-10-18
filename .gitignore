@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+data/*.db
+data/media/
+eval/results/*.json
+data/*.log
+data/mock_registry.json
+.pytest_cache/

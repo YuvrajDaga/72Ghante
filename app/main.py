@@ -1,0 +1,269 @@
+"""Web server: WhatsApp / voice-call / SMS webhooks, dashboard APIs, the PMFBY mock, and the background tick.
+
+Run:  .venv\\Scripts\\python -m uvicorn app.main:app --port 8000
+"""
+
+import asyncio
+import contextlib
+import json
+from xml.sax.saxutils import escape
+
+import httpx
+from fastapi import BackgroundTasks, FastAPI, File, Form, Request, UploadFile
+from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
+
+from mock_pmfby import server as mock_server
+
+from . import agent, channels, clock, store, tools
+from . import stats as stats_mod
+from .api_cases import router as cases_router
+from .config import MEDIA_DIR, PUBLIC_BASE_URL, ROOT, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VOICE_FROM
+
+TICK_SECONDS = 5
+
+
+async def _ticker():
+    while True:
+        try:
+            await agent.tick()
+        except Exception as err:  # noqa: BLE001 - the loop must survive any single failure
+            store.add_trace(None, "system", "tick_error", "error", None, None, f"{type(err).__name__}: {err}")
+        await asyncio.sleep(TICK_SECONDS)
+
+
+@contextlib.asynccontextmanager
+async def lifespan(_: FastAPI):
+    task = asyncio.create_task(_ticker())
+    yield
+    task.cancel()
+
+
+app = FastAPI(title="72 Ghante", lifespan=lifespan)
+app.include_router(cases_router)
+app.mount("/mock", mock_server.mock)
+app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
+app.mount("/static", StaticFiles(directory=ROOT / "dashboard"), name="static")
+
+
+def _phone(raw: str) -> str:
+    return raw.replace("whatsapp:", "").strip()
+
+
+async def _download(url: str) -> tuple[bytes, str]:
+    async with httpx.AsyncClient(timeout=30, follow_redirects=True, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)) as http:
+        resp = await http.get(url)
+        resp.raise_for_status()
+        return resp.content, resp.headers.get("content-type", "application/octet-stream").split(";")[0]
+
+
+async def _process_twilio_message(form: dict, channel: str) -> None:
+    phone = _phone(form.get("From", ""))
+    media = []
+    for i in range(int(form.get("NumMedia", "0") or 0)):
+        try:
+            media.append(await _download(form[f"MediaUrl{i}"]))
+        except Exception as err:  # noqa: BLE001
+            store.add_trace(None, "channel", f"{channel}.media_download", "error", None, None, str(err)[:200])
+    await agent.handle_inbound(phone, channel, form.get("Body") or None, media)
+
+
+EMPTY_TWIML = Response("<Response></Response>", media_type="application/xml")
+
+
+@app.post("/whatsapp")
+async def whatsapp_webhook(request: Request, background: BackgroundTasks):
+    # Answer Twilio at once; the agent replies asynchronously through the REST API.
+    form = dict(await request.form())
+    background.add_task(_process_twilio_message, form, "whatsapp")
+    return EMPTY_TWIML
+
+
+@app.post("/sms")
+async def sms_webhook(request: Request, background: BackgroundTasks):
+    form = dict(await request.form())
+    background.add_task(_process_twilio_message, form, "sms")
+    return EMPTY_TWIML
+
+
+# ---------------------------------------------------------------- phone call (for farmers without a smartphone)
+
+def _twiml(*parts: str) -> Response:
+    return Response("<Response>" + "".join(parts) + "</Response>", media_type="application/xml")
+
+
+def _record() -> str:
+    return f'<Record action="{PUBLIC_BASE_URL}/voice/recorded" maxLength="30" timeout="3" playBeep="true" trim="trim-silence"/>'
+
+
+def _call_phone(form: dict) -> str:
+    return form.get("To") if form.get("Direction", "").startswith("outbound") else form.get("From", "")
+
+
+@app.post("/voice/incoming")
+async def voice_incoming(request: Request):
+    form = dict(await request.form())
+    phone = _call_phone(form)
+    channels.voice_queue[phone].clear()
+    greeting = "Namaskar. 72 Ghante mein aapka swagat hai. Beep ke baad batayiye, aapki fasal ko kya nuksaan hua aur kab hua."
+    return _twiml(f'<Say language="hi-IN">{escape(greeting)}</Say>', _record())
+
+
+@app.post("/voice/recorded")
+async def voice_recorded(request: Request, background: BackgroundTasks):
+    form = dict(await request.form())
+    phone = _call_phone(form)
+
+    async def run():
+        audio = await _download(form["RecordingUrl"] + ".mp3")
+        await agent.handle_inbound(phone, "voice", None, [(audio[0], "audio/mpeg")])
+
+    background.add_task(run)
+    return _twiml('<Say language="hi-IN">Ek minute.</Say>', f'<Redirect method="POST">{PUBLIC_BASE_URL}/voice/poll?n=0</Redirect>')
+
+
+@app.post("/voice/poll")
+async def voice_poll(request: Request, n: int = 0):
+    form = dict(await request.form())
+    phone = _call_phone(form)
+    queue = channels.voice_queue[phone]
+    if queue:
+        parts = []
+        while queue:
+            item = queue.pop(0)
+            if item.get("audio"):
+                parts.append(f"<Play>{PUBLIC_BASE_URL}{item['audio']}</Play>")
+            else:
+                parts.append(f'<Say language="hi-IN">{escape(item["text"])}</Say>')
+        return _twiml(*parts, _record())
+    if n < 20:
+        return _twiml('<Pause length="2"/>', f'<Redirect method="POST">{PUBLIC_BASE_URL}/voice/poll?n={n + 1}</Redirect>')
+    return _twiml('<Say language="hi-IN">Maaf kijiye, thodi der lag rahi hai. Kripya dobara boliye.</Say>', _record())
+
+
+@app.post("/api/call")
+async def start_call(body: dict):
+    """Agent calls the farmer (missed-call callback, or for the demo)."""
+    if not (TWILIO_ACCOUNT_SID and TWILIO_VOICE_FROM and PUBLIC_BASE_URL):
+        return JSONResponse({"error": "Set TWILIO_VOICE_FROM and PUBLIC_BASE_URL in .env"}, 400)
+    async with httpx.AsyncClient(timeout=15, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)) as http:
+        resp = await http.post(f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Calls.json",
+                               data={"To": body["phone"], "From": TWILIO_VOICE_FROM, "Url": f"{PUBLIC_BASE_URL}/voice/incoming"})
+    store.add_trace(None, "channel", "voice.outbound_call", "ok" if resp.status_code < 300 else "error", None, {"to": store.mask_phone(body["phone"])}, resp.status_code)
+    return JSONResponse(resp.json(), resp.status_code)
+
+
+# ---------------------------------------------------------------- simulator (test without a phone)
+
+@app.post("/api/sim/send")
+async def sim_send(phone: str = Form(...), text: str = Form(""), voice: bool = Form(False), file: UploadFile | None = File(None)):
+    media = []
+    if file is not None:
+        data = await file.read()
+        media.append((data, file.content_type or "application/octet-stream"))
+    case = store.open_case_for(phone)
+    if case is not None and case.get("sim_voice") != voice:
+        case["sim_voice"] = voice
+        store.save_case(case)
+    case = await agent.handle_inbound(phone, "sim", text or None, media)
+    return {"case_id": case["id"]}
+
+
+@app.get("/api/sim/messages")
+async def sim_messages(phone: str, after: int = 0):
+    return store.messages_for(phone, after)
+
+
+# ---------------------------------------------------------------- dashboard APIs
+
+@app.get("/api/stats")
+async def stats():
+    return stats_mod.compute()
+
+
+@app.get("/api/weather")
+async def weather_now(place: str = "nashik"):
+    """Current live weather for the top bar (Open-Meteo, no key)."""
+    lat, lon = tools.PLACES.get(place.lower(), tools.PLACES["nashik"])
+    try:
+        async with httpx.AsyncClient(timeout=6) as http:
+            r = await http.get("https://api.open-meteo.com/v1/forecast", params={"latitude": lat, "longitude": lon, "current": "temperature_2m,weather_code", "timezone": "Asia/Kolkata"})
+        cur = r.json()["current"]
+        return {"available": True, "place": place.title(), "temp_c": round(cur["temperature_2m"]), "code": cur["weather_code"]}
+    except Exception:  # noqa: BLE001 - weather chip is decorative
+        return {"available": False}
+
+
+@app.get("/api/trace")
+async def trace(after: int = 0, limit: int = 200):
+    return store.trace_for(None, after, limit)
+
+
+@app.get("/api/live_chat")
+async def live_chat():
+    """The most recent live (non-demo) conversation, mirrored on the projector during the demo."""
+    live = [c for c in store.list_cases() if not c.get("demo")]
+    if not live:
+        return {"case_id": None, "messages": []}
+    return {"case_id": live[0]["id"], "phone": store.mask_phone(live[0]["phone"]), "channel": live[0]["channel"],
+            "messages": store.messages_for_case(live[0]["id"])}
+
+
+@app.get("/api/eval")
+async def eval_results():
+    path = ROOT / "eval" / "results" / "summary.json"
+    return JSONResponse(json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"available": False})
+
+
+@app.get("/api/clock")
+async def get_clock():
+    return {"now": clock.now().isoformat(timespec="seconds"), "offset_hours": clock.offset_hours()}
+
+
+@app.post("/api/clock/advance")
+async def advance_clock(body: dict):
+    clock.advance(float(body.get("hours", 0)))
+    store.add_trace(None, "system", "time_travel", "ok", None, body, {"offset_hours": clock.offset_hours()})
+    return await get_clock()
+
+
+@app.post("/api/clock/reset")
+async def reset_clock():
+    clock.reset()
+    return await get_clock()
+
+
+@app.post("/api/faults")
+async def faults(body: dict):
+    result = await mock_server.admin_faults(body)
+    store.add_trace(None, "system", "fault_injection", "warn" if "down" in result.values() or "flaky" in result.values() else "ok", None, body, result)
+    return result
+
+
+@app.get("/api/mock")
+async def mock_state():
+    return await mock_server.admin_state()
+
+
+@app.post("/api/link")
+async def link(body: dict):
+    return await mock_server.admin_link(body)
+
+
+@app.post("/api/officer_forward")
+async def officer_forward(body: dict):
+    return await mock_server.admin_officer_forward(body)
+
+
+@app.post("/api/reset")
+async def reset_all():
+    store.reset_all()
+    await mock_server.admin_reset()
+    clock.reset()
+    return {"reset": True}
+
+
+@app.get("/")
+async def dashboard():
+    # No caching, so a refresh always shows the latest dashboard.
+    return FileResponse(ROOT / "dashboard" / "index.html", headers={"Cache-Control": "no-store"})
