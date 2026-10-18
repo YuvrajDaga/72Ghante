@@ -572,6 +572,31 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#9fb4ad}.dot.live{background:#3dffa0;box-shadow:0 0 6px #3dffa0}.dot.off{background:#ff3b4e}.dot.mock{background:#ffd23f}
 .tkey{position:absolute;left:14px;right:14px;bottom:12px;list-style:none;font-size:12.5px;padding:10px 12px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.08)}
 .tkey li{display:flex;gap:8px;align-items:flex-start;margin:3px 0}.tkey svg{width:16px;height:16px;color:#3dffa0;flex:none}
+
+/* Failure page */
+#sBtnRow{position:absolute;left:10px;right:10px;top:174px;height:64px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.sbig{position:relative;overflow:hidden;border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 12px;cursor:pointer;color:#fff;text-align:left;font-family:"Inter Tight",sans-serif;
+  border:1.5px solid var(--sc);background:linear-gradient(135deg,color-mix(in srgb,var(--sc) 35%,transparent),rgba(6,20,22,.9));box-shadow:0 0 14px color-mix(in srgb,var(--sc) 40%,transparent);animation:rise .6s both}
+.sbig>span{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--sc);box-shadow:0 0 12px var(--sc)}
+.sbig>span svg{width:20px;height:20px}.sbig p{flex:1;min-width:0}.sbig b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sbig small{display:block;font-size:11px;color:#dfe9e6;margin-top:3px}
+.sbig>svg{width:16px;height:16px;flex:none}.sbig:hover{filter:brightness(1.2)}.sbig.run{animation:riskpulse 1s infinite}
+.sbig::after{content:"";position:absolute;top:0;bottom:0;width:35%;left:-50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-20deg);animation:ksweep 5s ease-in-out infinite}
+#rpList{position:absolute;left:12px;right:12px;top:58px;bottom:190px;list-style:none;overflow:hidden}
+.rp{display:flex;align-items:center;gap:10px;height:44px;margin-bottom:5px;padding:0 10px 0 26px;border-radius:9px;background:rgba(10,30,34,.6);border:1px solid rgba(255,255,255,.07);position:relative;animation:slide .4s both}
+.rpd{position:absolute;left:6px;top:15px;width:12px;height:12px;border-radius:50%;box-shadow:0 0 8px currentColor}
+.rp time{font-size:11.5px;color:#cfdcd8;width:78px;flex:none}
+.rpi{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none}.rpi svg{width:16px;height:16px;color:#fff}
+.rp p{flex:1;min-width:0}.rp p b{display:block;font-size:12.5px}.rp p small{display:block;font-size:11px;color:#cfdcd8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpt{text-align:right;flex:none}.rpt small{display:block;font-size:10.5px;color:#cfdcd8;margin-top:3px}
+#rpFin{position:absolute;left:12px;right:12px;bottom:124px;height:58px}
+.rpdone{height:58px;border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 14px;background:linear-gradient(90deg,rgba(30,160,90,.3),rgba(10,40,30,.4));border:1px solid rgba(60,220,150,.55);animation:rise .5s both}
+.rpdone.bad{background:linear-gradient(90deg,rgba(200,30,58,.3),rgba(60,10,20,.4));border-color:rgba(255,70,90,.6)}
+.rpdone>svg{width:28px;height:28px;color:#ffd23f}.rpdone b{display:block;font-size:14px;color:#3dffa0}.rpdone.bad b{color:#ff6b78}.rpdone small{display:block;font-size:11.5px;color:#dfe9e6}.rpdone>div{flex:1}
+#simRes{position:absolute;left:12px;right:12px;top:42px;bottom:10px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#simRes .kpi{height:auto}
+#simRes .kpi b{font-size:20px}#simRes .kpi .lb,#simRes .kpi .tr{white-space:normal;line-height:13px;right:8px}#simRes .kpi .lb{font-size:11.5px!important}
+#rpStat{position:absolute;left:14px;right:14px;top:44px;display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;font-size:13px}
+#rpStat div{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:5px}#rpStat b{font-size:15px}
 </style>
 </head>
 <body>
@@ -776,6 +801,27 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <div style="position:absolute;left:8px;right:10px;top:40px;height:200px"><canvas id="tLat"></canvas></div>
       <ul id="tKey" class="tkey"></ul></section>
   </div>
+  <div class="page" id="pg-failure">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Failure Simulation</div><h1>Failure Simulation &amp; Testing</h1>
+      <p>Test how the agent handles real-world failures and ensures no farmer is left behind. Every button runs a real test.</p>
+    </section>
+    <section id="sBtnRow"></section>
+    <section class="card" style="left:10px;top:248px;width:calc(58% - 12px);bottom:10px"><h3 style="font-size:19px">Live Recovery Replay</h3>
+      <p id="rpSub" style="position:absolute;left:14px;top:36px;font-size:12px;color:#cfdcd8"></p>
+      <div class="ctl" style="right:12px;top:10px">Replay Speed <div class="tabs" id="rpSpeed"><span class="pill on" data-s="1">1x</span><span class="pill" data-s="2">2x</span><span class="pill" data-s="4">4x</span></div></div>
+      <ul id="rpList"></ul><div id="rpFin"></div>
+      <div style="position:absolute;left:8px;right:12px;bottom:6px;height:110px"><canvas id="rpLat"></canvas></div>
+    </section>
+    <section class="card" style="left:calc(58% + 6px);top:248px;right:10px;height:150px"><h3 style="font-size:19px">Simulation Results</h3><div id="simRes"></div></section>
+    <section class="card" style="left:calc(58% + 6px);top:408px;right:10px;height:420px"><h3 style="font-size:19px">Run History</h3>
+      <label class="srch2" style="left:auto;right:150px;width:34%"><i data-lucide="search"></i><input id="rSearch" placeholder="Search runs..."></label>
+      <div class="ctl" style="right:12px"><select class="pill" id="rKind"><option value="">All Scenarios</option><option value="success">Success</option><option value="timeout">Timeout</option><option value="server_failure">Server Failure</option><option value="invalid_document">Invalid Document</option><option value="hour61">Break at Hour 61</option></select></div>
+      <table id="runTbl" class="xtbl" style="top:48px"></table>
+      <div class="pager"><span id="rInfo"></span><div class="mid" id="rPg" style="margin-right:0"></div></div>
+    </section>
+    <section class="card" style="left:calc(58% + 6px);top:838px;right:10px;bottom:10px"><h3>Step Gaps <small>(selected run)</small></h3><div id="rpStat"></div></section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -977,7 +1023,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1180,6 +1226,55 @@ function drawTools(){const fmt=x=>new Date(x).toLocaleString('en-IN',{day:'numer
     off.length?`Not connected yet: ${off.join(', ')} — add the API keys in .env.`:'All keyed tools are connected.',
     'PMFBY portal runs as a mock (no public API); Helpline 14447 is a human hand-off.'].map(x=>`<li><i data-lucide="circle-check"></i>${esc(x)}</li>`).join('');
   lucide.createIcons()}
+
+// ===== Failure Simulation page (real scenario runs from /api/scenarios) =====
+const SCN=[['success','Simulate Success','Normal flow, everything works','play','#2fe08a'],['timeout','Simulate Timeout','Slow response / no response','clock','#f5a524'],
+  ['server_failure','Simulate Server Failure','HTTP 503 / portal down','server-crash','#ff3b4e'],['invalid_document','Simulate Invalid Document','Unreadable / dark photo','file-x','#a855f7'],
+  ['hour61','Break Portal at Hour 61','Loss reported late, then portal fails','triangle-alert','#ff3b4e']];
+const SN={success:'Success (Normal)',timeout:'Timeout (Slow)',server_failure:'Server Failure (503)',invalid_document:'Invalid Document',hour61:'Break at Hour 61'};
+let FR={runs:[],sel:null,page:1,speed:1,timer:null};
+async function failurePage(){const d=await fetch('/api/scenarios').then(r=>r.json()).catch(()=>null);if(!d)return;FR.runs=d.runs||[];
+  $('sBtnRow').innerHTML=SCN.map(([k,t,s,ic,c])=>`<button class="sbig" data-k="${k}" style="--sc:${c}"><span><i data-lucide="${ic}"></i></span><p><b>${t}</b><small>${s}</small></p><i data-lucide="chevron-right"></i></button>`).join('');
+  const done=FR.runs.filter(r=>r.status!=='running'),pass=done.filter(r=>r.status==='passed').length,fail=done.length-pass,fx=done.filter(r=>r.kind!=='success'&&r.kind!=='invalid_document'),rec=fx.filter(r=>r.status==='passed').length;
+  const R=[['k5','circle-check',pass,'Passed Runs',done.length?Math.round(100*pass/done.length)+'% success rate':'No runs yet'],['k4','circle-x',fail,'Failed Runs',done.length?Math.round(100*fail/done.length)+'% failure rate':'—'],
+    ['k2','refresh-cw',fx.length?Math.round(100*rec/fx.length)+'%':'—','Recovery Rate',fx.length?`${rec} of ${fx.length} failures recovered`:'Run a failure test'],['k4b','shield-check',String(STATS?.recovery.false_done??0),'False "Done"','No incorrect done status']];
+  $('simRes').innerHTML=R.map(([k,ic,v,l,s])=>`<div class="kpi ${k}"><span class="ic" style="width:40px;height:40px;top:14px;left:12px"><i data-lucide="${ic}"></i></span><b style="left:62px;top:12px">${v}</b><span class="lb" style="left:62px;top:40px;font-size:12.5px">${l}</span><span class="tr up" style="left:12px;bottom:8px;font-size:11.5px;font-weight:500;color:#d6e4df">${s}</span></div>`).join('');
+  drawRuns();if(!FR.sel&&FR.runs[0])FR.sel=FR.runs[0].id;replay(false);lucide.createIcons();
+  if(FR.runs.some(r=>r.status==='running'))setTimeout(()=>{if($('pg-failure').classList.contains('on'))failurePage()},2000)}
+function dur(a,b){if(!a||!b)return'—';const s=Math.max(0,(new Date(b)-new Date(a))/1000);return s<60?s.toFixed(1)+' s':`${Math.floor(s/60)}m ${String(Math.round(s%60)).padStart(2,'0')}s`}
+function drawRuns(){const q=$('rSearch').value.toLowerCase(),k=$('rKind').value,L=FR.runs.filter(r=>(!k||r.kind===k)&&(!q||[r.id,SN[r.kind],r.status,r.outcome].join(' ').toLowerCase().includes(q))),pages=Math.max(1,Math.ceil(L.length/10));
+  FR.page=Math.min(FR.page,pages);const rows=L.slice((FR.page-1)*10,FR.page*10),cls={passed:'sub',failed:'risk',error:'risk',running:'prog'},lab=r=>r.status==='passed'?(r.kind==='success'?'Success':r.kind==='invalid_document'?'Rejected ✓':'Recovered'):cap(r.status);
+  $('runTbl').innerHTML=`<tr><th>Run ID</th><th>Scenario</th><th>Result</th><th>Duration</th><th>Started At</th><th>Actions</th></tr>`+(rows.map(r=>`<tr class="row ${r.id===FR.sel?'sel':''}" data-id="${r.id}"><td>RUN-${String(r.id).padStart(4,'0')}</td><td>${SN[r.kind]||r.kind}</td><td><span class="st ${cls[r.status]||'grey'}">${lab(r)}</span></td><td>${dur(r.started,r.finished)}</td><td>${new Date(r.started).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td><td><span class="mdot" title="Replay">▶</span></td></tr>`).join('')||'<tr><td colspan="6" style="color:#cfdcd8">No runs yet — press a button above to run a real test.</td></tr>');
+  $('rInfo').textContent=`Showing ${L.length?(FR.page-1)*10+1:0}–${Math.min(L.length,FR.page*10)} of ${L.length} runs`;
+  $('rPg').innerHTML=Array.from({length:pages},(_,i)=>`<span class="pg ${i+1===FR.page?'on':''}" data-p="${i+1}">${i+1}</span>`).slice(0,7).join('')}
+async function replay(animate){clearInterval(FR.timer);const run=FR.runs.find(r=>r.id===FR.sel);if(!run){$('rpList').innerHTML='<li class="rp"><p><b>No run selected</b><small>Press a scenario button above.</small></p></li>';return}
+  $('rpSub').textContent=`Step-by-step execution of the AI agent for ${run.case_id||'—'} · ${SN[run.kind]}`;
+  const d=run.case_id?await fetch('/api/cases/'+run.case_id).then(r=>r.json()).catch(()=>null):null,c=d?.case;const ev=[];
+  if(c){ev.push({ts:c.created,ic:'file-plus',col:'#3d8bff',t:'Case created',s:`${cap(c.fields?.crop)} · ${cap(c.fields?.peril)} · deadline ${new Date(c.deadline).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`,tag:'Received',tc:'prog'});
+    (c.evidence||[]).forEach(e=>ev.push({ts:e.at||c.created,ic:e.accepted?'image':'image-off',col:e.accepted?'#2fe08a':'#ff3b4e',t:e.accepted?'Photo accepted':'Photo rejected',s:e.reason||'',tag:e.accepted?'OK':'Rejected',tc:e.accepted?'sub':'risk'}));
+    if(c.consent_at)ev.push({ts:c.consent_at,ic:'badge-check',col:'#2fe08a',t:'Consent recorded',s:'Farmer agreed to file',tag:'Consent',tc:'sub'});
+    (c.attempts||[]).forEach((a,i)=>ev.push({ts:a.at,ic:a.result==='failed'?(i?'rotate-cw':'triangle-alert'):'send',col:a.result==='failed'?(i?'#f5a524':'#ff3b4e'):'#2fe08a',t:a.result==='failed'?(i?`Retry ${i} – still failing`:'Submission failed'):`Submission ${a.result} (${cap(a.route)})`,s:a.error?`Error: ${a.error}`:cap(a.route),tag:a.result==='failed'?(i?'Retrying':'Failed'):'Accepted',tc:a.result==='failed'?(i?'wait':'risk'):'sub'}));
+    (c.action_log||[]).filter(a=>a.kind==='done'||a.kind==='pending').forEach(a=>ev.push({ts:a.ts,ic:a.kind==='done'?'shield-check':/helpline|fallback/i.test(a.text)?'phone-call':'search',col:a.kind==='done'?'#2fe08a':/helpline|fallback/i.test(a.text)?'#a855f7':'#3d8bff',t:a.kind==='done'?'Verification complete':/helpline|fallback/i.test(a.text)?'Switch to helpline route (14447)':'Check status – PENDING, NOT DONE',s:a.text+(a.kind==='done'&&c.intimation.reference?' · Ref: '+c.intimation.reference:''),tag:a.kind==='done'?'Verified':a.kind==='pending'?'Pending':'Info',tc:a.kind==='done'?'sub':'prog'}))}
+  else(run.detail||[]).forEach(x=>ev.push({ts:run.started,ic:'circle',col:'#3d8bff',t:x,s:'',tag:'',tc:'grey'}));
+  ev.sort((a,b)=>new Date(a.ts)-new Date(b.ts));ev.forEach((e,i)=>e.d=i?dur(ev[i-1].ts,e.ts):'—');
+  const li=e=>`<li class="rp"><span class="rpd" style="background:${e.col}"></span><time>${new Date(e.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</time><span class="rpi" style="background:${e.col}"><i data-lucide="${e.ic}"></i></span><p><b>${esc(e.t)}</b><small>${esc(e.s)}</small></p><span class="rpt"><span class="st ${e.tc}">${esc(e.tag)}</span><small>${e.d}</small></span></li>`;
+  const ok=run.status==='passed',late=c&&c.intimation.verified_at&&new Date(c.intimation.verified_at)<=new Date(c.deadline);
+  const fin=`<div class="rpdone ${ok?'':'bad'}"><i data-lucide="${ok?'trophy':'circle-x'}"></i><div><b>${ok?'Simulation Completed Successfully':'Simulation '+cap(run.status)}</b><small>${esc(run.outcome||'Running…')}${run.kind==='hour61'&&late?' · filed before the 72-hour window closed':''}</small></div><span class="reset" id="rpAgain"><i data-lucide="rotate-ccw"></i>Replay Again</span></div>`;
+  if(!animate){$('rpList').innerHTML=ev.map(li).join('');$('rpFin').innerHTML=fin}
+  else{$('rpList').innerHTML='';$('rpFin').innerHTML='';let i=0;FR.timer=setInterval(()=>{if(i<ev.length){$('rpList').insertAdjacentHTML('beforeend',li(ev[i++]));lucide.createIcons()}else{clearInterval(FR.timer);$('rpFin').innerHTML=fin;lucide.createIcons()}},900/FR.speed)}
+  const gaps=ev.map((e,i)=>i?Math.max(0,(new Date(e.ts)-new Date(ev[i-1].ts))/1000):0);
+  chart('rpLat',{type:'line',data:{labels:ev.map((_,i)=>'Step '+(i+1)),datasets:[{data:gaps,borderColor:'#2fe08a',backgroundColor:x=>fade(x,'#2fe08a'),fill:true,tension:.35,pointRadius:3}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,title:{display:true,text:'seconds'},grid:{color:'rgba(255,255,255,.06)'}}}}});
+  const tot=ev.length>1?dur(ev[0].ts,ev.at(-1).ts):'—',avg=gaps.length>1?(gaps.slice(1).reduce((a,b)=>a+b,0)/(gaps.length-1)).toFixed(1)+' s':'—';
+  $('rpStat').innerHTML=[['Total Steps',ev.length],['Total Duration',tot],['Avg Step Gap',avg],['Longest Gap',Math.max(0,...gaps).toFixed(1)+' s']].map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join('');
+  lucide.createIcons()}
+$('sBtnRow').addEventListener('click',async e=>{const b=e.target.closest('.sbig');if(!b)return;b.disabled=true;b.classList.add('run');
+  const r=await fetch('/api/scenarios/'+b.dataset.k,{method:'POST'}).then(r=>r.json()).catch(()=>null);if(r?.run_id)FR.sel=r.run_id;toast('Running real test: '+SN[b.dataset.k]);
+  const poll=async()=>{await failurePage();const run=FR.runs.find(x=>x.id===FR.sel);if(run&&run.status==='running')setTimeout(poll,1500);else{b.disabled=false;b.classList.remove('run');replay(true);loadAll()}};setTimeout(poll,1200)});
+$('runTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r){FR.sel=+r.dataset.id;drawRuns();replay(true)}});
+$('rpSpeed').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;FR.speed=+p.dataset.s;document.querySelectorAll('#rpSpeed .pill').forEach(x=>x.classList.toggle('on',x===p))});
+$('rpFin').addEventListener('click',e=>{if(e.target.closest('#rpAgain'))replay(true)});
+$('rSearch').addEventListener('input',drawRuns);$('rKind').addEventListener('change',drawRuns);
+$('rPg').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p){FR.page=p;drawRuns()}});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>

@@ -163,6 +163,7 @@ SCENARIOS = {
     "timeout": "Portal times out on every attempt, then recovers: retries, pending-not-done, fallback, recovery",
     "server_failure": "Portal returns 503, then recovers: pending-not-done, helpline fallback, background recovery",
     "invalid_document": "Damage photo is too dark and blurry: rejected with a reason, case not filed",
+    "hour61": "Loss reported at hour 61 of 72, then the portal breaks: fast fallback before the window closes",
 }
 
 
@@ -190,7 +191,7 @@ async def _run(run_id: int, kind: str) -> None:
         case = await create_case({
             "phone": f"+9180000{run_id:05d}", "farmer_name": f"Test Farmer {run_id} (synthetic)", "district": "Jodhpur", "taluka": "Osian",
             "crop": "bajra", "peril": "hailstorm", "survey_no": f"T{run_id}/{n}", "application_no": f"SIM-2026-{stamp}{run_id:03d}",
-            "event_time": (clock.now() - timedelta(hours=20)).isoformat(), "channel": "test"})
+            "event_time": (clock.now() - timedelta(hours=61 if kind == "hour61" else 20)).isoformat(), "channel": "test"})
         case["scenario"] = kind
         store.save_case(case)
         store.set_run_case(run_id, case["id"])
@@ -209,7 +210,7 @@ async def _run(run_id: int, kind: str) -> None:
         if kind == "timeout":
             await mock_server.admin_faults({"submit": "slow"})
             tools.SUBMIT_TIMEOUT_S = 2  # keep the demo run short; production default is 8 s
-        elif kind == "server_failure":
+        elif kind in ("server_failure", "hour61"):
             await mock_server.admin_faults({"submit": "down"})
         try:
             await submit(case)
