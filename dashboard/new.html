@@ -546,6 +546,32 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .hg i{height:25px;border-radius:3px;animation:rise .5s both}
 .hl{position:absolute;left:14px;right:14px;bottom:12px;display:flex;justify-content:space-around;font-size:12px}
 .hl i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+
+/* Tools page */
+#tGrid{position:absolute;left:10px;right:10px;top:174px;height:464px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:1fr 1fr;gap:10px}
+.tcard{min-width:0;overflow:hidden}
+.th b{overflow:hidden;text-overflow:ellipsis}
+#tTbl td{height:31px}
+#tTbl td:last-child{white-space:normal;line-height:12px;font-size:11px}
+.tcard{position:relative;border-radius:12px;padding:12px 14px;background:linear-gradient(160deg,rgba(14,40,40,.85),rgba(7,22,24,.92));border:1px solid color-mix(in srgb,var(--tc) 55%,transparent);
+  box-shadow:0 0 14px color-mix(in srgb,var(--tc) 22%,transparent);animation:rise .6s both;transition:transform .25s}
+.tcard:hover{transform:translateY(-3px)}
+.th{display:flex;gap:11px;align-items:center}
+.tic{width:46px;height:46px;border-radius:11px;display:grid;place-items:center;flex:none;background:color-mix(in srgb,var(--tc) 85%,#000);box-shadow:0 0 12px color-mix(in srgb,var(--tc) 60%,transparent)}
+.tic svg{width:24px;height:24px;color:#fff}
+.th b{display:block;font-size:15px;white-space:nowrap}.th small{display:block;font-size:11.5px;color:#cfdcd8;margin-top:3px}
+.th>div{flex:1;min-width:0}
+.tst{padding:3px 9px;border-radius:7px;font-size:11px;font-weight:700;border:1px solid;white-space:nowrap}
+.tst.live{color:#5dffb4;border-color:#2fdc9f;background:rgba(10,70,45,.5)}.tst.mock{color:#ffd23f;border-color:#f5a524;background:rgba(120,80,10,.5)}
+.tst.hum{color:#ffb15c;border-color:#fb923c;background:rgba(120,60,10,.5)}.tst.off{color:#ff8a96;border-color:#ff3b4e;background:rgba(120,20,40,.5)}
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:16px}
+.tstats div+div{border-left:1px solid rgba(255,255,255,.1);padding-left:10px}
+.tstats b{display:block;font-size:17px}.tstats small{font-size:11.5px;color:#cfdcd8}
+.tline{width:100%;height:44px;margin-top:12px;filter:drop-shadow(0 0 4px var(--tc))}
+.tft{position:absolute;left:14px;right:14px;bottom:10px;font-size:11px;color:#cfdcd8}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#9fb4ad}.dot.live{background:#3dffa0;box-shadow:0 0 6px #3dffa0}.dot.off{background:#ff3b4e}.dot.mock{background:#ffd23f}
+.tkey{position:absolute;left:14px;right:14px;bottom:12px;list-style:none;font-size:12.5px;padding:10px 12px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.08)}
+.tkey li{display:flex;gap:8px;align-items:flex-start;margin:3px 0}.tkey svg{width:16px;height:16px;color:#3dffa0;flex:none}
 </style>
 </head>
 <body>
@@ -738,6 +764,17 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <div class="tabs" id="aChT" style="position:absolute;left:14px;top:44px"><span class="pill on" data-v="ch">Channels</span><span class="pill" data-v="la">Languages</span></div>
       <ul id="aChL" class="alist" style="left:14px;right:14px;top:84px"></ul>
     </section>
+  </div>
+  <div class="page" id="pg-tools">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Tools &amp; Integrations</div><h1>Tools &amp; Integrations</h1>
+      <p>All external services, AI models and government systems used by 72 Ghante — checked live.</p>
+    </section>
+    <section id="tGrid"></section>
+    <section class="card" style="left:10px;top:648px;width:calc(60% - 12px);bottom:10px"><h3>Real vs Mock vs Human</h3><p style="position:absolute;left:14px;top:34px;font-size:12px;color:#cfdcd8">Honest status of every tool used in 72 Ghante.</p><table id="tTbl" class="xtbl" style="top:56px"></table></section>
+    <section class="card" style="left:calc(60% + 6px);top:648px;right:10px;bottom:10px"><h3>Latency <small>(this session's health checks)</small></h3>
+      <div style="position:absolute;left:8px;right:10px;top:40px;height:200px"><canvas id="tLat"></canvas></div>
+      <ul id="tKey" class="tkey"></ul></section>
   </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
@@ -940,7 +977,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1108,6 +1145,41 @@ $('aChT').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)r
 $('aReg').addEventListener('change',analyticsPage);
 $('aExp').addEventListener('click',()=>{const S=STATS,rows=[['metric','value'],['filed_within_72h',S.within_window],['verified',S.kpis.acknowledged.value],['avg_minutes_to_verified',S.kpis.avg_resolution_min.value],['failures',S.recovery.failures],['recovered',S.recovery.recovered],['false_done',S.recovery.false_done],...S.crops.map(c=>['crop_'+c.crop,c.n]),...S.channels.map(c=>['channel_'+c[0],c[1]]),...S.languages.map(c=>['language_'+c[0],c[1]])];
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'}));a.download='72ghante-analytics.csv';a.click()});
+
+// ===== Tools & Integrations page (real health checks from /api/tools/health) =====
+const TOOLS=[
+  ['whatsapp','WhatsApp (Twilio)','Messaging, voice notes, photos','message-circle','#25d366','twilio','live','Farmer channel: voice notes, photos, text'],
+  ['voice','Voice Calls (Twilio)','IVR, call recording, voice input','phone','#3d8bff','twilio','live','For farmers without a smartphone'],
+  ['gemini','Gemini AI (Google)','Intent detection, extraction, reasoning','sparkles','#a855f7','gemini','live','Understanding + replies in Marathi, Hindi, Marwadi'],
+  ['stt','Speech-to-Text (Gemini)','Audio → text (multi-language)','audio-lines','#22d3ee','gemini','live','Same Gemini key; voice notes to text'],
+  ['pmfby','PMFBY Portal','Policy lookup, intimation, status','landmark','#facc15','pmfby','mock','Faithful mock with fault injection; no public API access'],
+  ['weather','Weather API (Open-Meteo)','Weather signal for the event','cloud-sun','#2fe08a','weather','live','Live data, used only as a supporting signal'],
+  ['ocr','Document Reader (Gemini)','Policy slips, photos, land records','file-text','#c084fc','gemini','live','Pixel checks + Gemini vision'],
+  ['helpline','Helpline 14447','Fallback to human support','headset','#fb923c',null,'human','Agent prepares the script and tracks the outcome']];
+let TH=null,TT=null;
+async function toolsPage(){TH=await fetch('/api/tools/health').then(r=>r.json()).catch(()=>null);if(!TH)return;drawTools();clearTimeout(TT);
+  TT=setTimeout(()=>{if($('pg-tools').classList.contains('on'))toolsPage()},15000)}
+function tState(t){const[,, ,,,pr,kind]=t;if(kind==='human')return['Human hand-off','hum'];const p=TH.probes[pr];
+  if(pr==='twilio'&&!TH.configured.twilio||pr==='gemini'&&!TH.configured.gemini)return['Not connected','off'];
+  if(kind==='mock')return[p?.last.ok?'Mock · up':'Mock · down','mock'];return[p?.last.ok?'Live':'Down',p?.last.ok?'live':'off']}
+function drawTools(){const fmt=x=>new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false});
+  $('tGrid').innerHTML=TOOLS.map(t=>{const[id,name,sub,ic,c,pr]=t,[st,sk]=tState(t),p=pr?TH.probes[pr]:null,h=(p?.history||[]).map(x=>x.ok?x.ms:0);
+    const stat=(v,l)=>`<div><b>${v}</b><small>${l}</small></div>`,mx=Math.max(1,...h),pts=h.map((v,i)=>`${(i/(Math.max(1,h.length-1)))*100},${30-26*v/mx}`).join(' ');
+    return`<div class="tcard" style="--tc:${c}"><div class="th"><span class="tic"><i data-lucide="${ic}"></i></span><div><b>${name}</b><small>${sub}</small></div><span class="tst ${sk}">${st}</span></div>
+      <div class="tstats">${sk==='hum'?stat('Human','Hand-off')+stat('—','No API')+stat('Tracked','By agent'):stat(sk==='off'&&!p?.history.some(x=>x.ok)?'—':p?.uptime!=null?p.uptime+'%':'—','Uptime (session)')+stat(p?.avg_ms!=null?p.avg_ms.toLocaleString('en-IN')+' ms':'—','Avg Latency')+stat(p?p.checks:'—','Checks run')}</div>
+      <svg class="tline" viewBox="0 0 100 32" preserveAspectRatio="none">${h.length>1?`<polyline points="${pts}" fill="none" stroke="${c}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`:`<line x1="0" y1="28" x2="100" y2="28" stroke="${c}" stroke-opacity=".35" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>`}</svg>
+      <div class="tft"><span><i class="dot ${sk}"></i>${p?'Last check: '+fmt(p.last.ts):sk==='hum'?'No automatic check':'—'}</span></div></div>`}).join('');
+  $('tTbl').innerHTML=`<tr><th>#</th><th>Tool / Integration</th><th>Purpose</th><th>Status</th><th>Data</th><th>Notes</th></tr>`+TOOLS.map((t,i)=>{const[st,sk]=tState(t);
+    return`<tr><td>${i+1}</td><td>${t[1]}</td><td>${t[2]}</td><td><span class="tst ${sk}">${st}</span></td><td>${t[6]==='mock'?'Sample':t[6]==='human'?'Human':'Real'}</td><td>${t[7]}</td></tr>`}).join('');
+  const series=[['weather','Weather API','#2fe08a'],['pmfby','PMFBY (Mock)','#facc15'],['gemini','Gemini AI','#a855f7'],['twilio','Twilio','#3d8bff']].filter(([k])=>TH.probes[k]?.history.some(x=>x.ok));
+  const n=Math.max(...series.map(([k])=>TH.probes[k].history.length),1);
+  chart('tLat',{type:'line',data:{labels:Array.from({length:n},(_,i)=>'#'+(i+1)),datasets:series.map(([k,l,c])=>({label:l,data:TH.probes[k].history.map(x=>x.ok?x.ms:null),borderColor:c,backgroundColor:c,tension:.35,pointRadius:2.5,borderWidth:2}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{usePointStyle:true,boxWidth:8}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'Health check'}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'Latency (ms)'}}}}});
+  const live=TOOLS.filter(t=>tState(t)[1]==='live').length,off=TOOLS.filter(t=>tState(t)[1]==='off').map(t=>t[1]);
+  $('tKey').innerHTML=[`${live} of ${TOOLS.length} tools are live right now (checked every 15 s while this page is open).`,
+    off.length?`Not connected yet: ${off.join(', ')} — add the API keys in .env.`:'All keyed tools are connected.',
+    'PMFBY portal runs as a mock (no public API); Helpline 14447 is a human hand-off.'].map(x=>`<li><i data-lucide="circle-check"></i>${esc(x)}</li>`).join('');
+  lucide.createIcons()}
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>

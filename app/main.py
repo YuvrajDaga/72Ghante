@@ -267,3 +267,56 @@ async def reset_all():
 async def dashboard():
     # No caching, so a refresh always shows the latest dashboard.
     return FileResponse(ROOT / "dashboard" / "index.html", headers={"Cache-Control": "no-store"})
+
+
+# ---- Tools & Integrations: live health checks (real measurements, kept in memory) ----
+import time as _time
+from collections import deque as _deque
+from . import config as _cfg
+_HEALTH: dict[str, _deque] = {}
+
+
+async def _probe(name: str, fn) -> None:
+    t0 = _time.perf_counter()
+    try:
+        ok = await fn()
+    except Exception:  # noqa: BLE001 - a failed probe is a result, not an error
+        ok = False
+    _HEALTH.setdefault(name, _deque(maxlen=60)).append({"ts": clock.now().isoformat(), "ok": bool(ok), "ms": round((_time.perf_counter() - t0) * 1000)})
+
+
+@app.get("/api/tools/health")
+async def tools_health():
+    async def weather():
+        async with httpx.AsyncClient(timeout=6) as http:
+            r = await http.get("https://api.open-meteo.com/v1/forecast", params={"latitude": 20.0, "longitude": 73.8, "current": "temperature_2m"})
+        return r.status_code == 200
+
+    async def pmfby():
+        async with httpx.AsyncClient(timeout=4) as http:
+            r = await http.get(_cfg.PMFBY_BASE_URL.rstrip("/") + "/health")
+        return r.status_code == 200
+
+    async def gemini():
+        if not _cfg.GEMINI_API_KEY:
+            return False
+        async with httpx.AsyncClient(timeout=6) as http:
+            r = await http.get("https://generativelanguage.googleapis.com/v1beta/models", params={"key": _cfg.GEMINI_API_KEY, "pageSize": 1})
+        return r.status_code == 200
+
+    async def twilio():
+        if not (TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN):
+            return False
+        async with httpx.AsyncClient(timeout=6, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)) as http:
+            r = await http.get(f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}.json")
+        return r.status_code == 200
+
+    await asyncio.gather(_probe("weather", weather), _probe("pmfby", pmfby), _probe("gemini", gemini), _probe("twilio", twilio))
+    calls = store.trace_for(None, 0, 5000)
+    out = {}
+    for k, h in _HEALTH.items():
+        oks = [x for x in h if x["ok"]]
+        out[k] = {"checks": len(h), "uptime": round(100 * len(oks) / len(h), 1) if h else None,
+                  "avg_ms": round(sum(x["ms"] for x in oks) / len(oks)) if oks else None, "last": h[-1], "history": list(h)}
+    return {"probes": out, "configured": {"gemini": bool(_cfg.GEMINI_API_KEY), "twilio": bool(TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN),
+            "pmfby_mock": "/mock" in _cfg.PMFBY_BASE_URL}, "agent_calls": len(calls), "agent_errors": sum(1 for c in calls if c.get("status") != "ok")}
