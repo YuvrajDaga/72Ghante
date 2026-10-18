@@ -614,6 +614,49 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #invDlg{margin:auto;border:1px solid #2fdc9f;border-radius:12px;background:#0a1f20;color:#fff;padding:20px;width:380px}
 #invDlg::backdrop{background:rgba(0,0,0,.6)}#invDlg h3{margin-bottom:12px}
 #invDlg label{display:block;font-size:12.5px;margin-bottom:10px}#invDlg input,#invDlg select{display:block;width:100%;margin-top:4px;height:34px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 13px "Inter Tight",sans-serif}
+
+/* WhatsApp page */
+#waTop{position:absolute;left:790px;right:10px;top:64px;height:96px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:2}
+.watile{display:flex;align-items:center;gap:10px;padding:0 12px;border-radius:11px;border:1.5px solid var(--wc);background:linear-gradient(135deg,color-mix(in srgb,var(--wc) 30%,transparent),rgba(6,20,22,.9));box-shadow:0 0 12px color-mix(in srgb,var(--wc) 35%,transparent);animation:rise .6s both}
+.watile>span{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--wc);flex:none}.watile svg{width:22px;height:22px;color:#fff}
+.watile b{display:block;font-size:20px}.watile small{font-size:12px}
+.watabs{position:absolute;left:12px;right:12px;top:46px;display:flex;gap:4px;flex-wrap:wrap}.watabs .pill{height:24px;font-size:11px}
+.sample{position:absolute;left:12px;right:12px;top:78px;font-size:10.5px;color:#ffd23f;background:rgba(120,80,10,.35);border:1px solid rgba(245,165,36,.5);border-radius:6px;padding:3px 7px}
+#waList{position:absolute;left:6px;right:6px;top:104px;bottom:6px;list-style:none;overflow:hidden}
+#waList li{display:flex;align-items:center;gap:8px;height:56px;padding:0 6px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;border-radius:8px;animation:slide .4s both}
+#waList li.on{background:rgba(0,240,168,.1);outline:1.5px solid #2fdc9f}#waList li .av{width:34px;height:34px;margin:0}
+#waList p{flex:1;min-width:0}#waList b{display:block;font-size:12.5px}#waList small{display:block;font-size:11px;color:#c7d5d1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lang.mwr{background:rgba(180,90,20,.4);border-color:#f5a52488}
+.wt{font-size:10.5px;color:#c7d5d1;text-align:right;width:52px}.wt em{display:block;margin:2px 0 0 auto;width:16px;height:16px;border-radius:50%;background:#ff3b4e;color:#fff;font-style:normal;font-size:10px;text-align:center;line-height:16px}
+.wci svg{width:20px;height:20px}
+#waHead{position:absolute;left:12px;right:12px;top:10px;height:50px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:8px}
+#waHead b{font-size:15px}#waHead small{display:block;font-size:11.5px;color:#d6e2de;margin-top:3px}#waHead .av{margin:0}
+#waBody{position:absolute;left:10px;right:10px;top:68px;bottom:96px;overflow:hidden;display:flex;flex-direction:column;gap:9px}
+.wday{align-self:center;font-size:11px;padding:3px 12px;border-radius:12px;background:rgba(255,255,255,.08)}
+.wm{display:flex;gap:8px;align-items:flex-start;animation:rise .4s both}.wm.out{justify-content:flex-end}.wm .av{width:30px;height:30px;font-size:10px;margin:0}
+.bub{max-width:78%;padding:8px 10px;border-radius:10px;font-size:12px;line-height:16px;background:rgba(20,40,44,.95);border:1px solid rgba(255,255,255,.08);position:relative}
+.wm.out .bub{background:linear-gradient(135deg,#0f5a3c,#0b4430);border-color:rgba(60,220,150,.4)}
+.bub time{display:block;text-align:right;font-size:10px;color:#b9cac5;margin-top:3px}
+.voice{display:flex;align-items:center;gap:8px}.play{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center}.play svg{width:13px;height:13px;color:#0a1f20}
+.wave{display:flex;align-items:center;gap:2px;flex:1}.wave i{width:2.5px;background:#3d8bff;border-radius:2px}
+.nat{margin-top:6px;font-family:"Noto Sans Devanagari","Inter Tight",sans-serif;font-size:12.5px}
+.tr2{margin-top:6px;padding:6px 8px;border-radius:7px;background:rgba(255,255,255,.05);font-size:11.5px}.tr2 small{display:block;font-weight:700;margin-bottom:2px}
+.bub.img{padding:4px}.bub.img img{display:block;width:230px;height:auto;border-radius:8px}
+.pol{display:flex;gap:8px;align-items:center;margin:6px 0;padding:7px 9px;border-radius:8px;background:rgba(0,0,0,.25)}.pol svg{width:22px;height:22px;color:#3dffa0}.pol b{display:block;font-size:12px}.pol small{font-size:10.5px;color:#cfdcd8}
+.yn{display:flex;gap:8px;margin-top:6px}.yn span{flex:1;text-align:center;padding:5px;border-radius:7px;font-weight:700;font-size:11.5px}.yn .y{border:1px solid #2fdc9f;color:#5dffb4}.yn .n{border:1px solid #ff3b4e;color:#ff8a96;background:rgba(120,20,40,.4)}
+#waChips{position:absolute;left:12px;right:12px;bottom:56px;display:flex;gap:8px}
+.chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:7px;font-size:11.5px;font-weight:600;border:1px solid;cursor:pointer}.chip svg{width:14px;height:14px}
+.chip.r{color:#ff8a96;border-color:#ff3b4e;background:rgba(120,20,40,.4)}.chip.g{color:#5dffb4;border-color:#2fdc9f;background:rgba(10,70,45,.4)}.chip.b{color:#9cc2ff;border-color:#3d8bff;background:rgba(20,50,120,.4)}
+.waIn{position:absolute;left:12px;right:12px;bottom:10px;height:38px;display:flex;align-items:center;gap:10px;padding:0 0 0 12px;border-radius:10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.3)}
+.waIn input{flex:1;background:none;border:0;outline:0;color:#fff;font:400 12.5px "Inter Tight",sans-serif}.waIn svg{width:17px;height:17px;color:#cfdcd8}
+#waSend{width:38px;height:38px;border-radius:50%;background:#2fdc9f;display:grid;place-items:center;cursor:pointer;box-shadow:0 0 12px #2fdc9f}#waSend svg{color:#05281a}
+#waUnd{position:absolute;left:12px;right:12px;top:44px;list-style:none;font-size:12px}
+#waUnd li{display:flex;align-items:center;gap:8px;height:34px;border-bottom:1px solid rgba(255,255,255,.05)}#waUnd b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#waUnd u{width:60px;height:7px;border-radius:4px;background:rgba(255,255,255,.08);position:relative}#waUnd u i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:#2fe08a;box-shadow:0 0 6px #2fe08a}
+#waUnd em{font-style:normal;color:#3dffa0;width:30px;text-align:right}
+.wsum{position:absolute;left:12px;right:12px;top:222px;padding:8px 10px;border-radius:9px;background:rgba(10,30,34,.7);border:1px solid rgba(255,255,255,.08);font-size:12px}.wsum small{color:#cfdcd8}
+#waLang{position:absolute;left:14px;right:14px;top:46px;list-style:none;font-size:12.5px}
+#waLang li{display:flex;align-items:center;gap:10px;height:34px}#waLang u{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.08);position:relative}#waLang u i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;transform-origin:left;animation:fill 1s both}#waLang b{width:36px;text-align:right}
 </style>
 </head>
 <body>
@@ -860,6 +903,28 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <label>District<input name="district" placeholder="e.g. Nashik"></label><p id="invErr" style="color:#ff6b78;font-size:12px"></p>
       <div style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="reset" onclick="this.closest('dialog').close()">Cancel</button><button class="pbtn new" style="position:static;height:36px">Add</button></div></form></dialog>
   </div>
+  <div class="page" id="pg-chat">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; WhatsApp Agent</div><h1>WhatsApp Agent <span class="livePill" style="position:static;font-size:13px;vertical-align:6px">Live</span></h1>
+      <p style="width:640px">AI-powered multi-language agent to help farmers report crop loss, check policy and track claims — on WhatsApp, Voice and SMS.</p>
+    </section>
+    <section id="waTop"></section>
+    <section class="card" style="left:10px;top:174px;width:calc(29% - 12px);bottom:10px"><h3 id="waConvTitle" style="font-size:18px">Conversations</h3>
+      <label class="srch2" style="left:auto;right:12px;width:38%"><i data-lucide="search"></i><input id="waQ" placeholder="Search..."></label>
+      <div id="waTabs" class="watabs"></div>
+      <div class="sample">Sample conversations · real chats appear here once WhatsApp is connected</div>
+      <ul id="waList"></ul></section>
+    <section class="card" style="left:calc(29% + 6px);top:174px;width:calc(43% - 12px);bottom:10px">
+      <div id="waHead"></div><div id="waBody"></div><div id="waChips"></div>
+      <div class="waIn"><i data-lucide="paperclip"></i><input placeholder="Type a message..."><i data-lucide="smile"></i><span id="waSend"><i data-lucide="mic"></i></span></div></section>
+    <section class="card" style="left:calc(72% + 6px);top:174px;right:10px;height:384px"><h3>Agent Understanding</h3><span class="cns y" style="position:absolute;right:12px;top:10px">✓ AI Extracted</span>
+      <ul id="waUnd"></ul><div class="wsum"><small>Farmer&#39;s Summary</small><p id="waSum"></p></div>
+      <div class="sBtns" id="waSideBtns" style="position:absolute;left:12px;right:12px;bottom:10px;margin:0"><span class="b2" data-a="Human Takeover" style="border-color:#f5a524;color:#ffd23f"><i data-lucide="user"></i>Human Takeover</span><span class="b1" data-a="Send Reminder"><i data-lucide="send"></i>Send Reminder</span></div></section>
+    <section class="card" style="left:calc(72% + 6px);top:568px;right:10px;height:200px"><h3>Channel Breakdown</h3>
+      <div style="position:absolute;left:14px;top:44px;width:140px;height:140px"><canvas id="waDon"></canvas></div><div style="position:absolute;left:14px;top:44px;width:140px;height:140px;display:grid;place-items:center;pointer-events:none;text-align:center"><div><b id="waDonT" style="font-size:22px;display:block"></b><small style="font-size:11px">Conversations</small></div></div>
+      <ul id="waChL" class="alist" style="left:168px;top:60px;font-size:12.5px"></ul></section>
+    <section class="card" style="left:calc(72% + 6px);top:778px;right:10px;bottom:10px"><h3>Languages</h3><ul id="waLang"></ul></section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1061,7 +1126,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1338,6 +1403,55 @@ $('tmInvite').addEventListener('click',()=>$('invDlg').showModal());
 $('invForm').addEventListener('submit',async e=>{e.preventDefault();const f=new FormData(e.target),body=Object.fromEntries(f);
   const r=await fetch('/api/team/member',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const j=await r.json();
   if(!r.ok){$('invErr').textContent=j.detail;return}$('invDlg').close();e.target.reset();toast('Member added (status: Invited)');teamPage()});
+
+// ===== WhatsApp Agent page =====
+// Real chats come from /api/live_chat once Twilio is connected. Until then: SAMPLE conversations built on the demo cases
+// (names, crops, places, application numbers are from the demo data; message wording is sample text, clearly labelled).
+const WAP={mr:{open:['माझ्या पिकाचं खूप नुकसान झालं आहे.','काल झालेल्या गारपिटीमुळे सगळं पिक पडून गेलं.'],en:['My crop has suffered a lot of damage.','Due to yesterday\'s storm, the entire crop has been destroyed.'],prev:['पीक खूप खराब झालं आहे...','Claim cha status kaya aahe?','Document pathavle aahet','Mala policy number pahije','Photo send kela aahe','Pavsa mule nuksan jhala']},
+  hi:{open:['मेरी फसल को बहुत नुकसान हुआ है।','कल की बारिश से पूरी फसल खराब हो गई।'],en:['My crop has been badly damaged.','Yesterday\'s rain ruined the whole crop.'],prev:['Ho, karu shakta','Thank you 🙏','Survey kab hoga?','Policy renew karni hai']},
+  mwr:{open:['म्हारी फसल रो घणो नुकसान होयो है।','काल री आंधी सूं सगळी फसल खराब होगी।'],en:['My crop is heavily damaged.','Yesterday\'s storm spoiled the whole crop.'],prev:['Kal survey wale aaye the','Survey number 123/2','Kitna paisa milega?']}};
+let WA={sel:0,tab:'all',list:[],live:false};
+async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);return}
+  const live=await fetch('/api/live_chat').then(r=>r.json()).catch(()=>null);WA.live=!!live?.case_id;
+  const base=CASES.filter(c=>c.source==='demo'&&c.farmer).slice(0,40);
+  WA.list=base.map((c,i)=>{const P=WAP[c.language]||WAP.hi,t=new Date(new Date(c.created).getTime());return{c,ch:c.channel,lang:c.language,prev:i===0?P.open[0].slice(0,26)+'... (0:24)':P.prev[i%P.prev.length],time:t,unread:[3,1,0,0,0,1,0,4,0,0][i%10]}});
+  const ch=STATS.channels,tot=ch.reduce((a,x)=>a+x[1],0),get=k=>(ch.find(x=>x[0]===k)||[0,0])[1];
+  $('waTop').innerHTML=[['whatsapp','message-circle','#25d366',get('whatsapp'),'WhatsApp'],['voice','phone','#3d8bff',get('voice'),'Voice Calls'],['sms','message-square-text','#a855f7',get('sms'),'SMS'],['all','file-text','#f5a524',tot,'Total Conversations']]
+    .map(([k,ic,c,v,l])=>`<div class="watile" style="--wc:${c}"><span><i data-lucide="${ic}"></i></span><p><b>${v}</b><small>${l}</small></p></div>`).join('');
+  $('waTabs').innerHTML=[['all',`All (${WA.list.length})`],['unread',`Unread (${WA.list.filter(x=>x.unread).length})`],['whatsapp','WhatsApp'],['voice','Voice'],['sms','SMS']].map(([k,l])=>`<span class="pill ${WA.tab===k?'on':''}" data-t="${k}">${l}</span>`).join('');
+  drawConvs();drawChat();drawWaSide();lucide.createIcons()}
+const CHI2={whatsapp:['message-circle','#25d366'],voice:['phone','#3d8bff'],sms:['message-square-text','#a855f7']};
+function drawConvs(){const q=$('waQ').value.toLowerCase(),L=WA.list.map((x,i)=>({...x,i})).filter(x=>(WA.tab==='all'||(WA.tab==='unread'?x.unread:x.ch===WA.tab))&&(!q||x.c.farmer.toLowerCase().includes(q)));
+  $('waConvTitle').textContent=`Conversations (${WA.list.length})`;
+  $('waList').innerHTML=L.map(x=>{const[ic,col]=CHI2[x.ch]||CHI2.whatsapp;return`<li class="${x.i===WA.sel?'on':''}" data-i="${x.i}"><span class="av">${ini(x.c.farmer)}</span><p><b>${esc(x.c.farmer)}</b><small>${esc(x.prev)}</small></p><span class="lang ${x.lang}">${LANG[x.lang]||x.lang}</span><span class="wt">${x.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}${x.unread?`<em>${x.unread}</em>`:''}</span><span class="wci" style="color:${col}"><i data-lucide="${ic}"></i></span></li>`}).join('');lucide.createIcons()}
+async function drawChat(){const x=WA.list[WA.sel];if(!x)return;const c=x.c,P=WAP[x.lang]||WAP.hi;
+  const d=await fetch('/api/cases/'+c.id).then(r=>r.json()).catch(()=>null),f=d?.case?.fields||{},left=(new Date(c.deadline)-(Date.now()+skew))/36e5;
+  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${ini(c.farmer)}</span><div><b>${esc(c.farmer)}</b> <span class="cns y" style="font-size:10.5px">✓ Farmer</span><small>${esc(c.phone.replace(/^x+/,'••••'))} · ${esc([f.village,f.taluka,f.district].filter(Boolean).join(', '))} · <span class="lang">${LANG[x.lang]}</span></small></div><span class="nav2" style="margin-left:auto"><i data-lucide="phone"></i></span><span class="nav2"><i data-lucide="ellipsis"></i></span>`;
+  const t0=new Date(c.created),tm=m=>new Date(t0.getTime()+m*6e4).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  const wave=Array.from({length:34},(_,i)=>`<i style="height:${6+Math.abs(Math.sin(i*1.7))*16}px"></i>`).join('');
+  $('waBody').innerHTML=`<div class="wday">Today</div>
+    <div class="wm in"><span class="av">${ini(c.farmer)}</span><div class="bub"><div class="voice"><span class="play"><i data-lucide="play"></i></span><span class="wave">${wave}</span><small>0:24</small></div>
+      <p class="nat">${P.open[0]}<br>${P.open[1]}</p><div class="tr2"><small>Translation (English)</small>${P.en[0]}<br>${P.en[1]}</div><time>${tm(0)}</time></div></div>
+    <div class="wm out"><div class="bub">I'm sorry to hear about the damage, ${esc(c.farmer.split(' ')[0])} ji. Can you please share some photos of your field?<time>${tm(2)} ✓✓</time></div></div>
+    <div class="wm in"><span class="av">${ini(c.farmer)}</span><div class="bub img"><img src="img/field1.png" alt="Field photo"><time>${tm(4)}</time></div></div>
+    <div class="wm out"><div class="bub">Thank you for the photo. I have found your policy details.<div class="pol"><i data-lucide="shield-check"></i><div><b>Policy found: ${esc(f.application_no||'—')}</b><small>Crop: ${cap(f.crop)} · Survey no: ${esc(f.survey_no||'—')} · Area: ${f.area_acres??'—'} acres</small></div></div>
+      Is this correct?<div class="yn"><span class="y">✓ Ho (Yes)</span><span class="n">✕ Nahi (No)</span></div><time>${tm(6)} ✓✓</time></div></div>`;
+  $('waChips').innerHTML=`<span class="chip r"><i data-lucide="triangle-alert"></i>${left>0?`Deadline: ${Math.floor(left)}h left`:'Window closed'}</span><span class="chip g"><i data-lucide="circle-check"></i>${d?.case?.consent_at||c.status==='verified'?'Consent received':'Consent pending'}</span><span class="chip b"><i data-lucide="plus"></i>Open Case ${c.id}</span>`;
+  drawWaSide(f,c);lucide.createIcons()}
+function drawWaSide(f,c){if(!f)return;const rows=[['flame','Crop',cap(f.crop),98],['cloud-hail','Damage Type',cap(f.peril),92],['calendar','Date of Loss',c?new Date(c.created).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—',96],['map','Survey No.',f.survey_no||'—',88],['sprout','Area Affected',f.area_acres!=null?f.area_acres+' Acres':'—',90]];
+  $('waUnd').innerHTML=rows.map(([ic,k,v,p])=>`<li><span class="cico" style="background:#f5a52433;color:#f5a524;width:26px;height:26px"><i data-lucide="${ic}"></i></span><span style="width:96px">${k}</span><b>${esc(v)}</b><u><i style="width:${p}%"></i></u><em>${p}%</em></li>`).join('');
+  $('waSum').textContent=`${cap(f.crop)} crop damaged due to ${cap(f.peril).toLowerCase()}. ${f.area_acres??'—'} acres affected in ${f.village||f.taluka||'the village'}. Seeking claim support.`;
+  const ch=STATS.channels,t=ch.reduce((a,x)=>a+x[1],0),cc={whatsapp:'#2fe08a',voice:'#3d8bff',sms:'#a855f7'};
+  chart('waDon',{type:'doughnut',data:{labels:ch.map(x=>cap(x[0])),datasets:[{data:ch.map(x=>x[1]),backgroundColor:ch.map(x=>cc[x[0]]||'#94a3b8'),borderWidth:0}]},options:{cutout:'74%',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+  $('waDonT').textContent=t;$('waChL').innerHTML=ch.map(x=>`<li><i style="background:${cc[x[0]]};color:${cc[x[0]]}"></i><span>${{whatsapp:'WhatsApp',voice:'Voice Calls',sms:'SMS'}[x[0]]||x[0]}</span><b>${x[1]}</b><em>(${Math.round(100*x[1]/t)}%)</em></li>`).join('');
+  const lg=STATS.languages,lt=lg.reduce((a,x)=>a+x[1],0),lc={mr:'#2fe08a',hi:'#3d8bff',mwr:'#a855f7'};
+  $('waLang').innerHTML=lg.map(x=>`<li><span style="width:80px">${LANG[x[0]]||x[0]}</span><u><i style="width:${100*x[1]/lt}%;background:${lc[x[0]]||'#94a3b8'}"></i></u><b>${Math.round(100*x[1]/lt)}%</b></li>`).join('');lucide.createIcons()}
+$('waList').addEventListener('click',e=>{const li=e.target.closest('li');if(li){WA.sel=+li.dataset.i;WA.list[WA.sel].unread=0;drawConvs();drawChat()}});
+$('waTabs').addEventListener('click',e=>{const p=e.target.closest('.pill');if(p){WA.tab=p.dataset.t;document.querySelectorAll('#waTabs .pill').forEach(x=>x.classList.toggle('on',x===p));drawConvs()}});
+$('waQ').addEventListener('input',drawConvs);
+$('waSend').addEventListener('click',()=>toast('Sending needs WhatsApp (Twilio) keys — sample chat only'));
+$('waSideBtns').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: works once WhatsApp is connected`)});
+$('waChips').addEventListener('click',e=>{if(e.target.closest('.chip.b')){CP.sel=WA.list[WA.sel].c.id;document.querySelector('.nav li[data-p="cases"]').click()}});
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>
