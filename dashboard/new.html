@@ -693,6 +693,19 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .lgTl div{flex:1;text-align:center;font-size:9.5px;color:#cfdcd8;position:relative;min-width:0}.lgTl div::before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;background:rgba(0,240,168,.3)}
 .lgTl i{position:relative;display:block;width:14px;height:14px;margin:0 auto 4px;border-radius:50%;background:#2fe08a;box-shadow:0 0 6px #2fe08a}.lgTl .bad i{background:#ff3b4e;box-shadow:0 0 6px #ff3b4e}.lgTl .cur i{outline:2px solid #fff}
 .lgTl span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 1px}
+
+/* Reports page */
+.rptabs{position:absolute;left:10px;right:10px;top:172px;height:50px;display:flex;align-items:center;gap:10px}
+.rptabs .tabs .pill{height:42px;padding:0 26px;font-size:14px}
+.rhead{position:absolute;left:14px;right:14px;top:12px;height:70px;display:flex;align-items:center;gap:12px}
+.rhead img{width:50px;height:50px}.rhead>div>b{display:block;font-size:22px}.rhead small{display:block;font-size:12px;color:#d6e2de}
+.rtitle{margin-left:auto;text-align:center}.rtitle b{font-size:22px;display:block}.rgen{margin-left:auto;text-align:right}.rhead .rgen b{font-size:13px}
+.rkpis{position:absolute;left:12px;right:12px;top:92px;height:102px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.rkpis .kpi{height:auto}.rkpis .kpi .tr{font-size:12px}
+.rbox{position:absolute;border-radius:10px;background:rgba(10,30,34,.6);border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.rbox h4{position:absolute;left:10px;top:7px;font-size:13.5px}.rbox h4 small{font-weight:400;color:#cfdcd8}
+#rpTk td,#rpTk th{height:18px}#rpSaved td,#rpRuns td{height:30px}
+@media print{body *{visibility:hidden}#rpDoc,#rpDoc *{visibility:visible}#rpDoc{position:fixed!important;left:0!important;top:0!important;width:100%!important;height:100%!important}}
 </style>
 </head>
 <body>
@@ -999,6 +1012,30 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <div class="pager"><span id="lgInfo"></span><div class="mid" id="lgPg"></div></div></section>
     <section class="card" style="left:calc(62% + 6px);top:246px;right:10px;bottom:10px"><h3 style="font-size:18px">Step Details</h3><span id="lgPos" style="position:absolute;right:12px;top:14px;font-size:12px;color:#cfdcd8"></span><div id="lgDet"></div></section>
   </div>
+  <div class="page" id="pg-reports">
+    <section class="phead"><img src="img/hero.png" alt="">
+      <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Reports</div><h1>Reports</h1>
+      <p>Download insights, track progress and share impact with stakeholders.</p>
+    </section>
+    <section class="rptabs"><div class="tabs" id="rpPer"><span class="pill" data-d="1">Daily</span><span class="pill on" data-d="7">Weekly</span><span class="pill" data-d="30">Monthly</span></div>
+      <span class="pbtn" id="rpPdf" style="position:static;margin-left:auto;background:rgba(150,20,40,.75);border-color:#ff3b4e"><i data-lucide="file-text"></i>Download PDF</span>
+      <span class="pbtn" id="rpCsv" style="position:static;background:rgba(10,70,45,.75);border-color:#2fdc9f"><i data-lucide="sheet"></i>Download CSV</span></section>
+    <section class="card" id="rpDoc" style="left:10px;top:232px;width:calc(66% - 12px);bottom:10px">
+      <div class="rhead"><img src="img/logo.png" alt=""><div><b>72 Ghante</b><small>Har Kisan Ke Saath</small></div><div class="rtitle"><b id="rpTitle">Weekly Report</b><small id="rpRange"></small><small>Faster Intimation. Verified Receipts. No Farmer Missed.</small></div><div class="rgen"><small>Generated on</small><b id="rpGen"></b></div></div>
+      <div class="rkpis" id="rpK"></div>
+      <div class="rbox" style="left:12px;top:204px;width:calc(55% - 18px);height:180px"><h4>Cases Trend <small>(daily)</small></h4><div style="position:absolute;left:6px;right:8px;top:28px;bottom:4px"><canvas id="rpTr"></canvas></div></div>
+      <div class="rbox" style="left:calc(55% + 0px);top:204px;right:12px;height:180px"><h4>Damage Type Distribution</h4><div style="position:absolute;left:10px;top:30px;width:140px;height:140px"><canvas id="rpDm"></canvas></div><ul class="alist" id="rpDmL" style="left:160px;top:34px;font-size:11.5px"></ul></div>
+      <div class="rbox" style="left:12px;top:394px;width:calc(55% - 18px);height:200px"><h4>Cases by Crop</h4><div style="position:absolute;left:6px;right:8px;top:28px;bottom:4px"><canvas id="rpCr"></canvas></div></div>
+      <div class="rbox" style="left:calc(55% + 0px);top:394px;right:12px;height:200px"><h4>Channel Usage</h4><div style="position:absolute;left:10px;top:34px;width:140px;height:140px"><canvas id="rpCh"></canvas></div><ul class="alist" id="rpChL" style="left:160px;top:44px;font-size:11.5px"></ul></div>
+      <div class="rbox" style="left:12px;top:604px;width:calc(55% - 18px);bottom:12px"><h4>Top Talukas by Cases</h4><table id="rpTk" class="xtbl" style="top:26px;font-size:11px"></table></div>
+      <div class="rbox" style="left:calc(55% + 0px);top:604px;right:12px;bottom:12px"><h4>Key Takeaways</h4><ul id="rpKey" class="tkey" style="position:absolute;left:10px;right:10px;top:30px;bottom:auto;background:none;border:0;padding:0"></ul></div>
+    </section>
+    <section class="card" style="left:calc(66% + 6px);top:232px;right:10px;height:330px"><h3>Saved Reports <small id="rpSavedN"></small></h3><table id="rpSaved" class="xtbl" style="top:44px"></table></section>
+    <section class="card" style="left:calc(66% + 6px);top:572px;right:10px;height:250px"><h3>Test-run Report <small>(Simulation)</small></h3><p style="position:absolute;left:14px;top:34px;font-size:11.5px;color:#cfdcd8">Simulation runs are kept separate from the analytics.</p><table id="rpRuns" class="xtbl" style="top:56px"></table></section>
+    <section class="card" style="left:calc(66% + 6px);top:832px;right:10px;bottom:10px"><h3>Schedule Report</h3><span class="tog" id="rpSch" style="position:absolute;right:14px;top:12px"></span>
+      <div style="position:absolute;left:14px;right:14px;top:44px;font-size:12px;display:flex;gap:10px"><label style="flex:1">Frequency<select id="rpFreq" class="lin" style="width:100%;margin-top:4px"><option>Weekly (Every Monday)</option><option>Daily (8 AM)</option><option>Monthly (1st)</option></select></label><label style="flex:1">Email<input id="rpMail" class="lin" style="width:100%;margin-top:4px" value="yuvraj.daga.in@gmail.com"></label></div>
+      <p style="position:absolute;left:14px;right:14px;bottom:10px;font-size:11px;color:#ffd23f">Saved here. Emails start once an email service is connected.</p></section>
+  </div>
   <div class="page" id="pg-cases">
     <section class="phead"><img src="img/hero.png" alt="">
       <div class="crumb"><b>Home</b> &nbsp;›&nbsp; Cases</div><h1>Cases</h1>
@@ -1200,7 +1237,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
@@ -1601,6 +1638,42 @@ $('lgTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r)
 $('lgDet').addEventListener('click',e=>{const d=e.target.closest('[data-id]');if(d){LG.sel=+d.dataset.id;drawLogs()}});
 $('lgRef').addEventListener('click',logsPage);
 $('lgExp').addEventListener('click',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(lfilt(),null,1)],{type:'application/json'}));a.download='72ghante-agent-trace.json';a.click()});
+
+// ===== Reports page (real numbers for the chosen period) =====
+let RPD=7;
+const rpStore={get(){try{return JSON.parse(localStorage.getItem('72g_reports')||'[]')}catch{return[]}},add(r){try{const a=this.get();a.unshift(r);localStorage.setItem('72g_reports',JSON.stringify(a.slice(0,30)))}catch{}}};
+function rpCases(){const now=Date.now()+skew;return CASES.filter(c=>now-new Date(c.created)<=RPD*864e5)}
+async function reportsPage(){if(!CASES.length||!STATS){setTimeout(reportsPage,500);return}const L=rpCases(),now=new Date(Date.now()+skew),from=new Date(now-RPD*864e5),f=d=>d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  $('rpTitle').textContent={1:'Daily',7:'Weekly',30:'Monthly'}[RPD]+' Report';$('rpRange').textContent=`${f(from)} – ${f(now)}`;$('rpGen').textContent=now.toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const ver=L.filter(c=>['acknowledged','closed'].includes(c.status_key)).length,esc2=L.filter(c=>c.status_key==='escalated').length,within=Math.round(100*STATS.within_window/(STATS.kpis.acknowledged.value||1));
+  $('rpK').innerHTML=[['k1','file-text',L.length,'Total Cases'],['k2','clock',within+'%','Filed Within 72h'],['k5','shield-check',ver,'Verified Receipt'],['k4','triangle-alert',esc2,'Escalated Cases']]
+    .map(([k,ic,v,l])=>`<div class="kpi ${k}"><span class="ic" style="top:24px"><i data-lucide="${ic}"></i></span><b style="left:76px;top:22px">${v}</b><span class="lb" style="left:76px;top:52px">${l}</span></div>`).join('');
+  const days=[...Array(Math.max(RPD,2))].map((_,i)=>new Date(now-(Math.max(RPD,2)-1-i)*864e5).toISOString().slice(0,10)),cnt=p=>days.map(d=>L.filter(c=>c.created?.slice(0,10)===d&&p(c)).length);
+  chart('rpTr',{type:'line',data:{labels:days.map(d=>new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'})),datasets:[['Submitted',c=>c.status_key!=='awaiting_info','#2fe08a'],['Verified',c=>['acknowledged','closed'].includes(c.status_key),'#3d8bff'],['Escalated',c=>c.status_key==='escalated','#ff3b4e']].map(([l,p,c])=>({label:l,data:cnt(p),borderColor:c,backgroundColor:c,tension:.35,pointRadius:2}))},options:{maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:8,usePointStyle:true,font:{size:10}}}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8,font:{size:9.5}}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.06)'},ticks:{maxTicksLimit:4}}}}});
+  const grp=k=>{const m={};L.forEach(c=>{const v=c[k]||'other';m[v]=(m[v]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])},PCC=['#2fe08a','#3d8bff','#facc15','#c4b5fd','#f472b6','#fb923c','#60a5fa','#94a3b8'];
+  const dn=(id,lid,rows,lab)=>{const t=rows.reduce((a,r)=>a+r[1],0)||1;chart(id,{type:'doughnut',data:{labels:rows.map(r=>lab(r[0])),datasets:[{data:rows.map(r=>r[1]),backgroundColor:PCC,borderWidth:0}]},options:{cutout:'66%',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+    $(lid).innerHTML=rows.slice(0,6).map((r,i)=>`<li style="height:22px"><i style="background:${PCC[i]};color:${PCC[i]}"></i><span>${esc(lab(r[0]))}</span><em>${Math.round(100*r[1]/t)}%</em></li>`).join('')};
+  dn('rpDm','rpDmL',grp('peril'),cap);dn('rpCh','rpChL',grp('channel'),k=>({whatsapp:'WhatsApp',voice:'Voice Call',sms:'SMS'}[k]||cap(k)));
+  const cr=grp('crop');chart('rpCr',{type:'bar',data:{labels:cr.map(r=>cap(r[0])),datasets:[{data:cr.map(r=>r[1]),backgroundColor:PCC,borderRadius:3}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:9.5}}},y:{grid:{color:'rgba(255,255,255,.06)'},ticks:{maxTicksLimit:4}}}}});
+  const tk={};L.forEach(c=>{const b=tk[c.taluka]=tk[c.taluka]||{d:c.district,n:0,v:0,e:0};b.n++;if(['acknowledged','closed'].includes(c.status_key))b.v++;if(c.status_key==='escalated')b.e++});
+  const tks=Object.entries(tk).sort((a,b)=>b[1].n-a[1].n).slice(0,7);
+  $('rpTk').innerHTML=`<tr><th>#</th><th>Taluka</th><th>District</th><th>Cases</th><th>Verified %</th><th>Escalated</th></tr>`+tks.map(([k,b],i)=>`<tr><td>${i+1}</td><td>${esc(k)}</td><td>${esc(b.d)}</td><td>${b.n}</td><td>${Math.round(100*b.v/b.n)}%</td><td style="color:#ff6b78">${b.e}</td></tr>`).join('');
+  const topCrops=cr.slice(0,3).map(r=>cap(r[0])).join(', '),nash=L.filter(c=>c.district==='Nashik').length;
+  $('rpKey').innerHTML=[`${L.length} cases in this period; ${ver} verified with an insurer receipt.`,`${within}% of verified cases were filed within 72 hours.`,`${topCrops} account for most cases.`,
+    `Nashik district: ${L.length?Math.round(100*nash/L.length):0}% of cases in this period.`,`False "done" cases: ${STATS.recovery.false_done}.`,`Average time to verified receipt: ${Math.round(STATS.kpis.avg_resolution_min.value)} minutes.`].map(x=>`<li><i data-lucide="circle-check"></i>${esc(x)}</li>`).join('');
+  const sv=rpStore.get();$('rpSavedN').textContent=`(${sv.length})`;
+  $('rpSaved').innerHTML=`<tr><th>Date</th><th>Report</th><th>Type</th><th>By</th><th></th></tr>`+(sv.slice(0,8).map(r=>`<tr><td>${new Date(r.at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td><td>${esc(r.name)}</td><td>${r.type}</td><td>Yuvraj Daga</td><td><i data-lucide="download" style="width:15px;height:15px"></i></td></tr>`).join('')||'<tr><td colspan="5" style="color:#cfdcd8">No saved reports yet — download one and it is listed here.</td></tr>');
+  const runs=(await fetch('/api/scenarios').then(r=>r.json()).catch(()=>({runs:[]}))).runs.slice(0,5);
+  $('rpRuns').innerHTML=`<tr><th>Date</th><th>Scenario</th><th>Result</th><th>Duration</th></tr>`+runs.map(r=>`<tr><td>${new Date(r.started).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</td><td>${SN[r.kind]||r.kind}</td><td><span class="st ${r.status==='passed'?'sub':'risk'}">${r.status==='passed'?'Passed':cap(r.status)}</span></td><td>${dur(r.started,r.finished)}</td></tr>`).join('');
+  try{const s=JSON.parse(localStorage.getItem('72g_sched')||'{}');$('rpSch').classList.toggle('on',!!s.on);if(s.freq)$('rpFreq').value=s.freq;if(s.mail)$('rpMail').value=s.mail}catch{}
+  lucide.createIcons()}
+$('rpPer').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;RPD=+p.dataset.d;document.querySelectorAll('#rpPer .pill').forEach(x=>x.classList.toggle('on',x===p));reportsPage()});
+$('rpCsv').addEventListener('click',()=>{const L=rpCases(),h=['id','farmer','crop','peril','taluka','district','channel','status_key','created','deadline'];
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([[h.join(','),...L.map(c=>h.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n')],{type:'text/csv'}));
+  a.download=`72ghante-${$('rpTitle').textContent.toLowerCase().replace(/ /g,'-')}.csv`;a.click();rpStore.add({at:Date.now(),name:$('rpTitle').textContent,type:'CSV'});reportsPage()});
+$('rpPdf').addEventListener('click',()=>{rpStore.add({at:Date.now(),name:$('rpTitle').textContent,type:'PDF'});window.print();reportsPage()});
+const saveSch=()=>{try{localStorage.setItem('72g_sched',JSON.stringify({on:$('rpSch').classList.contains('on'),freq:$('rpFreq').value,mail:$('rpMail').value}))}catch{}};
+$('rpSch').addEventListener('click',()=>{$('rpSch').classList.toggle('on');saveSch();toast('Schedule saved')});$('rpFreq').addEventListener('change',saveSch);$('rpMail').addEventListener('change',saveSch);
 if(location.hash)setTimeout(()=>document.querySelector(`.nav li[data-p="${location.hash.slice(1)}"]`)?.click(),300);
 </script>
 </body>
