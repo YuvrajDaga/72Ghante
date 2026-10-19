@@ -19,8 +19,8 @@ def _env(name: str, default: str = "") -> str:
 
 
 GEMINI_API_KEY = _env("GEMINI_API_KEY")
-GEMINI_MODEL = _env("GEMINI_MODEL", "gemini-3.5-flash")
-GEMINI_FALLBACK_MODELS = [m.strip() for m in _env("GEMINI_FALLBACK_MODELS", "gemini-3.6-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite").split(",") if m.strip()]
+GEMINI_MODEL = _env("GEMINI_MODEL", "gemini-3.6-flash")
+GEMINI_FALLBACK_MODELS = [m.strip() for m in _env("GEMINI_FALLBACK_MODELS", "gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.8-flash").split(",") if m.strip()]
 GEMINI_TTS_MODELS = [m for m in dict.fromkeys([_env("GEMINI_TTS_MODEL"), "gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts"]) if m]
 GEMINI_TTS_VOICE = _env("GEMINI_TTS_VOICE", "Kore")
 
