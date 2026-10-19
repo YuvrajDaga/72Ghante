@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>72 Ghante – Farmer phone</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Farmer's phone: a WhatsApp-style chat with the 72 Ghante agent (real agent + real Gemini; the phone itself is simulated). */
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 30% 20%,#123a2c,#03100b 70%);font-family:Roboto,"Noto Sans Devanagari",sans-serif}
+.phone{width:390px;height:min(844px,96vh);border-radius:46px;background:#0b0b0b;padding:12px;box-shadow:0 0 0 2px #2a2a2a,0 30px 80px rgba(0,0,0,.7),0 0 40px rgba(37,211,102,.15);position:relative}
+.screen{width:100%;height:100%;border-radius:36px;overflow:hidden;display:flex;flex-direction:column;background:#efeae2;position:relative}
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:110px;height:28px;border-radius:16px;background:#0b0b0b;z-index:5}
+.status{height:44px;background:#008069;color:#fff;font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 6px}
+.head{background:#008069;color:#fff;display:flex;align-items:center;gap:10px;padding:6px 10px 10px}
+.head .back{font-size:22px;line-height:1}
+.head .dp{width:40px;height:40px;border-radius:50%;background:#fff url(img/logo.png) center/70% no-repeat;flex:none}
+.head .who{flex:1;min-width:0}.head b{display:block;font-size:16.5px;font-weight:500}.head small{font-size:12.5px;opacity:.9}
+.head .ic{display:flex;gap:20px;font-size:19px;opacity:.95}
+.chat{flex:1;overflow-y:auto;padding:10px 8px 6px;display:flex;flex-direction:column;gap:3px;
+  background:#efeae2 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23d9d2c5' stroke-width='1.2'%3E%3Cpath d='M10 15c5-6 12-6 16 0M50 10l6 6m0-6l-6 6M15 55a6 6 0 1 0 12 0a6 6 0 1 0-12 0M55 50h12v12H55zM35 35l4 8 4-8'/%3E%3C/g%3E%3C/svg%3E")}
+.day{align-self:center;background:#fff;color:#54656f;font-size:12px;padding:5px 12px;border-radius:8px;margin:6px 0;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.enc{align-self:center;max-width:88%;background:#ffeecd;color:#54656f;font-size:12px;text-align:center;padding:6px 10px;border-radius:8px;margin-bottom:6px;line-height:16px}
+.m{max-width:82%;padding:6px 8px 4px 9px;border-radius:8px;font-size:14.2px;line-height:19px;color:#111b21;position:relative;box-shadow:0 1px .5px rgba(0,0,0,.13);word-wrap:break-word;white-space:pre-wrap}
+.m.out{align-self:flex-end;background:#d9fdd3;border-top-right-radius:0}
+.m.in{align-self:flex-start;background:#fff;border-top-left-radius:0}
+.m .t{float:right;font-size:11px;color:#667781;margin:7px 0 -3px 10px;white-space:nowrap}
+.m .t .tk{color:#53bdeb;margin-left:3px}
+.m img{display:block;max-width:240px;border-radius:6px;margin-bottom:3px}
+.m audio{display:block;width:230px;height:34px;margin:2px 0}
+.m .heard{display:block;font-size:12px;color:#667781;margin-top:2px}
+.typing{align-self:flex-start;background:#fff;border-radius:8px;border-top-left-radius:0;padding:10px 14px;display:none;gap:4px;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.typing.on{display:flex}.typing i{width:7px;height:7px;border-radius:50%;background:#8696a0;animation:dot 1.2s infinite}.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.bar{display:flex;align-items:flex-end;gap:6px;padding:6px 6px 14px;background:transparent}
+.box{flex:1;min-height:46px;background:#fff;border-radius:24px;display:flex;align-items:center;gap:8px;padding:0 12px;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.box span{font-size:21px;color:#54656f;cursor:pointer;user-select:none}
+.box input[type=text]{flex:1;border:0;outline:0;font:15px Roboto,"Noto Sans Devanagari",sans-serif;color:#111b21;background:none;min-width:0}
+.send{width:46px;height:46px;border-radius:50%;background:#00a884;color:#fff;display:grid;place-items:center;font-size:20px;cursor:pointer;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.25);border:0}
+.send.rec{background:#e53935;animation:pulse 1s infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(229,57,53,.25)}}
+.recbar{display:none;flex:1;align-items:center;gap:8px;color:#e53935;font-size:14px}.recbar.on{display:flex}
+.reset{position:fixed;top:14px;right:16px;color:#bfe9d6;font:13px Roboto,sans-serif;cursor:pointer;opacity:.8;background:rgba(0,0,0,.3);padding:6px 10px;border-radius:8px}
+.cap{position:fixed;top:14px;left:16px;color:#bfe9d6;font:13px Roboto,sans-serif;opacity:.85}
+</style>
+</head>
+<body>
+<div class="cap">📱 Farmer's phone · real 72 Ghante agent</div>
+<div class="reset" id="reset">↺ New chat</div>
+<div class="phone"><div class="screen">
+  <div class="notch"></div>
+  <div class="status"><span id="clock">9:41</span><span>📶 🔋</span></div>
+  <div class="head"><span class="back">←</span><span class="dp"></span><div class="who"><b>72 Ghante 🌾</b><small id="st">online</small></div><div class="ic"><span>📹</span><span>📞</span><span>⋮</span></div></div>
+  <div class="chat" id="chat"></div>
+  <div class="bar">
+    <div class="box">
+      <span title="Emoji">🙂</span>
+      <input type="text" id="txt" placeholder="Message" autocomplete="off">
+      <div class="recbar" id="recbar">● Recording… <span id="rt">0:00</span></div>
+      <label><span title="Attach">📎</span><input type="file" id="file" accept="image/*,audio/*" hidden></label>
+      <label><span title="Camera">📷</span><input type="file" id="cam" accept="image/*" capture="environment" hidden></label>
+    </div>
+    <button class="send" id="send" title="Record voice note">🎤</button>
+  </div>
+</div></div>
+<script>
+const PHONE=new URLSearchParams(location.search).get('phone')||'+919000000001';
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let busy=false,rec=null,chunks=[],sig='',t0=0;
+const hm=t=>new Date(t).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}).toLowerCase();
+setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',hour12:false}),1000);
+async function draw(force){
+  const o=await fetch('/api/sim/open?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>({}));
+  const all=o.case_id?await fetch('/api/sim/messages?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>[]):[];
+  const msgs=all.filter(m=>m.case_id===o.case_id);
+  const s=JSON.stringify([o.case_id,msgs.length,busy]);if(s===sig&&!force)return;sig=s;
+  // farmer = this phone = right side (green); agent = left side (white)
+  $('chat').innerHTML=`<div class="enc">🔒 Messages are end-to-end encrypted. No one outside of this chat can read them.</div><div class="day">TODAY</div>`+msgs.map(m=>{
+    const mine=m.direction==='in',txt=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');
+    const media=m.media_url?(m.kind==='image'?`<img src="${m.media_url}">`:`<audio controls preload="none" src="${m.media_url}"></audio>`):'';
+    const body=m.kind==='voice'&&mine?`${media}<span class="heard">🎤 ${esc(txt)}</span>`:`${media}${esc(txt)}`;
+    return`<div class="m ${mine?'out':'in'}">${body}<span class="t">${hm(m.ts)}${mine?'<span class="tk">✓✓</span>':''}</span></div>`}).join('')+`<div class="typing ${busy?'on':''}"><i></i><i></i><i></i></div>`;
+  $('st').textContent=busy?'typing…':'online';
+  $('chat').scrollTop=1e9}
+async function post(fd){if(busy)return;busy=true;fd.append('phone',PHONE);draw(true);
+  try{await fetch('/api/sim/send',{method:'POST',body:fd})}catch(e){}
+  busy=false;draw(true)}
+function sendText(){const t=$('txt').value.trim();if(!t)return;$('txt').value='';updBtn();const fd=new FormData();fd.append('text',t);post(fd)}
+function updBtn(){$('send').textContent=$('txt').value.trim()?'➤':(rec?'■':'🎤')}
+$('txt').addEventListener('input',updBtn);
+$('txt').addEventListener('keydown',e=>{if(e.key==='Enter')sendText()});
+$('send').addEventListener('click',async()=>{
+  if($('txt').value.trim())return sendText();
+  if(rec){rec.stop();return}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];rec=new MediaRecorder(st);t0=Date.now();
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{st.getTracks().forEach(t=>t.stop());const b=new Blob(chunks,{type:rec.mimeType||'audio/webm'});rec=null;
+      $('send').classList.remove('rec');$('recbar').classList.remove('on');$('txt').style.display='';updBtn();
+      const fd=new FormData();fd.append('file',b,'voice.webm');fd.append('voice','true');post(fd)};
+    rec.start();$('send').classList.add('rec');$('recbar').classList.add('on');$('txt').style.display='none';updBtn();
+    const tick=setInterval(()=>{if(!rec)return clearInterval(tick);const s=Math.floor((Date.now()-t0)/1000);$('rt').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},250);
+  }catch(e){alert('Please allow the microphone for this page.')}});
+const upload=e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f,f.name);if(f.type.startsWith('audio'))fd.append('voice','true');e.target.value='';post(fd)};
+$('file').addEventListener('change',upload);$('cam').addEventListener('change',upload);
+$('reset').addEventListener('click',async()=>{if(!confirm('Start a new chat? The current case is closed.'))return;await fetch('/api/sim/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:PHONE})});sig='';draw(true)});
+draw(true);setInterval(()=>{if(!busy)draw()},2500);
+</script>
+</body>
+</html>

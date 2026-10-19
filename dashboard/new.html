@@ -706,7 +706,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .nfNone{padding:18px;text-align:center;font-size:13px;color:#c2d0cc}.popF{padding:11px 14px;text-align:center;font-size:12.5px;font-weight:600;color:#3dffa0;cursor:pointer}
 .meTop{display:flex;gap:10px;align-items:center;padding:10px 10px 12px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px}.meTop .av{width:38px;height:38px;border-radius:50%;background:#27c97d;display:grid;place-items:center;font-weight:700}
 .meTop b{display:block;font-size:13.5px}.meTop small{font-size:11.5px;color:#c2d0cc}
-.mi{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;cursor:pointer}.mi:hover{background:rgba(60,220,160,.12)}.mi svg{width:16px;height:16px;color:#3dffa0}.mi.red svg{color:#ff6b78}
+#mePop .mi{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;cursor:pointer}#mePop .mi:hover{background:rgba(60,220,160,.12)}#mePop .mi svg{width:16px;height:16px;color:#3dffa0}#mePop .mi.red svg{color:#ff6b78}
 #lockScr{position:fixed;inset:0;z-index:99998;display:none;place-items:center;background:rgba(2,12,10,.92);backdrop-filter:blur(14px)}#lockScr.on{display:grid}
 #lockScr>div{display:grid;justify-items:center;gap:8px;color:#fff}#lockScr img{width:70px}#lockScr b{font-size:24px}#lockScr small{color:#c2d0cc}
 #lockScr button{margin-top:10px;height:38px;padding:0 26px;border-radius:9px;border:0;font:700 14px "Inter Tight",sans-serif;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);color:#05281a;cursor:pointer}
@@ -744,7 +744,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .wci svg{width:20px;height:20px}
 #waHead{position:absolute;left:12px;right:12px;top:10px;height:50px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:8px}
 #waHead b{font-size:15px}#waHead small{display:block;font-size:11.5px;color:#d6e2de;margin-top:3px}#waHead .av{margin:0}
-#waBody{position:absolute;left:10px;right:10px;top:68px;bottom:96px;overflow:hidden;display:flex;flex-direction:column;gap:9px}
+#waBody{position:absolute;left:10px;right:10px;top:68px;bottom:96px;overflow-y:auto;display:flex;flex-direction:column;gap:9px}
 .wday{align-self:center;font-size:11px;padding:3px 12px;border-radius:12px;background:rgba(255,255,255,.08)}
 .wm{display:flex;gap:8px;align-items:flex-start;animation:rise .4s both}.wm.out{justify-content:flex-end}.wm .av{width:30px;height:30px;font-size:10px;margin:0}
 .bub{max-width:78%;padding:8px 10px;border-radius:10px;font-size:12px;line-height:16px;background:rgba(20,40,44,.95);border:1px solid rgba(255,255,255,.08);position:relative}
@@ -762,6 +762,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .chip.r{color:#ff8a96;border-color:#ff3b4e;background:rgba(120,20,40,.4)}.chip.g{color:#5dffb4;border-color:#2fdc9f;background:rgba(10,70,45,.4)}.chip.b{color:#9cc2ff;border-color:#3d8bff;background:rgba(20,50,120,.4)}
 .waIn{position:absolute;left:12px;right:12px;bottom:10px;height:38px;display:flex;align-items:center;gap:10px;padding:0 0 0 12px;border-radius:10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.3)}
 .waIn input{flex:1;background:none;border:0;outline:0;color:#fff;font:400 12.5px "Inter Tight",sans-serif}.waIn svg{width:17px;height:17px;color:#cfdcd8}
+#waSend.rec{background:#ff3b4e;box-shadow:0 0 14px #ff3b4e;animation:blink 1s infinite}#waSend.rec svg{color:#fff}
+#waList li.liveConv{border:1px solid rgba(37,211,102,.55);background:rgba(37,211,102,.08)}
+#waAttach{cursor:pointer;display:grid}
+#waText{flex:1;background:none;border:0;outline:0;color:#fff;font:400 13px "Inter Tight",sans-serif}
 #waSend{width:38px;height:38px;border-radius:50%;background:#2fdc9f;display:grid;place-items:center;cursor:pointer;box-shadow:0 0 12px #2fdc9f}#waSend svg{color:#05281a}
 #waUnd{position:absolute;left:12px;right:12px;top:44px;list-style:none;font-size:12px}
 #waUnd li{display:flex;align-items:center;gap:8px;height:34px;border-bottom:1px solid rgba(255,255,255,.05)}#waUnd b{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1124,7 +1128,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <ul id="waList"></ul></section>
     <section class="card" style="left:calc(29% + 6px);top:174px;width:calc(43% - 12px);bottom:10px">
       <div id="waHead"></div><div id="waBody"></div><div id="waChips"></div>
-      <div class="waIn"><i data-lucide="paperclip"></i><input placeholder="Type a message..."><i data-lucide="smile"></i><span id="waSend"><i data-lucide="mic"></i></span></div></section>
+      <div class="waIn"><label id="waAttach" title="Send a photo or voice file"><i data-lucide="paperclip"></i><input type="file" id="waFile" accept="image/*,audio/*" hidden></label><input id="waText" placeholder="Type as the farmer… (Hindi / Marathi / Marwadi)"><i data-lucide="smile"></i><span id="waSend" title="Hold-free: click to record, click again to send"><i data-lucide="mic"></i></span></div></section>
     <section class="card" style="left:calc(72% + 6px);top:174px;right:10px;height:384px"><h3>Agent Understanding</h3><span class="cns y" style="position:absolute;right:12px;top:10px">✓ AI Extracted</span>
       <ul id="waUnd"></ul><div class="wsum"><small>Farmer&#39;s Summary</small><p id="waSum"></p></div>
       <div class="sBtns" id="waSideBtns" style="position:absolute;left:12px;right:12px;bottom:10px;margin:0"><span class="b2" data-a="Human Takeover" style="border-color:#f5a524;color:#ffd23f"><i data-lucide="user"></i>Human Takeover</span><span class="b1" data-a="Send Reminder"><i data-lucide="send"></i>Send Reminder</span></div></section>
@@ -1535,8 +1539,10 @@ function LIMG(x){const n=x.name,ok=x.status==='ok';
   if(n==='verified_done')return 7;
   if(n==='sms.send')return ok?4:5;
   return ok?2:5}
-async function drawFeed(c,caseTrace){const t=await fetch('/api/trace?limit=60').then(r=>r.json()).catch(()=>[]);
-  const cid=t.find(x=>x.case_id)?.case_id,steps=t.filter(x=>x.case_id&&x.case_id===cid).reverse().slice(-8);
+async function drawFeed(c,caseTrace){const t=await fetch('/api/trace?limit=300').then(r=>r.json()).catch(()=>[]);
+  const cid=t.find(x=>x.case_id)?.case_id,raw=t.filter(x=>x.case_id&&x.case_id===cid).reverse(),steps=[];
+  raw.forEach(x=>{const p=steps[steps.length-1];if(p&&p.name===x.name&&p.status===x.status){p.n=(p.n||1)+1;p.ts=x.ts}else steps.push({...x})});// same step repeated -> one line "×N"
+  steps.splice(0,Math.max(0,steps.length-8));
   if(!steps.length){// brand-new server: no agent run yet -> show the newest demo cases' real action logs, and offer a live run
     const ds=await Promise.all(CASES.slice(0,4).map(x=>fetch('/api/cases/'+x.id).then(r=>r.json()).catch(()=>null)));
     const ev=ds.filter(Boolean).flatMap(d=>evOf(d.case)).filter(e=>e.ts).sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,7);
@@ -1545,7 +1551,7 @@ async function drawFeed(c,caseTrace){const t=await fetch('/api/trace?limit=60').
       +'<div class="lv"><span class="dot" style="--d:#ffc21a"></span><p><b style="color:#3dffa0;cursor:pointer" id="feedRun">▶ Run a live agent test now</b></p></div>';
     $('feedRun')?.addEventListener('click',()=>document.getElementById('bLive').click());return}
   $('feed').innerHTML=steps.map((x,k)=>{const[ic,col,title,sub,sc]=stepOf(x);
-    return`<div class="lv"><span class="dot" style="--d:${k%2?CB:CG}"></span><img class="ic4" src="img/li${LIMG(x)}.webp" alt=""><time>${new Date(x.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</time><p><b>${esc(title)}</b>${sub?`<small class="${sc||''}">${esc(sub)}</small>`:''}</p></div>`}).join('')
+    return`<div class="lv"><span class="dot" style="--d:${k%2?CB:CG}"></span><img class="ic4" src="img/li${LIMG(x)}.webp" alt=""><time>${new Date(x.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</time><p><b>${esc(title)}${x.n>1?` <em style="font-style:normal;color:#9fb3ae;font-weight:500">×${x.n}</em>`:''}</b>${sub?`<small class="${sc||''}">${esc(sub)}</small>`:''}</p></div>`}).join('')
     ||'<p style="font-size:12px;color:#cfdcd8">Waiting for agent activity…</p>';
   lucide.createIcons()}
 
@@ -1953,7 +1959,8 @@ $('invForm').addEventListener('submit',async e=>{e.preventDefault();const f=new 
 const WAP={mr:{open:['माझ्या पिकाचं खूप नुकसान झालं आहे.','काल झालेल्या गारपिटीमुळे सगळं पिक पडून गेलं.'],en:['My crop has suffered a lot of damage.','Due to yesterday\'s storm, the entire crop has been destroyed.'],prev:['पीक खूप खराब झालं आहे...','Claim cha status kaya aahe?','Document pathavle aahet','Mala policy number pahije','Photo send kela aahe','Pavsa mule nuksan jhala']},
   hi:{open:['मेरी फसल को बहुत नुकसान हुआ है।','कल की बारिश से पूरी फसल खराब हो गई।'],en:['My crop has been badly damaged.','Yesterday\'s rain ruined the whole crop.'],prev:['Ho, karu shakta','Thank you 🙏','Survey kab hoga?','Policy renew karni hai']},
   mwr:{open:['म्हारी फसल रो घणो नुकसान होयो है।','काल री आंधी सूं सगळी फसल खराब होगी।'],en:['My crop is heavily damaged.','Yesterday\'s storm spoiled the whole crop.'],prev:['Kal survey wale aaye the','Survey number 123/2','Kitna paisa milega?']}};
-let WA={sel:0,tab:'all',list:[],live:false};
+let WA={sel:'live',tab:'all',list:[],live:false};
+const LIVE_PHONE='+919000000001';// mock PMFBY farmer Sunita Pawar (Lasalgaon, onion) — real AI, real agent, simulated phone
 async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);return}
   const live=await fetch('/api/live_chat').then(r=>r.json()).catch(()=>null);WA.live=!!live?.case_id;
   const base=CASES.filter(c=>c.source==='demo'&&c.farmer).slice(0,40);
@@ -1966,8 +1973,8 @@ async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);ret
 const CHI2={whatsapp:['message-circle','#25d366'],voice:['phone','#3d8bff'],sms:['message-square-text','#a855f7']};
 function drawConvs(){const q=$('waQ').value.toLowerCase(),L=WA.list.map((x,i)=>({...x,i})).filter(x=>(WA.tab==='all'||(WA.tab==='unread'?x.unread:x.ch===WA.tab))&&(!q||x.c.farmer.toLowerCase().includes(q)));
   $('waConvTitle').textContent=`Conversations (${WA.list.length})`;
-  $('waList').innerHTML=L.map(x=>{const[ic,col]=CHI2[x.ch]||CHI2.whatsapp;return`<li class="${x.i===WA.sel?'on':''}" data-i="${x.i}"><span class="av">${ini(x.c.farmer)}</span><p><b>${esc(x.c.farmer)}</b><small>${esc(x.prev)}</small></p><span class="lang ${x.lang}">${LANG[x.lang]||x.lang}</span><span class="wt">${x.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}${x.unread?`<em>${x.unread}</em>`:''}</span><span class="wci" style="color:${col}"><i data-lucide="${ic}"></i></span></li>`}).join('');lucide.createIcons()}
-async function drawChat(){const x=WA.list[WA.sel];if(!x)return;const c=x.c,P=WAP[x.lang]||WAP.hi;
+  $('waList').innerHTML=`<li class="${WA.sel==='live'?'on':''} liveConv" data-i="live"><span class="av" style="background:linear-gradient(135deg,#25d366,#0f8a5a)">SP</span><p><b>Live demo · Sunita Pawar</b><small>Real AI agent · type or speak</small></p><span class="livePill" style="position:static">Live</span></li>`+L.map(x=>{const[ic,col]=CHI2[x.ch]||CHI2.whatsapp;return`<li class="${x.i===WA.sel?'on':''}" data-i="${x.i}"><span class="av">${ini(x.c.farmer)}</span><p><b>${esc(x.c.farmer)}</b><small>${esc(x.prev)}</small></p><span class="lang ${x.lang}">${LANG[x.lang]||x.lang}</span><span class="wt">${x.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}${x.unread?`<em>${x.unread}</em>`:''}</span><span class="wci" style="color:${col}"><i data-lucide="${ic}"></i></span></li>`}).join('');lucide.createIcons()}
+async function drawChat(){if(WA.sel==='live')return drawLive();const x=WA.list[WA.sel];if(!x)return;const c=x.c,P=WAP[x.lang]||WAP.hi;
   const d=await fetch('/api/cases/'+c.id).then(r=>r.json()).catch(()=>null),f=d?.case?.fields||{},left=(new Date(c.deadline)-(Date.now()+skew))/36e5;
   $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${ini(c.farmer)}</span><div><b>${esc(c.farmer)}</b> <span class="cns y" style="font-size:10.5px">✓ Farmer</span><small>${esc(c.phone.replace(/^x+/,'••••'))} · ${esc([f.village,f.taluka,f.district].filter(Boolean).join(', '))} · <span class="lang">${LANG[x.lang]}</span></small></div><span class="nav2" style="margin-left:auto"><i data-lucide="phone"></i></span><span class="nav2"><i data-lucide="ellipsis"></i></span>`;
   const t0=new Date(c.created),tm=m=>new Date(t0.getTime()+m*6e4).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -1984,17 +1991,53 @@ async function drawChat(){const x=WA.list[WA.sel];if(!x)return;const c=x.c,P=WAP
 function drawWaSide(f,c){if(!f)return;const rows=[['flame','Crop',cap(f.crop),98],['cloud-hail','Damage Type',cap(f.peril),92],['calendar','Date of Loss',c?new Date(c.created).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—',96],['map','Survey No.',f.survey_no||'—',88],['sprout','Area Affected',f.area_acres!=null?f.area_acres+' Acres':'—',90]];
   $('waUnd').innerHTML=rows.map(([ic,k,v,p])=>`<li><span class="cico" style="background:#f5a52433;color:#f5a524;width:26px;height:26px"><i data-lucide="${ic}"></i></span><span style="width:96px">${k}</span><b>${esc(v)}</b><u><i style="width:${p}%"></i></u><em>${p}%</em></li>`).join('');
   $('waSum').textContent=`${cap(f.crop)} crop damaged due to ${cap(f.peril).toLowerCase()}. ${f.area_acres??'—'} acres affected in ${f.village||f.taluka||'the village'}. Seeking claim support.`;
-  const ch=STATS.channels,t=ch.reduce((a,x)=>a+x[1],0),cc={whatsapp:'#2fe08a',voice:'#3d8bff',sms:'#a855f7'};
+  const ch=STATS.channels,t=ch.reduce((a,x)=>a+x[1],0),cc={whatsapp:'#2fe08a',voice:'#3d8bff',sms:'#a855f7',sim:'#f5a524'};
   chart('waDon',{type:'doughnut',data:{labels:ch.map(x=>cap(x[0])),datasets:[{data:ch.map(x=>x[1]),backgroundColor:ch.map(x=>cc[x[0]]||'#94a3b8'),borderWidth:0}]},options:{cutout:'74%',maintainAspectRatio:false,plugins:{legend:{display:false}}}});
-  $('waDonT').textContent=t;$('waChL').innerHTML=ch.map(x=>`<li><i style="background:${cc[x[0]]};color:${cc[x[0]]}"></i><span>${{whatsapp:'WhatsApp',voice:'Voice Calls',sms:'SMS'}[x[0]]||x[0]}</span><b>${x[1]}</b><em>(${Math.round(100*x[1]/t)}%)</em></li>`).join('');
+  $('waDonT').textContent=t;$('waChL').innerHTML=ch.map(x=>`<li><i style="background:${cc[x[0]]};color:${cc[x[0]]}"></i><span>${{whatsapp:'WhatsApp',voice:'Voice Calls',sms:'SMS',sim:'Live demo'}[x[0]]||x[0]}</span><b>${x[1]}</b><em>(${Math.round(100*x[1]/t)}%)</em></li>`).join('');
   const lg=STATS.languages,lt=lg.reduce((a,x)=>a+x[1],0),lc={mr:'#2fe08a',hi:'#3d8bff',mwr:'#a855f7'};
   $('waLang').innerHTML=lg.map(x=>`<li><span style="width:80px">${LANG[x[0]]||x[0]}</span><u><i style="width:${100*x[1]/lt}%;background:${lc[x[0]]||'#94a3b8'}"></i></u><b>${Math.round(100*x[1]/lt)}%</b></li>`).join('');lucide.createIcons()}
-$('waList').addEventListener('click',e=>{const li=e.target.closest('li');if(li){WA.sel=+li.dataset.i;WA.list[WA.sel].unread=0;drawConvs();drawChat()}});
+$('waList').addEventListener('click',e=>{const li=e.target.closest('li');if(!li)return;if(li.dataset.i==='live'){WA.sel='live';drawConvs();drawLive();return}WA.sel=+li.dataset.i;WA.list[WA.sel].unread=0;drawConvs();drawChat()});
 $('waTabs').addEventListener('click',e=>{const p=e.target.closest('.pill');if(p){WA.tab=p.dataset.t;document.querySelectorAll('#waTabs .pill').forEach(x=>x.classList.toggle('on',x===p));drawConvs()}});
 $('waQ').addEventListener('input',drawConvs);
-$('waSend').addEventListener('click',()=>toast('Sending needs WhatsApp (Twilio) keys — sample chat only'));
+// ---- Live demo chat: real agent + real Gemini, the phone is simulated (no Twilio needed)
+let LV={case:null,busy:false,rec:null,chunks:[],sig:''};
+const lvTime=t=>new Date(t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+async function drawLive(force){if(WA.sel!=='live')return;
+  const o=await fetch('/api/sim/open?phone='+encodeURIComponent(LIVE_PHONE)).then(r=>r.json()).catch(()=>({}));LV.case=o.case_id||LV.case;
+  const all=await fetch('/api/sim/messages?phone='+encodeURIComponent(LIVE_PHONE)).then(r=>r.json()).catch(()=>[]);
+  const msgs=o.case_id?all.filter(m=>m.case_id===o.case_id):[];
+  const d=o.case_id?await fetch('/api/cases/'+o.case_id).then(r=>r.json()).catch(()=>null):null,c=d?.case;
+  const sig=JSON.stringify([msgs.length,LV.busy,c?.stage,c?.intimation?.status]);if(sig===LV.sig&&!force)return;LV.sig=sig;
+  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px;background:linear-gradient(135deg,#25d366,#0f8a5a)">SP</span><div><b>Sunita Pawar</b> <span class="cns y" style="font-size:10.5px">● Live · real AI</span><small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
+  const bub=m=>{const media=m.media_url?(m.kind==='image'?`<img src="${m.media_url}" alt="">`:`<audio controls preload="none" src="${m.media_url}" style="width:220px;height:32px;display:block;margin-bottom:4px"></audio>`):'';
+    const txt=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');
+    return m.direction==='in'?`<div class="wm in"><span class="av">SP</span><div class="bub ${m.kind==='image'?'img':''}">${media}${m.kind==='voice'&&txt?`<small style="color:#9fb3ae">🎤 heard:</small><br>`:''}${esc(txt)}<time>${lvTime(m.ts)}</time></div></div>`
+      :`<div class="wm out"><div class="bub">${media}${esc(txt).replace(/\n/g,'<br>')}<time>${lvTime(m.ts)} ✓✓</time></div></div>`};
+  $('waBody').innerHTML=(msgs.length?`<div class="wday">Today</div>`+msgs.map(bub).join(''):`<div class="wday">Live demo · real AI agent</div><div class="wm out"><div class="bub">Type or record a message as the farmer — Hindi, Marathi or Marwadi.<br>For example: <i>काल रात्री गारपीट झाली, कांद्याचं नुकसान झालं</i><time>now</time></div></div>`)
+    +(LV.busy?`<div class="wm out"><div class="bub">⏳ Agent is thinking…</div></div>`:'');
+  $('waBody').scrollTop=1e9;
+  const left=c?.deadline?(new Date(c.deadline)-(Date.now()+skew))/36e5:null;
+  $('waChips').innerHTML=(left!=null&&c.intimation.status!=='verified'?`<span class="chip r"><i data-lucide="alarm-clock"></i>${left>0?`Deadline: ${Math.floor(left)}h left`:'Window closed'}</span>`:'')
+    +(c?.intimation?.status==='verified'?`<span class="chip g"><i data-lucide="shield-check"></i>Verified: ${esc(c.intimation.reference)}</span>`:c?.consent_at?`<span class="chip g"><i data-lucide="circle-check"></i>Consent received</span>`:'')
+    +(c?`<span class="chip b" data-case="${c.id}"><i data-lucide="file-text"></i>Open Case ${c.id}</span>`:'')+`<span class="chip" id="lvReset" style="cursor:pointer"><i data-lucide="rotate-ccw"></i>New chat</span>`;
+  if(c)drawWaSide(c.fields||{},{created:c.created});lucide.createIcons()}
+async function lvSend(fd){if(LV.busy)return;LV.busy=true;fd.append('phone',LIVE_PHONE);drawLive(true);
+  try{const r=await fetch('/api/sim/send',{method:'POST',body:fd});if(!r.ok)toast('Agent error: '+r.status)}catch(e){toast('Could not reach the agent')}
+  LV.busy=false;await drawLive(true);loadAll();}
+$('waText').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.value.trim()){const fd=new FormData();fd.append('text',e.target.value.trim());e.target.value='';WA.sel='live';drawConvs();lvSend(fd)}});
+$('waSend').addEventListener('click',async()=>{const t=$('waText').value.trim();WA.sel='live';
+  if(t){const fd=new FormData();fd.append('text',t);$('waText').value='';drawConvs();return lvSend(fd)}
+  if(LV.rec){LV.rec.stop();return}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});LV.chunks=[];LV.rec=new MediaRecorder(st);
+    LV.rec.ondataavailable=e=>LV.chunks.push(e.data);
+    LV.rec.onstop=()=>{st.getTracks().forEach(t=>t.stop());$('waSend').classList.remove('rec');const b=new Blob(LV.chunks,{type:LV.rec.mimeType||'audio/webm'});LV.rec=null;
+      const fd=new FormData();fd.append('file',b,'voice.webm');fd.append('voice','true');lvSend(fd)};
+    LV.rec.start();$('waSend').classList.add('rec');toast('Recording… click the mic again to send')}catch(e){toast('Microphone not allowed in this browser')}});
+$('waFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f,f.name);if(f.type.startsWith('audio'))fd.append('voice','true');e.target.value='';WA.sel='live';drawConvs();lvSend(fd)});
+$('waChips').addEventListener('click',async e=>{if(e.target.closest('#lvReset')){await fetch('/api/sim/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:LIVE_PHONE})});LV.case=null;toast('New live chat started');drawLive(true)}},true);
+setInterval(()=>{if(WA.sel==='live'&&document.getElementById('pg-chat').classList.contains('on')&&!LV.busy)drawLive()},3000);
 $('waSideBtns').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: works once WhatsApp is connected`)});
-$('waChips').addEventListener('click',e=>{if(e.target.closest('.chip.b')){CP.sel=WA.list[WA.sel].c.id;document.querySelector('.nav li[data-p="cases"]').click()}});
+$('waChips').addEventListener('click',e=>{const ch=e.target.closest('.chip.b');if(ch&&ch.dataset.case)return openCase(ch.dataset.case);if(ch){CP.sel=WA.list[WA.sel].c.id;document.querySelector('.nav li[data-p="cases"]').click()}});
 
 // ===== Maps & Regions page (real cases per taluka, real weather forecast) =====
 let MM={map:null,reg:'mh',heat:null,tile:null,dark:null,rj:null,lay:{cases:true,risk:true,wx:true},wx:[]};

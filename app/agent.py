@@ -615,7 +615,7 @@ async def tick_case(case: dict) -> bool:
     # Tracking: surveyor assignment.
     if case["stage"] == "tracking" and not case.get("surveyor"):
         last = clock.parse(case.get("last_status_check"))
-        if not last or now - last >= timedelta(minutes=1):
+        if not last or now - last >= timedelta(minutes=15):  # surveyor assignment takes hours; check every 15 min, not every minute
             case["last_status_check"] = now.isoformat()
             try:
                 s = await tools.intimation_status(case["id"], case["intimation"]["reference"])

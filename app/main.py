@@ -242,13 +242,48 @@ async def sim_send(phone: str = Form(...), text: str = Form(""), voice: bool = F
     media = []
     if file is not None:
         data = await file.read()
-        media.append((data, file.content_type or "application/octet-stream"))
+        mime = file.content_type or "application/octet-stream"
+        if mime.startswith("audio") and "ogg" not in mime:
+            # Browser recordings are WebM; Gemini and WhatsApp both want OGG/Opus voice notes.
+            data, mime = await asyncio.to_thread(_to_ogg, data), "audio/ogg"
+        media.append((data, mime))
     case = store.open_case_for(phone)
     if case is not None and case.get("sim_voice") != voice:
         case["sim_voice"] = voice
         store.save_case(case)
     case = await agent.handle_inbound(phone, "sim", text or None, media)
     return {"case_id": case["id"]}
+
+
+def _to_ogg(data: bytes) -> bytes:
+    import subprocess
+    import imageio_ffmpeg
+    return subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-loglevel", "error", "-i", "pipe:0", "-c:a", "libopus", "-b:a", "32k", "-f", "ogg", "pipe:1"],
+                          input=data, capture_output=True, check=True).stdout
+
+
+@app.post("/api/sim/reset")
+async def sim_reset(body: dict):
+    """Start a fresh live-demo chat for this phone: closes its open case and clears that farmer's earlier
+    filings in the MOCK portal (so a repeat demo is not treated as a duplicate)."""
+    phone = body.get("phone", "")
+    case = store.open_case_for(phone)
+    if case:
+        app_no = case["fields"].get("application_no")
+        case["stage"] = "closed"
+        agent.log(case, "done", "Live demo chat restarted by admin; this case was closed")
+        store.save_case(case)
+        if app_no:
+            mock_server.state["intimations"] = {k: v for k, v in mock_server.state["intimations"].items() if v.get("application_no") != app_no}
+            mock_server._save()
+    return {"ok": True}
+
+
+@app.get("/api/sim/open")
+async def sim_open(phone: str):
+    """The live demo chat shows only the farmer's current open case."""
+    case = store.open_case_for(phone)
+    return {"case_id": case["id"] if case else None}
 
 
 @app.get("/api/sim/messages")
