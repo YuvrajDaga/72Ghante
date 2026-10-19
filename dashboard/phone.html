@@ -41,14 +41,45 @@ body{min-height:100vh;display:grid;place-items:center;background:radial-gradient
 .send.rec{background:#e53935;animation:pulse 1s infinite}@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(229,57,53,.25)}}
 .recbar{display:none;flex:1;align-items:center;gap:8px;color:#e53935;font-size:14px}.recbar.on{display:flex}
 .reset{position:fixed;top:14px;right:16px;color:#bfe9d6;font:13px Roboto,sans-serif;cursor:pointer;opacity:.8;background:rgba(0,0,0,.3);padding:6px 10px;border-radius:8px}
+.modes{position:fixed;top:56px;left:16px;display:flex;flex-direction:column;gap:8px;z-index:10}
+.modes span{padding:9px 14px;border-radius:10px;background:rgba(255,255,255,.08);color:#d7efe6;font:500 14px Roboto,sans-serif;cursor:pointer;border:1px solid rgba(255,255,255,.12)}
+.modes span.on{background:#00a884;color:#fff;border-color:#00a884}
+/* SMS (Android Messages look) */
+.sms .status,.sms .head{background:#fff;color:#1f1f1f}.sms .head .dp{background:#1a73e8;color:#fff;display:grid;place-items:center;font:500 16px Roboto}
+.sms .head .back{color:#1f1f1f}.sms .chat{background:#fff}.sms .m{box-shadow:none;border-radius:18px;font-size:14.5px}
+.sms .m.out{background:#d3e3fd;border-top-right-radius:18px}.sms .m.in{background:#f1f3f4;border-top-left-radius:18px}
+.sms .m .tk{display:none}.sms .enc,.sms .day{background:none;box-shadow:none;color:#5f6368}
+.sms .box{background:#f1f3f4;box-shadow:none}.sms .send{background:#1a73e8}
+/* Call */
+.callv{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;color:#fff;
+  background:linear-gradient(180deg,#0b3d2e 0%,#06231b 55%,#03140f 100%);padding:70px 20px 40px}
+.call .callv{display:flex}
+.callv .cdp{width:110px;height:110px;border-radius:50%;background:#fff url(img/logo.png) center/70% no-repeat;box-shadow:0 0 0 8px rgba(255,255,255,.06),0 0 40px rgba(37,211,102,.35)}
+.callv h2{margin-top:18px;font:500 24px Roboto}.callv .ctime{margin-top:6px;font-size:15px;color:#bfe9d6}
+.callv .cap2{margin-top:26px;min-height:120px;width:100%;background:rgba(255,255,255,.07);border-radius:16px;padding:14px;font-size:15px;line-height:22px;text-align:center}
+.callv .cap2 small{display:block;color:#8fd3b6;font-size:12px;margin-bottom:6px}
+.callv .talk{margin-top:auto;width:96px;height:96px;border-radius:50%;border:0;background:#00a884;color:#fff;font-size:34px;cursor:pointer;box-shadow:0 0 0 10px rgba(0,168,132,.18)}
+.callv .talk.rec{background:#e53935;box-shadow:0 0 0 10px rgba(229,57,53,.25);animation:pulse 1s infinite}
+.callv .hint{margin-top:10px;font-size:13px;color:#bfe9d6}
+.callv .crow{display:flex;gap:26px;margin-top:22px}.callv .crow span{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:22px;cursor:pointer}
+.callv .crow .end{background:#e53935}
+.callv.idle .ctime,.callv.idle .talk,.callv.idle .hint,.callv.idle .cap2{display:none}
+.callv .start{display:none;margin-top:auto;width:76px;height:76px;border-radius:50%;background:#00a884;font-size:30px;border:0;color:#fff;cursor:pointer}
+.callv.idle .start{display:block}.callv.idle .crow{display:none}
 .cap{position:fixed;top:14px;left:16px;color:#bfe9d6;font:13px Roboto,sans-serif;opacity:.85}
 </style>
 </head>
 <body>
 <div class="cap">📱 Farmer's phone · real 72 Ghante agent</div>
 <div class="reset" id="reset">↺ New chat</div>
+<div class="modes" id="modes"><span data-m="wa" class="on">💬 WhatsApp</span><span data-m="call">📞 Call</span><span data-m="sms">✉️ SMS</span></div>
 <div class="phone"><div class="screen">
   <div class="notch"></div>
+  <div class="callv idle" id="callv"><div class="cdp"></div><h2>72 Ghante Helpline</h2><div class="ctime" id="ctime">00:00</div>
+    <div class="cap2" id="cap2"><small>Agent</small><span id="capt">…</span></div>
+    <button class="start" id="cstart" title="Call">📞</button>
+    <button class="talk" id="talk" title="Tap to speak, tap again to send">🎤</button><div class="hint" id="hint">Tap the mic and speak</div>
+    <div class="crow"><span>🔇</span><span>🔢</span><span>🔊</span><span class="end" id="cend">📞</span></div></div>
   <div class="status"><span id="clock">9:41</span><span>📶 🔋</span></div>
   <div class="head"><span class="back">←</span><span class="dp"></span><div class="who"><b>72 Ghante 🌾</b><small id="st">online</small></div><div class="ic"><span>📹</span><span>📞</span><span>⋮</span></div></div>
   <div class="chat" id="chat"></div>
@@ -103,6 +134,31 @@ $('send').addEventListener('click',async()=>{
 const upload=e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f,f.name);if(f.type.startsWith('audio'))fd.append('voice','true');e.target.value='';post(fd)};
 $('file').addEventListener('change',upload);$('cam').addEventListener('change',upload);
 $('reset').addEventListener('click',async()=>{if(!confirm('Start a new chat? The current case is closed.'))return;await fetch('/api/sim/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:PHONE})});sig='';draw(true)});
+// ---- modes: WhatsApp / SMS share the chat view (different skin); Call is a voice-only screen
+let MODE='wa',lastSpoken='',callT0=0,callTick=null;
+const scr=document.querySelector('.screen');
+function setMode(m){MODE=m;document.querySelectorAll('#modes span').forEach(x=>x.classList.toggle('on',x.dataset.m===m));
+  scr.classList.toggle('sms',m==='sms');scr.classList.toggle('call',m==='call');
+  document.querySelector('.head b').textContent=m==='sms'?'72GHNT':'72 Ghante 🌾';document.querySelector('.head small').textContent=m==='sms'?'SMS · Text message':'online';
+  $('txt').placeholder=m==='sms'?'Text message':'Message';sig='';draw(true)}
+$('modes').addEventListener('click',e=>{const t=e.target.closest('span');if(t)setMode(t.dataset.m)});
+function speak(text){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const v=speechSynthesis.getVoices().find(v=>/hi-IN|mr-IN/.test(v.lang));if(v)u.voice=v;u.lang=v?.lang||'hi-IN';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+async function lastAgent(){const o=await fetch('/api/sim/open?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>({}));if(!o.case_id)return null;
+  const all=await fetch('/api/sim/messages?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>[]);const out=all.filter(m=>m.case_id===o.case_id&&m.direction==='out');return out[out.length-1]||null}
+async function callSay(){const m=await lastAgent();if(!m||String(m.id)===lastSpoken)return;lastSpoken=String(m.id);
+  const t=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');$('capt').textContent=t;
+  if(m.media_url){const a=new Audio(m.media_url);a.play().catch(()=>speak(t))}else speak(t)}
+$('cstart').addEventListener('click',async()=>{$('callv').classList.remove('idle');callT0=Date.now();
+  callTick=setInterval(()=>{const s=Math.floor((Date.now()-callT0)/1000);$('ctime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},500);
+  const m=await lastAgent();lastSpoken=m?String(m.id):'';const hello='नमस्ते, 72 घंटे हेल्पलाइन में आपका स्वागत है। अपनी फसल के नुकसान के बारे में बताइए।';$('capt').textContent=hello;speak(hello)});
+$('cend').addEventListener('click',()=>{$('callv').classList.add('idle');clearInterval(callTick);$('ctime').textContent='00:00';speechSynthesis.cancel()});
+$('talk').addEventListener('click',async()=>{
+  if(rec){rec.stop();return}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];rec=new MediaRecorder(st);
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=async()=>{st.getTracks().forEach(t=>t.stop());const b=new Blob(chunks,{type:rec.mimeType||'audio/webm'});rec=null;$('talk').classList.remove('rec');$('hint').textContent='Agent is listening…';$('capt').textContent='…';
+      const fd=new FormData();fd.append('file',b,'voice.webm');fd.append('voice','true');await post(fd);$('hint').textContent='Tap the mic and speak';callSay()};
+    speechSynthesis.cancel();rec.start();$('talk').classList.add('rec');$('hint').textContent='Speaking… tap again to send'}catch(e){alert('Please allow the microphone for this page.')}});
 draw(true);setInterval(()=>{if(!busy)draw()},2500);
 </script>
 </body>
