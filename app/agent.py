@@ -346,7 +346,12 @@ async def advance(case: dict) -> None:
         return
     if case.get("plots") and not f.get("survey_no"):
         case["pending_question"] = "plot_choice"
-        await say(case, "ask_field", {"question": QUESTIONS["plot_choice"], "options": [f"{p['crop']} (gat {p['survey_no']}, {p['area_acres']} acre)" for p in case["plots"]]})
+        facts = {"question": QUESTIONS["plot_choice"], "options": [f"{p['crop']} (gat {p['survey_no']}, {p['area_acres']} acre)" for p in case["plots"]]}
+        if case.get("uninsured_crop"):
+            facts["important"] = (f"First say clearly: the farmer mentioned {case['uninsured_crop']}, but this PMFBY policy does not cover "
+                                  f"{case['uninsured_crop']}; it covers only {', '.join(p['crop'] for p in case['plots'])}. Then ask which of these insured crops was damaged. "
+                                  f"Do not thank them for reporting the uninsured crop as if it will be filed.")
+        await say(case, "ask_field", facts)
         return
     for name in REQUIRED:
         if not f.get(name):
@@ -412,6 +417,11 @@ def apply_registry(case: dict, farmer: dict) -> None:
         store.add_trace(case["id"], "decision", "conflict_detected", "warn", None, {"field": "survey_no"}, {"farmer": said_survey, "insured": [p["survey_no"] for p in plots]})
         case["fields"].pop("survey_no", None)
         return
+    if said_crop and not any(p["crop"] == said_crop for p in plots):
+        # The crop the farmer named is not on this policy: say so plainly instead of silently picking another plot.
+        case["uninsured_crop"] = said_crop
+        log(case, "retrieved", f"Farmer said {said_crop}, but the policy covers only: {', '.join(p['crop'] for p in plots)}")
+        store.add_trace(case["id"], "decision", "crop_not_on_policy", "warn", None, {"farmer_said": said_crop}, {"insured": [p["crop"] for p in plots]})
     if len(match) == 1 or len(plots) == 1:
         p = match[0] if match else plots[0]
         if said_crop and p["crop"] != said_crop:
