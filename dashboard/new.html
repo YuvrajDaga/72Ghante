@@ -1536,7 +1536,14 @@ function LIMG(x){const n=x.name,ok=x.status==='ok';
   if(n==='sms.send')return ok?4:5;
   return ok?2:5}
 async function drawFeed(c,caseTrace){const t=await fetch('/api/trace?limit=60').then(r=>r.json()).catch(()=>[]);
-  const cid=t[0]?.case_id,steps=t.filter(x=>x.case_id===cid).reverse().slice(-8);
+  const cid=t.find(x=>x.case_id)?.case_id,steps=t.filter(x=>x.case_id&&x.case_id===cid).reverse().slice(-8);
+  if(!steps.length){// brand-new server: no agent run yet -> show the newest demo cases' real action logs, and offer a live run
+    const ds=await Promise.all(CASES.slice(0,4).map(x=>fetch('/api/cases/'+x.id).then(r=>r.json()).catch(()=>null)));
+    const ev=ds.filter(Boolean).flatMap(d=>evOf(d.case)).filter(e=>e.ts).sort((a,b)=>new Date(b.ts)-new Date(a.ts)).slice(0,7);
+    const IC={'mic':0,'send':4,'triangle-alert':5,'shield-check':7};
+    $('feed').innerHTML=ev.map((e,k)=>`<div class="lv"><span class="dot" style="--d:${k%2?CB:CG}"></span><img class="ic4" src="img/li${IC[e.ic]??2}.webp" alt=""><time>${new Date(e.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</time><p><b>${esc(e.title)}</b><small class="${e.bad?'o':e.good?'g':''}">${esc(e.sub)}</small></p></div>`).join('')
+      +'<div class="lv"><span class="dot" style="--d:#ffc21a"></span><p><b style="color:#3dffa0;cursor:pointer" id="feedRun">▶ Run a live agent test now</b></p></div>';
+    $('feedRun')?.addEventListener('click',()=>document.getElementById('bLive').click());return}
   $('feed').innerHTML=steps.map((x,k)=>{const[ic,col,title,sub,sc]=stepOf(x);
     return`<div class="lv"><span class="dot" style="--d:${k%2?CB:CG}"></span><img class="ic4" src="img/li${LIMG(x)}.webp" alt=""><time>${new Date(x.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</time><p><b>${esc(title)}</b>${sub?`<small class="${sc||''}">${esc(sub)}</small>`:''}</p></div>`}).join('')
     ||'<p style="font-size:12px;color:#cfdcd8">Waiting for agent activity…</p>';
