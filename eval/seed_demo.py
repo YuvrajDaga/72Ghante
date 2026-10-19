@@ -98,8 +98,8 @@ def make_case(i: int, now: datetime) -> tuple[dict, str, str]:
     return state, created.isoformat(timespec="seconds"), updated
 
 
-def main() -> None:
-    count = int(sys.argv[1]) if len(sys.argv) > 1 else 842
+def main(count: int | None = None) -> None:
+    count = count or (int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 842)
     store._db.execute("DELETE FROM cases WHERE id LIKE 'CG-2026-%'")
     store._db.commit()
     now = clock.now()

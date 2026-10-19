@@ -1,0 +1,21 @@
+# Render blueprint: New + > Blueprint > pick this repo. Set ADMIN_PASSWORD (and later GEMINI/TWILIO keys) in the dashboard.
+services:
+  - type: web
+    name: 72ghante
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /login
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PMFBY_BASE_URL
+        value: http://127.0.0.1:10000/mock
+      - key: SEED_DEMO_ON_START
+        value: "1"
+      - key: GEMINI_API_KEY
+        sync: false

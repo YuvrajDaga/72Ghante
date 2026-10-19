@@ -5,12 +5,15 @@ Run:  .venv\\Scripts\\python -m uvicorn app.main:app --port 8000
 
 import asyncio
 import contextlib
+import hashlib
+import hmac
+import os
 import json
 from xml.sax.saxutils import escape
 
 import httpx
 from fastapi import BackgroundTasks, FastAPI, File, Form, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from mock_pmfby import server as mock_server
@@ -18,7 +21,7 @@ from mock_pmfby import server as mock_server
 from . import agent, channels, clock, demo_roll, store, tools
 from . import stats as stats_mod
 from .api_cases import router as cases_router
-from .config import ADMIN_KEY, DATA_DIR, MEDIA_DIR, PUBLIC_BASE_URL, ROOT, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VOICE_FROM
+from .config import ADMIN_KEY, ADMIN_PASSWORD, DATA_DIR, MEDIA_DIR, PUBLIC_BASE_URL, ROOT, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VOICE_FROM
 
 TICK_SECONDS = 5
 
@@ -38,6 +41,9 @@ async def _ticker():
 
 @contextlib.asynccontextmanager
 async def lifespan(_: FastAPI):
+    if os.getenv("SEED_DEMO_ON_START") == "1" and not store._db.execute("SELECT 1 FROM cases WHERE id LIKE 'CG-2026-%' LIMIT 1").fetchone():
+        from eval import seed_demo  # first start on a new server: create the 842 demo cases
+        seed_demo.main()
     task = asyncio.create_task(_ticker())
     yield
     task.cancel()
@@ -61,11 +67,56 @@ async def admin_only_from_this_laptop(request, call_next):
     unless they send the ADMIN_KEY from .env (header X-Admin-Key or ?key=)."""
     host = request.client.host if request.client else ""
     outside = bool(request.headers.get("x-forwarded-for")) or host not in ("127.0.0.1", "::1", "localhost", "testclient")
-    if outside and not request.url.path.startswith(PUBLIC_PATHS):
+    path = request.url.path
+    if outside and not path.startswith(PUBLIC_PATHS) and path not in ("/login", "/static/img/logo.png"):
         key = request.headers.get("x-admin-key") or request.query_params.get("key")
-        if not (ADMIN_KEY and key == ADMIN_KEY):
-            return JSONResponse({"error": "Admin area: open it on the demo laptop"}, 403)
+        signed_in = ADMIN_PASSWORD and hmac.compare_digest(request.cookies.get("gh_auth", ""), _auth_token())
+        if not (signed_in or (ADMIN_KEY and key == ADMIN_KEY)):
+            if ADMIN_PASSWORD and request.method == "GET" and (path == "/" or path.endswith(".html")):
+                return RedirectResponse("/login", 303)
+            return JSONResponse({"error": "Sign in first" if ADMIN_PASSWORD else "Admin area: open it on the demo laptop"}, 401 if ADMIN_PASSWORD else 403)
     return await call_next(request)
+
+
+# ---------------------------------------------------------------- password page (public deployment)
+
+def _auth_token() -> str:
+    return hmac.new(ADMIN_PASSWORD.encode(), b"72ghante-admin", hashlib.sha256).hexdigest()
+
+
+LOGIN_HTML = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>72 Ghante – Sign in</title><style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;color:#fff;
+background:radial-gradient(circle at 30% 20%,#0f3b2c,#04120d 70%)}
+form{width:320px;padding:30px 28px;border-radius:16px;background:rgba(8,28,30,.85);border:1px solid rgba(60,220,160,.5);box-shadow:0 0 30px rgba(40,230,160,.2);text-align:center}
+img{width:64px}h1{margin:8px 0 2px;font-size:24px}p{margin:0 0 20px;color:#bcd0ca;font-size:13px}
+input{width:100%;box-sizing:border-box;height:42px;border-radius:9px;border:1px solid rgba(110,170,210,.4);background:#0a1e26;color:#fff;padding:0 12px;font-size:15px}
+button{margin-top:14px;width:100%;height:42px;border:0;border-radius:9px;font-weight:700;font-size:15px;color:#05281a;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);cursor:pointer}
+.e{color:#ff6b78;font-size:13px;min-height:18px;margin-top:10px}</style></head><body>
+<form method="post" action="/login"><img src="/static/img/logo.png" alt=""><h1>72 Ghante</h1><p>Control room · admin sign in</p>
+<input type="password" name="password" placeholder="Password" autofocus required><button>Sign in</button><div class="e">{err}</div></form></body></html>"""
+
+
+@app.get("/login")
+async def login_page():
+    return Response(LOGIN_HTML.replace("{err}", ""), media_type="text/html")
+
+
+@app.post("/login")
+async def login(password: str = Form("")):
+    if not ADMIN_PASSWORD or not hmac.compare_digest(password, ADMIN_PASSWORD):
+        await asyncio.sleep(1.5)  # slows down password guessing
+        return Response(LOGIN_HTML.replace("{err}", "Wrong password"), media_type="text/html", status_code=401)
+    resp = RedirectResponse("/static/new.html#dashboard", 303)
+    resp.set_cookie("gh_auth", _auth_token(), max_age=7 * 86400, httponly=True, secure=True, samesite="lax")
+    return resp
+
+
+@app.get("/logout")
+async def logout():
+    resp = RedirectResponse("/login", 303)
+    resp.delete_cookie("gh_auth")
+    return resp
 
 
 @app.middleware("http")
@@ -334,7 +385,7 @@ async def reset_all():
 @app.get("/")
 async def dashboard():
     # No caching, so a refresh always shows the latest dashboard.
-    return FileResponse(ROOT / "dashboard" / "index.html", headers={"Cache-Control": "no-store"})
+    return RedirectResponse("/static/new.html#dashboard", 307)
 
 
 # ---- Tools & Integrations: live health checks (real measurements, kept in memory) ----

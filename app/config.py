@@ -38,3 +38,5 @@ HANDOFF_WINDOW_HOURS = float(_env("HANDOFF_WINDOW_HOURS", "48"))
 
 # Optional: lets the dashboard be opened from another device through ngrok (send it as X-Admin-Key or ?key=).
 ADMIN_KEY = _env("ADMIN_KEY", "")
+# Public deployment (Render/Railway): the password for the sign-in page. Empty on the laptop = no sign-in.
+ADMIN_PASSWORD = _env("ADMIN_PASSWORD", "")

@@ -696,6 +696,20 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #tmLog li{display:flex;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);animation:slide .4s both}
 .lic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none}.lic svg{width:16px;height:16px;color:#fff}
 #tmLog time{font-size:11.5px;color:#cfdcd8;width:92px;flex:none}#tmLog p{min-width:0}#tmLog b{display:block;font-size:12.5px}#tmLog small{display:block;font-size:11.5px;color:#cfdcd8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pop{position:fixed;z-index:9000;display:none;width:340px;border-radius:12px;background:rgba(8,26,30,.97);border:1px solid rgba(60,220,160,.45);box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 18px rgba(40,230,160,.18);backdrop-filter:blur(10px);color:#fff;font-family:"Inter Tight",sans-serif}
+.pop.on{display:block;animation:popIn .18s ease-out}@keyframes popIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+#notifPop{top:58px;right:150px}#mePop{top:58px;right:12px;width:250px;padding:6px}
+.popH{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08)}.popH b{font-size:14px}.popH span{font-size:12px;color:#3dffa0;cursor:pointer}
+#nfList{max-height:360px;overflow:auto}.nf{display:flex;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}.nf:hover{background:rgba(255,255,255,.05)}
+.nf span{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--c);box-shadow:0 0 8px var(--c)}.nf span svg{width:15px;height:15px;color:#fff}
+.nf p b{display:block;font-size:12.5px;font-weight:600}.nf p small{font-size:11.5px;color:#c2d0cc}.nf.new p b::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#3dffa0;margin-left:6px;vertical-align:1px}
+.nfNone{padding:18px;text-align:center;font-size:13px;color:#c2d0cc}.popF{padding:11px 14px;text-align:center;font-size:12.5px;font-weight:600;color:#3dffa0;cursor:pointer}
+.meTop{display:flex;gap:10px;align-items:center;padding:10px 10px 12px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px}.meTop .av{width:38px;height:38px;border-radius:50%;background:#27c97d;display:grid;place-items:center;font-weight:700}
+.meTop b{display:block;font-size:13.5px}.meTop small{font-size:11.5px;color:#c2d0cc}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;cursor:pointer}.mi:hover{background:rgba(60,220,160,.12)}.mi svg{width:16px;height:16px;color:#3dffa0}.mi.red svg{color:#ff6b78}
+#lockScr{position:fixed;inset:0;z-index:99998;display:none;place-items:center;background:rgba(2,12,10,.92);backdrop-filter:blur(14px)}#lockScr.on{display:grid}
+#lockScr>div{display:grid;justify-items:center;gap:8px;color:#fff}#lockScr img{width:70px}#lockScr b{font-size:24px}#lockScr small{color:#c2d0cc}
+#lockScr button{margin-top:10px;height:38px;padding:0 26px;border-radius:9px;border:0;font:700 14px "Inter Tight",sans-serif;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);color:#05281a;cursor:pointer}
 .gdlg{margin:auto;border:1px solid #2fdc9f;border-radius:14px;background:rgba(8,28,30,.97);color:#fff;padding:20px 22px;width:600px;max-width:94vw;box-shadow:0 0 30px rgba(40,230,160,.25)}
 .gdlg::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(3px)}.gdlg h3{font-size:18px;margin-bottom:12px}
 .gdlg .g2{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.gdlg label{display:block;font-size:12.5px;margin-bottom:8px;color:#d6e4e0}
@@ -1285,7 +1299,7 @@ function countUp(el,to,suf){const from=+(el.dataset.v||0);if(from===to&&el.datas
 const GOOD_UP={total:true,submitted:true,in_progress:false,at_risk:false,acknowledged:true,avg_resolution_min:false};
 const DK={total:'total',submitted:'submitted',in_progress:'in_progress',at_risk:'at_risk',acknowledged:'acknowledged'};
 function loadKpis(){fetch('/api/stats').then(r=>r.json()).then(s=>{
-  const n=s.kpis?.at_risk?.value;document.getElementById('bellN').textContent=n||'';
+  
   document.querySelectorAll('.kpi').forEach(el=>{const k=el.dataset.k,d=s.kpis?.[k];if(!d)return;
     countUp(el.querySelector('b'),Math.round(d.value),k==='avg_resolution_min'?' min':'');
     const t=d.trend||0,good=(t>=0)===GOOD_UP[k],tr=el.querySelector('.tr');
@@ -1644,8 +1658,36 @@ const casesWith=(f={})=>{goPage('cases');setTimeout(()=>{['fSt','fCr','fTa','fCh
 // top bar
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter')casesWith({q:e.target.value.trim()})});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('q').focus()}});
-document.querySelector('.bell').addEventListener('click',()=>casesWith({grp:'at_risk'}));
-document.querySelector('.me').addEventListener('click',()=>goPage('settings'));
+// Notifications dropdown (real alerts from the cases) and admin profile menu
+const pops=document.createElement('div');pops.innerHTML=`<div class="pop" id="notifPop"><div class="popH"><b>Notifications</b><span id="nfMark">Mark all as read</span></div><div id="nfList"></div><div class="popF" id="nfAll">View all at-risk cases →</div></div>
+<div class="pop" id="mePop"><div class="meTop"><div class="av">YD</div><div><b>Yuvraj Daga</b><small>Admin · All districts</small></div></div>
+<div class="mi" data-go="team"><i data-lucide="user-round"></i>My profile &amp; team</div><div class="mi" data-go="settings"><i data-lucide="settings"></i>Settings</div>
+<div class="mi" data-go="tools"><i data-lucide="plug"></i>Integrations status</div><div class="mi" data-go="reports"><i data-lucide="file-bar-chart"></i>Reports</div>
+<div class="mi" id="miHelp"><i data-lucide="circle-help"></i>How 72 Ghante works</div><div class="mi" id="miFull"><i data-lucide="maximize"></i>Full screen (for the projector)</div>
+<div class="mi red" id="miLock"><i data-lucide="lock"></i>Lock screen</div></div>
+<div id="lockScr"><div><img src="img/logo.png" alt=""><b>72 Ghante</b><small>Control room locked</small><button id="unlockBtn">Unlock</button></div></div>`;
+[...pops.children].forEach(x=>document.body.appendChild(x));
+const READ=new Set(JSON.parse(localStorage.getItem('nfRead')||'[]'));
+function notifs(){const now=Date.now()+skew,L=[];
+  CASES.filter(c=>c.status_key==='at_risk').sort((a,b)=>new Date(a.deadline)-new Date(b.deadline)).slice(0,6).forEach(c=>{const[t]=left(c);L.push({id:'r'+c.id,cid:c.id,ic:'triangle-alert',col:'#ff3b4e',t:`${c.farmer} – ${t} left`,s:`${c.id} · ${cap(c.crop)} · ${c.taluka}`})});
+  CASES.filter(c=>c.status_key==='escalated').slice(0,3).forEach(c=>L.push({id:'e'+c.id,cid:c.id,ic:'bell-ring',col:'#f5a524',t:`Escalated: ${c.farmer}`,s:`${c.id} · sent to district office`}));
+  CASES.filter(c=>c.status_key==='submitted').slice(0,2).forEach(c=>L.push({id:'s'+c.id,cid:c.id,ic:'send',col:'#3d8bff',t:`Docket received, verifying: ${c.farmer}`,s:`${c.id} · ${c.docket||''}`}));
+  return L}
+function drawNotifs(){const L=notifs(),n=L.filter(x=>!READ.has(x.id)).length;$('bellN').textContent=n||'';
+  $('nfList').innerHTML=L.map(x=>`<div class="nf ${READ.has(x.id)?'':'new'}" data-cid="${x.cid}" data-id="${x.id}"><span style="--c:${x.col}"><i data-lucide="${x.ic}"></i></span><p><b>${esc(x.t)}</b><small>${esc(x.s)}</small></p></div>`).join('')||'<p class="nfNone">No alerts right now</p>';lucide.createIcons()}
+const closePops=()=>document.querySelectorAll('.pop.on').forEach(p=>p.classList.remove('on'));
+document.querySelector('.bell').addEventListener('click',e=>{e.stopPropagation();const on=$('notifPop').classList.contains('on');closePops();if(!on){drawNotifs();$('notifPop').classList.add('on')}});
+document.querySelector('.me').addEventListener('click',e=>{e.stopPropagation();const on=$('mePop').classList.contains('on');closePops();if(!on){$('mePop').classList.add('on');lucide.createIcons()}});
+document.addEventListener('click',e=>{if(!e.target.closest('.pop'))closePops()});
+$('nfList').addEventListener('click',e=>{const r=e.target.closest('.nf');if(!r)return;READ.add(r.dataset.id);localStorage.setItem('nfRead',JSON.stringify([...READ]));closePops();drawNotifs();openCase(r.dataset.cid)});
+$('nfMark').addEventListener('click',()=>{notifs().forEach(x=>READ.add(x.id));localStorage.setItem('nfRead',JSON.stringify([...READ]));drawNotifs()});
+$('nfAll').addEventListener('click',()=>{closePops();casesWith({grp:'at_risk'})});
+$('mePop').addEventListener('click',e=>{const m=e.target.closest('.mi');if(!m)return;closePops();if(m.dataset.go)return goPage(m.dataset.go);
+  if(m.id==='miHelp')$('howDlg').showModal();
+  if(m.id==='miFull'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.()}
+  if(m.id==='miLock')$('lockScr').classList.add('on')});
+$('unlockBtn').addEventListener('click',()=>$('lockScr').classList.remove('on'));
+setInterval(()=>{if(CASES.length&&!$('notifPop').classList.contains('on'))drawNotifs()},5000);
 $('fDate').addEventListener('click',()=>goPage('reports'));
 document.querySelector('#fReg select').addEventListener('change',e=>{DF.reg=e.target.value;$('trReg').value=DF.reg;if(DF.reg){$('mapReg').value=DF.reg==='Jodhpur'?'rj':'mh';setRegion()}drawRecent();drawTrend()});
 document.querySelector('#fCrop select').addEventListener('change',e=>{DF.crop=e.target.value;drawRecent()});
