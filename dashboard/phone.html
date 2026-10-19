@@ -103,7 +103,7 @@ setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString('en-IN',{ho
 async function draw(force){
   const o=await fetch('/api/sim/open?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>({}));
   const all=o.case_id?await fetch('/api/sim/messages?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>[]):[];
-  const msgs=all.filter(m=>m.case_id===o.case_id);
+  const msgs=all.filter(m=>m.case_id===o.case_id&&m.channel!=='sms');// the SMS copy of a confirmation is not a second chat message
   const s=JSON.stringify([o.case_id,msgs.length,busy]);if(s===sig&&!force)return;sig=s;
   // farmer = this phone = right side (green); agent = left side (white)
   $('chat').innerHTML=`<div class="enc">🔒 Messages are end-to-end encrypted. No one outside of this chat can read them.</div><div class="day">TODAY</div>`+msgs.map(m=>{
@@ -144,7 +144,7 @@ function setMode(m){MODE=m;document.querySelectorAll('#modes span').forEach(x=>x
 $('modes').addEventListener('click',e=>{const t=e.target.closest('span');if(t)setMode(t.dataset.m)});
 function speak(text){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);const v=speechSynthesis.getVoices().find(v=>/hi-IN|mr-IN/.test(v.lang));if(v)u.voice=v;u.lang=v?.lang||'hi-IN';u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
 async function lastAgent(){const o=await fetch('/api/sim/open?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>({}));if(!o.case_id)return null;
-  const all=await fetch('/api/sim/messages?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>[]);const out=all.filter(m=>m.case_id===o.case_id&&m.direction==='out');return out[out.length-1]||null}
+  const all=await fetch('/api/sim/messages?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>[]);const out=all.filter(m=>m.case_id===o.case_id&&m.direction==='out'&&m.channel!=='sms');return out[out.length-1]||null}
 async function callSay(){const m=await lastAgent();if(!m||String(m.id)===lastSpoken)return;lastSpoken=String(m.id);
   const t=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');$('capt').textContent=t;
   if(m.media_url){const a=new Audio(m.media_url);a.play().catch(()=>speak(t))}else speak(t)}
