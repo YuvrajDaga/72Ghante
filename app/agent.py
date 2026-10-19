@@ -123,7 +123,10 @@ async def handle_inbound(phone: str, channel: str, text: str | None, media: list
 
         if heard:
             await handle_text(case, " ".join(heard))
+        replies_before = sum(1 for h in case["history"] if h["role"] == "agent")
         await advance(case)
+        if heard and sum(1 for h in case["history"] if h["role"] == "agent") == replies_before:
+            await say(case, "status_update", status_facts(case))  # never leave a farmer message unanswered
         store.save_case(case)
         return case
 
@@ -136,7 +139,9 @@ async def handle_text(case: dict, text: str) -> None:
         log(case, "pending", "Could not understand the message (AI unavailable); asked farmer to repeat")
         case["_reply_override"] = ("ask_repeat", {"reason": "temporary problem understanding"})
         return
-    case["language"] = case["language"] or nlu.get("language")
+    # "Hi" / "ok" in English letters says nothing about the farmer's language: keep Hindi (default) until a real Indian-language message.
+    if nlu.get("language") and nlu["language"] != "en":
+        case["language"] = case["language"] or nlu["language"]
     case["_nlu"] = nlu
     intent = nlu.get("intent")
 
@@ -351,11 +356,13 @@ async def advance(case: dict) -> None:
     t = tier(case)
     has_photo = any(e["type"] == "damage_photo" and e["accepted"] for e in case["evidence"])
     if not has_photo and not case.get("photo_skipped") and t == "normal" and case["channel"] != "voice":
-        if case["pending_question"] != "photo":
-            case["pending_question"] = "photo"
-            await say(case, "ask_photo", {"ask": "1 or 2 clear photos of the damaged crop in daylight", "optional": "photos help the surveyor; you can also say skip"})
-            return
-        return  # waiting for photo
+        reminder = case["pending_question"] == "photo"
+        case["pending_question"] = "photo"
+        # Every farmer message gets an answer: while waiting for the photo, remind (and offer to skip) instead of staying silent.
+        await say(case, "ask_photo", {"ask": "1 or 2 clear photos of the damaged crop in daylight",
+                                      "optional": "photos help the surveyor; if there is no photo, just say 'no photo' and I will continue",
+                                      **({"reminder": "the farmer wrote something else; gently repeat the request and the skip option"} if reminder else {})})
+        return
 
     # 7. Read-back and explicit consent
     case.setdefault("info_complete_at", clock.now().isoformat(timespec="seconds"))

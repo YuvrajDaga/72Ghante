@@ -48,7 +48,7 @@ async def compose(case: dict, key: str, facts: dict) -> str:
             return f"[{key}] " + json.dumps(facts, ensure_ascii=False, default=str)[:300]
     language = LANGUAGES.get(case.get("language") or "hi", "Hindi")
     farmer_said = next((h["text"] for h in reversed(case.get("history", [])) if h["role"] == "farmer"), "")
-    prompt = (f"Write ONLY in {language}, matching the dialect of the farmer's own words: \"{farmer_said[:300]}\"\n"
+    prompt = (f"Write ONLY in {language}, in its native script (Devanagari for Hindi, Marathi and Marwadi) even if the farmer typed in English letters, matching the dialect of the farmer's own words: \"{farmer_said[:300]}\"\n"
               f"The report is a crop-loss intimation (nuksan ki suchna), never call it a complaint.\n"
               f"Reply type: {key}\nFacts: {json.dumps(facts, ensure_ascii=False, default=str)}")
     try:
