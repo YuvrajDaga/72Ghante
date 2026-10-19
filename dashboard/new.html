@@ -710,6 +710,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #lockScr{position:fixed;inset:0;z-index:99998;display:none;place-items:center;background:rgba(2,12,10,.92);backdrop-filter:blur(14px)}#lockScr.on{display:grid}
 #lockScr>div{display:grid;justify-items:center;gap:8px;color:#fff}#lockScr img{width:70px}#lockScr b{font-size:24px}#lockScr small{color:#c2d0cc}
 #lockScr button{margin-top:10px;height:38px;padding:0 26px;border-radius:9px;border:0;font:700 14px "Inter Tight",sans-serif;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);color:#05281a;cursor:pointer}
+#akpis .kpi,#lgTop .kpi,#evTop .kpi{cursor:default}#akpis .kpi .go,#lgTop .kpi .go,#evTop .kpi .go{display:none}
 .gdlg{margin:auto;border:1px solid #2fdc9f;border-radius:14px;background:rgba(8,28,30,.97);color:#fff;padding:20px 22px;width:600px;max-width:94vw;box-shadow:0 0 30px rgba(40,230,160,.25)}
 .gdlg::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(3px)}.gdlg h3{font-size:18px;margin-bottom:12px}
 .gdlg .g2{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.gdlg label{display:block;font-size:12.5px;margin-bottom:8px;color:#d6e4e0}
@@ -1638,7 +1639,8 @@ $('allTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r
 $('sTabs').addEventListener('click',e=>{const t=e.target.closest('span');if(t){CP.tab=t.dataset.t;document.querySelectorAll('#sTabs span').forEach(x=>x.classList.toggle('on',x===t));sideTab()}});
 const step=dir=>{const L=filtered(),i=L.findIndex(c=>c.id===CP.sel)+dir;if(i>=0&&i<L.length){CP.sel=L[i].id;CP.page=Math.floor(i/CP.size)+1;drawCases()}};
 $('sPrev').addEventListener('click',()=>step(-1));$('sNext').addEventListener('click',()=>step(1));$('sClose').addEventListener('click',()=>showPage('dashboard')||document.querySelector('.nav li[data-p="dashboard"]').click());
-$('sCopy').addEventListener('click',()=>{navigator.clipboard?.writeText($('sId').textContent);toast('Case ID copied')});
+document.querySelector('.sId').addEventListener('click',e=>{if(!e.target.closest('#sCopy'))return;navigator.clipboard?.writeText($('sId').textContent).catch(()=>{});toast('Case ID copied: '+$('sId').textContent)});
+document.querySelector('.sId').style.cursor='pointer';
 $('sBody').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: not connected yet — needs WhatsApp/Twilio keys`)});
 $('cExp').addEventListener('click',()=>{const L=filtered(),h=['id','farmer','phone','crop','peril','taluka','district','channel','status_key','created','deadline'];
   const csv=[h.join(','),...L.map(c=>h.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='72ghante-cases.csv';a.click()});
@@ -1689,8 +1691,8 @@ $('mePop').addEventListener('click',e=>{const m=e.target.closest('.mi');if(!m)re
 $('unlockBtn').addEventListener('click',()=>$('lockScr').classList.remove('on'));
 setInterval(()=>{if(CASES.length&&!$('notifPop').classList.contains('on'))drawNotifs()},5000);
 $('fDate').addEventListener('click',()=>goPage('reports'));
-document.querySelector('#fReg select').addEventListener('change',e=>{DF.reg=e.target.value;$('trReg').value=DF.reg;if(DF.reg){$('mapReg').value=DF.reg==='Jodhpur'?'rj':'mh';setRegion()}drawRecent();drawTrend()});
-document.querySelector('#fCrop select').addEventListener('change',e=>{DF.crop=e.target.value;drawRecent()});
+document.querySelector('#fReg select').addEventListener('change',e=>{DF.reg=e.target.value;if(!$('pg-dashboard').classList.contains('on'))return casesWith({q:DF.reg,crop:DF.crop});$('trReg').value=DF.reg;if(DF.reg){$('mapReg').value=DF.reg==='Jodhpur'?'rj':'mh';setRegion()}drawRecent();drawTrend()});
+document.querySelector('#fCrop select').addEventListener('change',e=>{DF.crop=e.target.value;if(!$('pg-dashboard').classList.contains('on'))return casesWith({q:DF.reg,crop:DF.crop});drawRecent()});
 function fillCropLists(){if(!CASES.length)return setTimeout(fillCropLists,500);const cr=[...new Set(CASES.map(c=>c.crop).filter(Boolean))].sort(),o=cr.map(c=>`<option value="${c}">${cap(c)}</option>`).join('');
   document.querySelector('#fCrop select').insertAdjacentHTML('beforeend',o);$('cropSel').insertAdjacentHTML('beforeend',o);document.querySelector('#ncForm [name=crop]').innerHTML=o}
 fillCropLists();
@@ -1744,7 +1746,7 @@ async function farmersPage(){if(!CASES.length){setTimeout(farmersPage,500);retur
   const now=Date.now()+skew,w=7*864e5,tr=L=>{const a=L.filter(f=>now-new Date(f.last)<=w).length,b=L.filter(f=>{const d=now-new Date(f.last);return d>w&&d<=2*w}).length;return b?Math.round(100*(a-b)/b):0};
   const K=[['Total Farmers',n.toLocaleString('en-IN'),'users','k1',tr(FARM)],['With Active Policy',pol.toLocaleString('en-IN'),'shield-check','k2',tr(FARM.filter(f=>f.application_no))],
     ['Profile Complete',Math.round(100*full/n)+'%','file-check','k3',null],['Consent Given',Math.round(100*con/n)+'%','badge-check','k4b',null]];
-  $('fkpis').innerHTML=K.map(([l,v,ic,k,t])=>`<div class="kpi ${k}"><span class="ic"><i data-lucide="${ic}"></i></span><b>${v}</b><span class="lb">${l}</span><span class="tr up">${t==null?'of all farmers':(t>=0?'↑ ':'↓ ')+Math.abs(t)+'% vs last week'}</span><i class="go" data-lucide="chevron-right"></i></div>`).join('');
+  $('fkpis').innerHTML=K.map(([l,v,ic,k,t],i)=>`<div class="kpi ${k}" data-fk="${i}"><span class="ic"><i data-lucide="${ic}"></i></span><b>${v}</b><span class="lb">${l}</span><span class="tr up">${t==null?'of all farmers':(t>=0?'↑ ':'↓ ')+Math.abs(t)+'% vs last week'}</span><i class="go" data-lucide="chevron-right"></i></div>`).join('');
   lucide.createIcons();drawFarmers()}
 function ffiltered(){const q=$('fq').value.toLowerCase(),ta=$('ffTa').value,cr=$('ffCr').value,po=$('ffPo').value,co=$('ffCo').value,la=$('ffLa').value;
   return FARM.filter(f=>(!ta||f.taluka===ta)&&(!cr||f.crops.includes(cr))&&(!po||(po==='y')===!!f.application_no)&&(!co||(co==='y')===!!f.consent)&&(!la||f.language===la)
@@ -1776,6 +1778,9 @@ async function farmSide(){const f=FARM.find(x=>x.phone===FP.sel);if(!f){$('fBody
 ['ffTa','ffCr','ffPo','ffCo','ffLa'].forEach(id=>$(id).addEventListener('change',()=>{FP.page=1;drawFarmers()}));
 $('fq').addEventListener('input',()=>{FP.page=1;drawFarmers()});
 $('fpBtns').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p>=1){FP.page=p;drawFarmers()}});
+$('fkpis').addEventListener('click',e=>{const k=e.target.closest('.kpi');if(!k)return;['ffTa','ffCr','ffPo','ffCo','ffLa','fq'].forEach(id=>$(id).value='');
+  ({1:()=>$('ffPo').value='y',3:()=>$('ffCo').value='n'}[k.dataset.fk]||(()=>{}))();FP.page=1;drawFarmers();
+  toast(['Showing all farmers','Showing farmers with a policy found','All farmer profiles are complete','Showing farmers whose consent is pending'][k.dataset.fk])});
 $('fpSize').addEventListener('change',e=>{FP.size=+e.target.value;FP.page=1;drawFarmers()});
 $('farmTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r&&e.target.type!=='checkbox'){FP.sel=r.dataset.p;FP.tab='ov';document.querySelectorAll('#farmTbl tr.row').forEach(x=>x.classList.toggle('sel',x===r));farmSide()}});
 $('fTabs').addEventListener('click',e=>{const t=e.target.closest('span');if(t){FP.tab=t.dataset.t;farmSide()}});
@@ -1914,7 +1919,7 @@ $('rPg').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p){FR.page=
 let TM=null;
 const RC={'Admin':['sub','crown'],'District Officer':['prog','user'],'Helpline Staff':['ack','headset'],'Surveyor':['wait','hard-hat']};
 async function teamPage(){TM=await fetch('/api/team').then(r=>r.json()).catch(()=>null);if(!TM)return;
-  const ds=[...new Set(TM.members.map(m=>m.district))];$('tmDist').innerHTML='<option value="">All Districts</option>'+ds.map(d=>`<option>${esc(d)}</option>`).join('');drawTeam();drawPerms();drawLog()}
+  const ds=[...new Set(TM.members.map(m=>m.district))].filter(d=>d&&d!=='All Districts');$('tmDist').innerHTML='<option value="">All Districts</option>'+ds.map(d=>`<option>${esc(d)}</option>`).join('');drawTeam();drawPerms();drawLog()}
 function drawTeam(){const q=$('tmQ').value.toLowerCase(),r=$('tmRole').value,d=$('tmDist').value,L=TM.members.filter(m=>(!r||m.role===r)&&(!d||m.district===d)&&(!q||[m.name,m.role,m.district,m.email].join(' ').toLowerCase().includes(q)));
   $('tmCount').textContent=`(${TM.members.length})`;
   $('tmTbl').innerHTML=`<tr><th>#</th><th>Member</th><th>Role</th><th>District</th><th>Added</th><th>Status</th><th>Actions</th></tr>`+L.map((m,i)=>{const[k,ic]=RC[m.role]||['grey','user'];
@@ -2093,7 +2098,7 @@ $('rpCsv').addEventListener('click',()=>{const L=rpCases(),h=['id','farmer','cro
   a.download=`72ghante-${$('rpTitle').textContent.toLowerCase().replace(/ /g,'-')}.csv`;a.click();rpStore.add({at:Date.now(),name:$('rpTitle').textContent,type:'CSV'});reportsPage()});
 $('rpPdf').addEventListener('click',()=>{rpStore.add({at:Date.now(),name:$('rpTitle').textContent,type:'PDF'});window.print();reportsPage()});
 const saveSch=()=>{try{localStorage.setItem('72g_sched',JSON.stringify({on:$('rpSch').classList.contains('on'),freq:$('rpFreq').value,mail:$('rpMail').value}))}catch{}};
-$('rpSch').addEventListener('click',()=>{$('rpSch').classList.toggle('on');saveSch();toast('Schedule saved')});$('rpFreq').addEventListener('change',saveSch);$('rpMail').addEventListener('change',saveSch);
+$('rpSch').addEventListener('click',()=>{$('rpSch').classList.toggle('on');saveSch();toast('Schedule saved')});$('rpFreq').addEventListener('change',()=>{saveSch();toast('Schedule saved: '+$('rpFreq').value)});$('rpMail').addEventListener('change',saveSch);
 
 // ===== Settings page (saved to /api/prefs; key status is real) =====
 let PF=null,PCT='whatsapp';
