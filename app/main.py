@@ -15,17 +15,21 @@ from fastapi.staticfiles import StaticFiles
 
 from mock_pmfby import server as mock_server
 
-from . import agent, channels, clock, store, tools
+from . import agent, channels, clock, demo_roll, store, tools
 from . import stats as stats_mod
 from .api_cases import router as cases_router
-from .config import MEDIA_DIR, PUBLIC_BASE_URL, ROOT, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VOICE_FROM
+from .config import ADMIN_KEY, DATA_DIR, MEDIA_DIR, PUBLIC_BASE_URL, ROOT, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VOICE_FROM
 
 TICK_SECONDS = 5
 
 
 async def _ticker():
+    n = 0
     while True:
         try:
+            if n % 120 == 0:  # every ~10 minutes: keep demo dates current
+                demo_roll.roll()
+            n += 1
             await agent.tick()
         except Exception as err:  # noqa: BLE001 - the loop must survive any single failure
             store.add_trace(None, "system", "tick_error", "error", None, None, f"{type(err).__name__}: {err}")
@@ -44,6 +48,33 @@ app.include_router(cases_router)
 app.mount("/mock", mock_server.mock)
 app.mount("/media", StaticFiles(directory=MEDIA_DIR), name="media")
 app.mount("/static", StaticFiles(directory=ROOT / "dashboard"), name="static")
+
+
+# Phone webhooks Twilio must reach from the internet; everything else is the admin control room.
+PUBLIC_PATHS = ("/whatsapp", "/sms", "/voice/", "/media/")
+
+
+@app.middleware("http")
+async def admin_only_from_this_laptop(request, call_next):
+    """The control room (dashboard + every /api call, including /api/reset) only answers on this laptop.
+    When the server is opened to the internet (ngrok for WhatsApp), outside visitors get only the webhooks,
+    unless they send the ADMIN_KEY from .env (header X-Admin-Key or ?key=)."""
+    host = request.client.host if request.client else ""
+    outside = bool(request.headers.get("x-forwarded-for")) or host not in ("127.0.0.1", "::1", "localhost", "testclient")
+    if outside and not request.url.path.startswith(PUBLIC_PATHS):
+        key = request.headers.get("x-admin-key") or request.query_params.get("key")
+        if not (ADMIN_KEY and key == ADMIN_KEY):
+            return JSONResponse({"error": "Admin area: open it on the demo laptop"}, 403)
+    return await call_next(request)
+
+
+@app.middleware("http")
+async def no_stale_dashboard(request, call_next):
+    """Browsers must always load the newest dashboard page (old cached copies had dead buttons)."""
+    resp = await call_next(request)
+    if request.url.path.endswith(".html") or request.url.path == "/":
+        resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 def _phone(raw: str) -> str:
@@ -175,6 +206,43 @@ async def sim_messages(phone: str, after: int = 0):
 
 
 # ---------------------------------------------------------------- dashboard APIs
+
+# ---------------------------------------------------------------- map tiles, cached on disk (map works offline at the venue)
+
+TILE_SRC = {
+    "esri": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    "night": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png",
+    "dark": "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+}
+TILE_DIR = DATA_DIR / "tiles"
+
+
+async def fetch_tile(src: str, z: int, x: int, y: int) -> bytes | None:
+    path = TILE_DIR / src / str(z) / str(x) / f"{y}.img"
+    if path.exists():
+        return path.read_bytes()
+    try:
+        async with httpx.AsyncClient(timeout=10, headers={"User-Agent": "72Ghante-dashboard"}) as http:
+            r = await http.get(TILE_SRC[src].format(z=z, x=x, y=y))
+        if r.status_code != 200 or not r.content:
+            return None
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(r.content)
+        return r.content
+    except httpx.HTTPError:
+        return None
+
+
+@app.get("/tiles/{src}/{z}/{x}/{y}")
+async def tile(src: str, z: int, x: int, y: int):
+    if src not in TILE_SRC:
+        return Response(status_code=404)
+    data = await fetch_tile(src, z, x, y)
+    if data is None:
+        return Response(status_code=404)
+    kind = "image/png" if data[1:4] == b"PNG" else "image/jpeg"
+    return Response(data, media_type=kind, headers={"Cache-Control": "public, max-age=604800"})
+
 
 @app.get("/api/stats")
 async def stats():

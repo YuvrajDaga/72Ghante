@@ -8,3 +8,6 @@ eval/results/*.json
 data/*.log
 data/mock_registry.json
 .pytest_cache/
+data/tiles/
+data/demo_anchor.json
+data/*.bak*

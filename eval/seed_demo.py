@@ -7,6 +7,7 @@ post-harvest rain. Every seeded case has "demo": true and is never acted on by t
 Usage:  .venv\\Scripts\\python -m eval.seed_demo [count]      (clears earlier demo cases first)
 """
 
+import json
 import random
 import sys
 from datetime import datetime, timedelta
@@ -104,6 +105,8 @@ def main() -> None:
     now = clock.now()
     for i in range(1, count + 1):
         store.insert_case(*make_case(i, now))
+    from app import demo_roll
+    demo_roll.ANCHOR_FILE.write_text(json.dumps({"anchor": now.isoformat(timespec="seconds")}), encoding="utf-8")  # dates roll forward from here
     print(f"Seeded {count} demo cases")
 
 

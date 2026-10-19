@@ -13,7 +13,9 @@ from datetime import datetime, timedelta
 
 import pytest
 
-os.environ["GHANTE_DB"] = os.path.join(tempfile.mkdtemp(), "test.db")
+_TMP = tempfile.mkdtemp()
+os.environ["GHANTE_DB"] = os.path.join(_TMP, "test.db")
+os.environ["PMFBY_REGISTRY"] = os.path.join(_TMP, "mock_registry.json")  # never touch the real mock registry
 os.environ["PMFBY_BASE_URL"] = "http://127.0.0.1:8765/mock"
 
 import httpx  # noqa: E402

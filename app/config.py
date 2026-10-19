@@ -35,3 +35,6 @@ PMFBY_BASE_URL = _env("PMFBY_BASE_URL", "http://127.0.0.1:8000/mock").rstrip("/"
 
 INTIMATION_WINDOW_HOURS = 72
 HANDOFF_WINDOW_HOURS = float(_env("HANDOFF_WINDOW_HOURS", "48"))
+
+# Optional: lets the dashboard be opened from another device through ngrok (send it as X-Admin-Key or ?key=).
+ADMIN_KEY = _env("ADMIN_KEY", "")

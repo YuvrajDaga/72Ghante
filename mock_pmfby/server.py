@@ -18,13 +18,16 @@ from datetime import timedelta
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 
+import os
+from pathlib import Path
+
 from app import clock
 from app.config import DATA_DIR
 
 mock = FastAPI(title="PMFBY MOCK (synthetic)")
 
 SURVEYOR_DELAY_HOURS = 6
-REGISTRY_FILE = DATA_DIR / "mock_registry.json"
+REGISTRY_FILE = Path(os.getenv("PMFBY_REGISTRY") or DATA_DIR / "mock_registry.json")  # tests use a temp file
 
 # Synthetic farmers. Mobile numbers are fake; the dashboard can link a real demo phone to a profile.
 PROFILES = {

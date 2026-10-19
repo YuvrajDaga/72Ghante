@@ -90,7 +90,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
   background:radial-gradient(260px 60px at 1010px 70px,rgba(255,150,60,.5),transparent 70%),radial-gradient(500px 80px at 300px 70px,rgba(40,110,150,.35),transparent 70%),linear-gradient(180deg,#0b1a26,#0c2026)}
 
 /* ---------- 2. Top bar ---------- */
-.top{position:absolute;left:0;right:0;top:0;height:62px}
+.top{position:absolute;left:0;right:0;top:0;height:62px;z-index:20}
 .top>*{position:absolute;display:flex;align-items:center}
 .glass{background:rgba(10,32,48,.62);border:1px solid rgba(110,170,210,.28);border-radius:8px;backdrop-filter:blur(6px)}
 .srch{left:13px;top:13px;width:422px;height:37px;padding:0 6px 0 12px;gap:10px;font-size:13px;color:#c9d6de}
@@ -696,6 +696,19 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #tmLog li{display:flex;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);animation:slide .4s both}
 .lic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none}.lic svg{width:16px;height:16px;color:#fff}
 #tmLog time{font-size:11.5px;color:#cfdcd8;width:92px;flex:none}#tmLog p{min-width:0}#tmLog b{display:block;font-size:12.5px}#tmLog small{display:block;font-size:11.5px;color:#cfdcd8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gdlg{margin:auto;border:1px solid #2fdc9f;border-radius:14px;background:rgba(8,28,30,.97);color:#fff;padding:20px 22px;width:600px;max-width:94vw;box-shadow:0 0 30px rgba(40,230,160,.25)}
+.gdlg::backdrop{background:rgba(0,0,0,.6);backdrop-filter:blur(3px)}.gdlg h3{font-size:18px;margin-bottom:12px}
+.gdlg .g2{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.gdlg label{display:block;font-size:12.5px;margin-bottom:8px;color:#d6e4e0}
+.gdlg input,.gdlg select{display:block;width:100%;margin-top:4px;height:34px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 13px "Inter Tight",sans-serif;color-scheme:dark}
+.gdlg .err{color:#ff6b78;font-size:12.5px;min-height:16px}.dBtnRow{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
+.dBtnRow button{height:36px;padding:0 16px;border-radius:8px;font:600 13px "Inter Tight",sans-serif;cursor:pointer;color:#fff}
+.dBtnRow .ghost{background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.4)}.dBtnRow .go{background:linear-gradient(180deg,#4ff6bd,#2fdc9f);border:0;color:#05281a}
+.howL{list-style:none;counter-reset:h;display:grid;gap:9px}.howL li{counter-increment:h;display:grid;grid-template-columns:30px 1fr;column-gap:10px;font-size:13px}
+.howL li::before{content:counter(h);grid-row:span 2;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#05281a;background:#2fdc9f;box-shadow:0 0 10px rgba(47,220,159,.6)}
+.howL b{font-size:13.5px}.howL span{color:#cfdcd8;font-size:12.5px}
+#cDetail .dList{list-style:none;position:absolute;left:12px;right:12px;top:74px;bottom:10px;overflow:auto;font-size:12px}
+#cDetail .dList li{padding:6px 2px;border-bottom:1px solid rgba(255,255,255,.07)}#cDetail .dList b{display:block;font-weight:600}#cDetail .dList small{color:#c2d0cc}
+.bell,.me,#fDate,.viewall,.dTabs span,.dBtns .pill,#cDetail .ctl .pill,#recentTbl td.dots{cursor:pointer}
 #invDlg{margin:auto;border:1px solid #2fdc9f;border-radius:12px;background:#0a1f20;color:#fff;padding:20px;width:380px}
 #invDlg::backdrop{background:rgba(0,0,0,.6)}#invDlg h3{margin-bottom:12px}
 #invDlg label{display:block;font-size:12.5px;margin-bottom:10px}#invDlg input,#invDlg select{display:block;width:100%;margin-top:4px;height:34px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 13px "Inter Tight",sans-serif}
@@ -861,8 +874,8 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 <main class="main">
   <header class="top">
     <label class="srch glass"><i data-lucide="search"></i><input id="q" placeholder="Search by Case ID, Farmer, Mobile No., District…"><kbd>⌘ K</kbd></label>
-    <div class="flt glass" id="fReg"><select><option>All Regions</option><option>Rajasthan</option><option>Maharashtra</option></select><i data-lucide="chevron-down"></i></div>
-    <div class="flt glass" id="fCrop"><select><option>All Crops</option><option>Wheat</option><option>Paddy</option><option>Cotton</option><option>Soybean</option><option>Maize</option></select><i data-lucide="chevron-down"></i></div>
+    <div class="flt glass" id="fReg"><select><option value="">All Regions</option><option value="Jodhpur">Rajasthan</option><option value="Nashik">Maharashtra</option></select><i data-lucide="chevron-down"></i></div>
+    <div class="flt glass" id="fCrop"><select><option value="">All Crops</option></select><i data-lucide="chevron-down"></i></div>
     <div class="flt glass" id="fDate"><span id="dateTxt"></span><i data-lucide="calendar-days"></i></div>
     <div class="wx glass"><i class="sun" data-lucide="sun"></i><div><b id="wxT">—°C</b><span id="wxP">Jodhpur, RJ</span></div></div>
     <div class="bell"><i data-lucide="bell"></i><em id="bellN"></em></div>
@@ -915,12 +928,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
   <!-- 5. Charts row -->
   <section class="card" id="cTrend"><h3>Case Trends &amp; Forecast</h3>
     <div class="ctl" style="left:196px"><div class="tabs" id="trTabs"><span class="pill on" data-r="d">Daily</span><span class="pill" data-r="w">Weekly</span><span class="pill" data-r="m">Monthly</span></div></div>
-    <div class="ctl" style="right:12px"><select class="pill" id="trReg"><option value="">All Regions</option><option>Nashik</option><option>Jodhpur</option></select></div>
+    <div class="ctl" style="right:12px"><select class="pill" id="trReg"><option value="">All Regions</option><option value="Jodhpur">Rajasthan</option><option value="Nashik">Maharashtra</option></select></div>
     <div id="trendBox"><canvas id="trend"></canvas></div>
     <div class="leg nleg"><span><i style="--c:#1fe89a"><svg data-lucide="layers"></svg></i>Total Cases</span><span><i style="--c:#2f8bff"><svg data-lucide="file-text"></svg></i>Submitted</span><span><i style="--c:#ffc21a"><svg data-lucide="clock"></svg></i>In Progress</span><span><i style="--c:#b14dff"><svg data-lucide="badge-check"></svg></i>Acknowledged</span><span id="fcToggle" style="cursor:pointer" title="Show / hide 7-day forecast"><i class="fc"><svg data-lucide="cloud-sun"></svg></i>Forecast (7d)</span></div>
   </section>
   <section class="card" id="cCrop"><h3>Crop-wise Distribution</h3>
-    <div class="ctl" style="right:12px"><span class="pill">All Crops <i data-lucide="chevron-down"></i></span></div>
+    <div class="ctl" style="right:12px"><select class="pill" id="cropSel"><option value="">All Crops</option></select></div>
     <img id="cropPlants" src="img/donut_plants.png" alt="">
     <div id="donutBox"><canvas id="donut"></canvas></div><div id="donutMid"><div><b id="dTotal">—</b><span>Total Cases</span></div></div>
     <ul id="cropList"></ul><div id="cropTiles"></div>
@@ -1060,6 +1073,23 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <p style="position:absolute;left:14px;top:40px;font-size:12.5px;color:#cfdcd8">Click a switch to change what each role can do. Saved instantly.</p>
       <table id="pmTbl"></table></section>
     <section class="card" style="left:calc(59% + 6px);top:624px;right:10px;bottom:10px"><h3 style="font-size:20px">Activity Log</h3><ul id="tmLog"></ul></section>
+    <dialog id="ncDlg" class="gdlg"><form id="ncForm"><h3>New Case</h3>
+      <div class="g2"><label>Farmer name<input name="farmer_name" required></label><label>Mobile number<input name="phone" required inputmode="numeric" placeholder="10 digits"></label>
+      <label>District<select name="district"><option>Nashik</option><option>Jodhpur</option></select></label><label>Taluka<input name="taluka" required></label>
+      <label>Village<input name="village"></label><label>Crop<select name="crop"></select></label>
+      <label>Damage type<select name="peril"><option value="hailstorm">Hailstorm</option><option value="unseasonal_rain">Unseasonal rain</option><option value="inundation">Inundation (water logging)</option><option value="cyclonic_rain">Cyclonic rain</option><option value="cloudburst">Cloudburst</option><option value="landslide">Landslide</option><option value="natural_fire">Natural fire</option><option value="lightning_fire">Lightning fire</option></select></label>
+      <label>When did the damage happen?<input name="event_time" type="datetime-local" required></label>
+      <label>Application no. (PMFBY)<input name="application_no"></label><label>Survey / Khasra no.<input name="survey_no"></label>
+      <label>Language<select name="language"><option value="mr">Marathi</option><option value="hi">Hindi</option><option value="mwr">Marwadi</option></select></label><label>Area (acres)<input name="area_acres" inputmode="decimal"></label></div>
+      <p class="err" id="ncErr"></p><div class="dBtnRow"><button type="button" value="cancel" class="ghost">Cancel</button><button class="go">Create case &amp; start 72h clock</button></div></form></dialog>
+    <dialog id="howDlg" class="gdlg"><h3>How 72 Ghante works</h3><ol class="howL">
+      <li><b>Farmer reports</b><span>Sends a voice note or message on WhatsApp, or calls, in Marathi, Hindi or Marwadi.</span></li>
+      <li><b>72-hour clock starts</b><span>The agent reads when the damage happened and starts the PMFBY 72-hour countdown.</span></li>
+      <li><b>Details + photo check</b><span>Finds the policy from the phone number or a photo of the slip, asks only what is missing, checks crop photos.</span></li>
+      <li><b>Farmer says yes</b><span>Reads everything back and files only after the farmer confirms.</span></li>
+      <li><b>Files and verifies</b><span>Picks the best of 6 official routes, files, and checks the docket really exists before saying "done".</span></li>
+      <li><b>Never gives up</b><span>If the portal fails it retries, switches route, and escalates to the district office before time runs out.</span></li></ol>
+      <div class="dBtnRow"><button class="ghost" id="howClose">Close</button><button class="go" id="howLive">Watch it live</button></div></dialog>
     <dialog id="invDlg"><form id="invForm"><h3>Invite Member</h3>
       <label>Name<input name="name" required></label><label>Email<input name="email" type="email"></label>
       <label>Role<select name="role"><option>District Officer</option><option>Helpline Staff</option><option>Surveyor</option><option>Admin</option></select></label>
@@ -1295,7 +1325,12 @@ let STATS=null,CASES=[],SEL=null,TR='d';
 // --- 5a. Trend + forecast
 // Case Trends (design): 3 neon areas — Total (green), Acknowledged (purple), At Risk (orange); tooltip lists all 5 numbers for the day
 let FC_ON=false;
-function drawTrend(){if(!STATS)return;let all=STATS.daily.slice();if(all.length&&!all[all.length-1].total)all.pop();// today not started yet
+// Case Trends for one region, counted from the real cases (same rules as the server's daily stats)
+function regionDaily(reg){const out={},now=new Date(Date.now()+skew);for(let i=17;i>=0;i--){const d=new Date(now-i*864e5).toLocaleDateString('en-CA');out[d]={date:d,total:0,submitted:0,in_progress:0,at_risk:0,acknowledged:0}}
+  CASES.filter(c=>c.district===reg&&!c.scenario).forEach(c=>{const r=out[new Date(c.created).toLocaleDateString('en-CA')];if(!r)return;r.total++;const ack=c.status==='verified';
+    if(ack)r.acknowledged++;if(ack||['submitted_unverified','pending'].includes(c.status))r.submitted++;if(['awaiting_info','in_progress','pending','at_risk'].includes(c.status_key))r.in_progress++;if(['at_risk','escalated'].includes(c.status_key))r.at_risk++});
+  return Object.values(out)}
+function drawTrend(){if(!STATS)return;const rg=$('trReg').value;let all=rg?regionDaily(rg):STATS.daily.slice();if(all.length&&!all[all.length-1].total)all.pop();// today not started yet
   const fc=STATS.forecast||[],fmt=d=>new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short'});let rows;
   if(TR==='d')rows=all.slice(-15).map(d=>({...d,label:fmt(d.date),full:new Date(d.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}));
   else{const g={};all.forEach(d=>{const t=new Date(d.date),k=TR==='w'?`Wk ${Math.ceil(t.getDate()/7)} ${t.toLocaleDateString('en-IN',{month:'short'})}`:t.toLocaleDateString('en-IN',{month:'short',year:'numeric'});
@@ -1351,8 +1386,8 @@ function drawCrops(){const cr=STATS.crops,tot=cr.reduce((a,c)=>a+c.n,0),top=cr.s
 // --- 5c. Map (Leaflet, real taluka counts)
 const PL={Niphad:[20.08,74.11],Lasalgaon:[20.15,74.23],Dindori:[20.2,73.83],Mohadi:[20.17,73.86],Satana:[20.6,74.2],Malegaon:[20.55,74.53],Chandwad:[20.33,74.25],Sinnar:[19.85,74],Yeola:[20.04,74.49],Osian:[26.72,72.92],Tinwari:[26.53,72.96],Bilara:[26.18,73.7],Phalodi:[27.13,72.36],Bhopalgarh:[26.65,73.43]};
 let MAP,HEAT,TILE,LIGHTS,SAT=true;const STB={};
-const ESRI='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-const NIGHT='https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png';
+const ESRI='/tiles/esri/{z}/{x}/{y}';
+const NIGHT='/tiles/night/{z}/{x}/{y}';
 // Layers (bottom→top): bright satellite · dark mask outside the states · green tint inside (hard-light keeps the terrain texture) ·
 // golden night lights (screen) · white district lines + cyan neon edge · hotspots and names
 function initMap(){if(/[?&]reg=mh/.test(location.search))$('mapReg').value='mh';MAP=L.map('mapBox',{zoomControl:true,attributionControl:false,scrollWheelZoom:true,zoomSnap:.25,minZoom:4,maxZoom:12}).setView([24,75],5);
@@ -1418,7 +1453,9 @@ const face=n=>{const f=String(n||'').split(' ')[0],p=FEM.has(f)?FACES_F:FACES_M;
 const isLive=c=>!['acknowledged','closed','area_based'].includes(c.status_key);
 // No search: newest real case of each status, in the design's order (one row per status)
 const RORDER=['submitted','in_progress','awaiting_info','acknowledged','at_risk','pending','escalated'];
-function drawRecent(){const q=$('rq').value.toLowerCase();let list=CASES.filter(c=>!q||[c.id,c.farmer,c.crop,c.taluka,c.district].join(' ').toLowerCase().includes(q))
+const DF={reg:'',crop:''};// top-bar Region / Crop filters
+function drawRecent(){const q=$('rq').value.toLowerCase();let list=CASES.filter(c=>(!DF.reg||c.district===DF.reg)&&(!DF.crop||c.crop===DF.crop))
+    .filter(c=>!q||[c.id,c.farmer,c.crop,c.taluka,c.district].join(' ').toLowerCase().includes(q))
     .sort((a,b)=>(isLive(b)-isLive(a))||(new Date(b.created)-new Date(a.created)));
   // design rows: faces fa0 man, fa1 woman, fa2 man, fa3 man, fa0 man — pick a real case of that status whose farmer fits the face
   const ROWF=[4,5,6,7,0],isF=c=>FEM.has(String(c.farmer).split(' ')[0]);let rowFace=null;
@@ -1432,7 +1469,7 @@ $('recentTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');i
 $('rq').addEventListener('input',drawRecent);
 
 // --- 6b. Case details
-async function loadDetail(){if(!SEL)return;const d=await fetch('/api/cases/'+SEL).then(r=>r.ok?r.json():null).catch(()=>null);if(!d)return;const c=d.case,f=c.fields||{},sum=CASES.find(x=>x.id===SEL)||{};
+async function loadDetail(){if(!SEL)return;document.querySelectorAll("#cDetail .dTabs span").forEach((x,i)=>x.classList.toggle("on",i===0));const d=await fetch('/api/cases/'+SEL).then(r=>r.ok?r.json():null).catch(()=>null);if(!d)return;const c=d.case,f=c.fields||{},sum=CASES.find(x=>x.id===SEL)||{};
   $('dTitle').innerHTML=`Case Details – ${esc(c.id)} ${badge(sum)}`;
   const done=c.intimation.status==='verified',h=c.deadline?(new Date(c.deadline)-(Date.now()+skew))/36e5:null,[t]=left(sum);
   const ms=d.milestones||[],at=k=>ms.find(m=>m.key===k),failed=(c.attempts||[]).some(a=>a.result==='failed');
@@ -1440,7 +1477,7 @@ async function loadDetail(){if(!SEL)return;const d=await fetch('/api/cases/'+SEL
   const step=(l,ok,ts,bad)=>`<div class="${ok?'ok':bad?'fail':'wait'}"><i>${ok?'✓':bad?'!':''}</i>${l}<small>${ok?fmt(ts):'Pending'}</small></div>`;
   $('dBody').innerHTML=`<div class="dRow"><img class="fa big" src="${FACEOF[c.id]||face(c.farmer_name)}" alt=""><div class="who"><b>${esc(c.farmer_name||'—')}</b><small>${esc(c.phone||'')} · ${esc([...new Set([f.taluka,f.district].filter(Boolean))].join(', '))}</small></div>
       <div class="kv">Crop<b>${cap(f.crop)}</b></div><div class="kv">Damage Type<b>${cap(f.peril)}</b></div><div class="kv">Application No.<b>${esc(f.application_no||'—')}</b></div></div>
-    <div class="dTime ${done?'ok':''}"><i data-lucide="${done?'shield-check':'alarm-clock'}"></i><div><small>${done?'Verified receipt':'Time remaining'} · Event ${fmt(c.event_time)||'—'}</small><b>${done?esc(c.intimation.reference||'Verified'):(h>0?t+' remaining':'Window closed')}</b></div>${!done&&h!=null&&h<12?'<span class="pri">▲ High Priority</span>':''}</div>
+    <div class="dTime ${done?'ok':''}"><i data-lucide="${done?'shield-check':'alarm-clock'}"></i><div><small>${done?'Verified receipt':'Time remaining'} · Event ${fmt(c.event_time)||'—'}</small><b id="dLeft" data-dl="${done?'':(c.deadline||'')}">${done?esc(c.intimation.reference||'Verified'):(h>0?t+' remaining':'Window closed')}</b></div>${!done&&h!=null&&h<12?'<span class="pri">▲ High Priority</span>':''}</div>
     <div class="steps">${step('Report Received',!!at('received')?.at,at('received')?.at)}${step('Info Extracted',at('extracted')?.done,at('extracted')?.at||c.created)}${step('Consent',!!at('consent')?.at||done,at('consent')?.at)}${step('Submission',!!at('confirmed')?.at,at('confirmed')?.at,failed&&!at('confirmed')?.at)}${step('Verification',done,c.intimation.verified_at)}</div>
     <div class="dBtns"><span class="pill"><i data-lucide="user"></i>Send Reminder</span><span class="pill"><i data-lucide="phone"></i>Call Farmer</span><span class="pill g">Open Full Case <i data-lucide="arrow-right"></i></span></div>`;
   lucide.createIcons();drawFeed(c,d.trace||[])}
@@ -1589,9 +1626,69 @@ const step=dir=>{const L=filtered(),i=L.findIndex(c=>c.id===CP.sel)+dir;if(i>=0&
 $('sPrev').addEventListener('click',()=>step(-1));$('sNext').addEventListener('click',()=>step(1));$('sClose').addEventListener('click',()=>showPage('dashboard')||document.querySelector('.nav li[data-p="dashboard"]').click());
 $('sCopy').addEventListener('click',()=>{navigator.clipboard?.writeText($('sId').textContent);toast('Case ID copied')});
 $('sBody').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: not connected yet — needs WhatsApp/Twilio keys`)});
-$('cNew').addEventListener('click',()=>toast('New Case form comes next'));
 $('cExp').addEventListener('click',()=>{const L=filtered(),h=['id','farmer','phone','crop','peril','taluka','district','channel','status_key','created','deadline'];
   const csv=[h.join(','),...L.map(c=>h.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='72ghante-cases.csv';a.click()});
+
+// live countdowns: Case Details ticks every second, Recent Cases "Time Left" every second too
+setInterval(()=>{const b=document.getElementById('dLeft');if(b&&b.dataset.dl){const ms=new Date(b.dataset.dl)-(Date.now()+skew),p=n=>String(n).padStart(2,'0');
+    if(ms<=0)b.textContent='Window closed';else{const S=Math.floor(ms/1e3),d=Math.floor(S/86400),hh=Math.floor(S%86400/3600),mm=Math.floor(S%3600/60),ss=S%60;
+      b.textContent=(d?d+'d ':'')+hh+'h '+p(mm)+'m '+p(ss)+'s remaining'}}
+  document.querySelectorAll('#recentTbl tr.row').forEach(r=>{const c=CASES.find(x=>x.id===r.dataset.id),td=r.querySelector('td.tl');if(!c||!td)return;const[t,k]=left(c);if(td.textContent!==t){td.textContent=t;td.className='tl '+k}})},1000);
+// ===== Dashboard buttons (every control does something real) =====
+// pop-ups must live at the top of the page: inside a hidden page they open invisibly and block every click
+['ncDlg','howDlg','invDlg'].forEach(id=>{const d=document.getElementById(id);if(d)document.body.appendChild(d)});
+const goPage=p=>document.querySelector(`.nav li[data-p="${p}"]`)?.click();
+const openCase=id=>{goPage('cases');const go=()=>{if(!CASES.length)return setTimeout(go,300);
+  if(!filtered().some(c=>c.id===id))$('fReset').click();CP.sel=id;CP.tab='ov';const j=filtered().findIndex(c=>c.id===id);CP.page=Math.floor(Math.max(0,j)/CP.size)+1;drawCases()};setTimeout(go,80)};
+const casesWith=(f={})=>{goPage('cases');setTimeout(()=>{['fSt','fCr','fTa','fCh','fTl','fSo','cq'].forEach(id=>$(id).value='');document.querySelectorAll('.chb,.srcp').forEach(x=>x.classList.remove('on'));CP.grp='all';if(f.q!=null)$('cq').value=f.q;if(f.crop!=null)$('fCr').value=f.crop;if(f.grp)CP.grp=f.grp;CP.page=1;casesPage()},80)};
+// top bar
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter')casesWith({q:e.target.value.trim()})});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('q').focus()}});
+document.querySelector('.bell').addEventListener('click',()=>casesWith({grp:'at_risk'}));
+document.querySelector('.me').addEventListener('click',()=>goPage('settings'));
+$('fDate').addEventListener('click',()=>goPage('reports'));
+document.querySelector('#fReg select').addEventListener('change',e=>{DF.reg=e.target.value;$('trReg').value=DF.reg;if(DF.reg){$('mapReg').value=DF.reg==='Jodhpur'?'rj':'mh';setRegion()}drawRecent();drawTrend()});
+document.querySelector('#fCrop select').addEventListener('change',e=>{DF.crop=e.target.value;drawRecent()});
+function fillCropLists(){if(!CASES.length)return setTimeout(fillCropLists,500);const cr=[...new Set(CASES.map(c=>c.crop).filter(Boolean))].sort(),o=cr.map(c=>`<option value="${c}">${cap(c)}</option>`).join('');
+  document.querySelector('#fCrop select').insertAdjacentHTML('beforeend',o);$('cropSel').insertAdjacentHTML('beforeend',o);document.querySelector('#ncForm [name=crop]').innerHTML=o}
+fillCropLists();
+$('cropSel').addEventListener('change',e=>{if(e.target.value){casesWith({crop:e.target.value});e.target.value=''}});
+$('trReg').addEventListener('change',()=>drawTrend());
+// hero buttons
+const ncOpen=()=>{const f=$('ncForm');f.reset();$('ncErr').textContent='';const t=new Date(Date.now()+skew-2*36e5);f.event_time.value=new Date(t-t.getTimezoneOffset()*6e4).toISOString().slice(0,16);$('ncDlg').showModal()};
+$('bNew').addEventListener('click',ncOpen);$('cNew').addEventListener('click',ncOpen);
+$('ncDlg').addEventListener('click',e=>{if(e.target.value==='cancel'||e.target===$('ncDlg'))$('ncDlg').close()});
+$('ncForm').addEventListener('submit',async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));Object.keys(f).forEach(k=>{if(f[k]==='')delete f[k]});
+  f.event_time=new Date(f.event_time).toISOString();f.channel='manual';if(f.area_acres)f.area_acres=+f.area_acres;
+  const r=await fetch('/api/cases',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(f)});const j=await r.json().catch(()=>({}));
+  if(!r.ok){$('ncErr').textContent=j.detail||'Could not create the case';return}
+  $('ncDlg').close();toast('Case '+j.case_id+' created — 72-hour clock started');await loadAll();loadKpis();openCase(j.case_id)});
+const runLive=()=>{goPage('failure');setTimeout(()=>document.querySelector('#sBtnRow .sbig[data-k="hour61"]')?.click(),500)};
+$('bLive').addEventListener('click',runLive);
+$('bHow').addEventListener('click',()=>$('howDlg').showModal());$('howClose').addEventListener('click',()=>$('howDlg').close());
+$('howLive').addEventListener('click',()=>{$('howDlg').close();runLive()});
+// Recent Cases
+document.querySelector('#cRecent .viewall').addEventListener('click',()=>goPage('cases'));
+$('recentTbl').addEventListener('click',e=>{const d=e.target.closest('td.dots');if(d){e.stopPropagation();openCase(d.closest('tr').dataset.id)}},true);
+// Case Details: tabs + buttons
+document.querySelector('#cDetail .dTabs').addEventListener('click',async e=>{const t=e.target.closest('span');if(!t)return;const tab=t.textContent.trim();
+  document.querySelectorAll('#cDetail .dTabs span').forEach(x=>x.classList.toggle('on',x===t));if(tab==='Overview')return loadDetail();
+  const d=await fetch('/api/cases/'+SEL).then(r=>r.json()).catch(()=>null);if(!d)return;const c=d.case;
+  const fmt=x=>x?new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false}):'';
+  const items={Documents:(c.evidence||[]).map(v=>[v.kind||'Document',v.reason||(v.accepted?'Accepted':'Rejected')]),
+    Conversation:(d.messages||[]).map(m=>[`${m.direction==='in'?'Farmer':'Agent'} · ${fmt(m.ts)}`,(m.text||'').slice(0,120)]),
+    'Tool Trace':(d.trace||[]).map(t=>[`${cap(t.name)} · ${t.status}`,String(t.output||'').slice(0,110)]),
+    Timeline:(c.action_log||[]).map(a=>[fmt(a.ts),a.text]),
+    Logs:(d.trace||[]).map(t=>[`${fmt(t.ts)} · ${t.kind}`,`${t.name} → ${t.status}${t.ms?` (${t.ms} ms)`:''}`])}[tab]||[];
+  $('dBody').innerHTML=`<ul class="dList">${items.map(([a,b])=>`<li><b>${esc(a)}</b><small>${esc(b||'')}</small></li>`).join('')||'<li><small>Nothing recorded for this case yet.</small></li>'}</ul>`});
+$('dBody').addEventListener('click',e=>{const b=e.target.closest('.dBtns .pill');if(!b)return;const t=b.textContent.trim();
+  if(t.startsWith('Open Full Case'))return openCase(SEL);toast(`${t}: needs WhatsApp/Twilio keys — not connected yet`)});
+document.querySelector('#cDetail .ctl').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;
+  if(p.querySelector('.dots'))return openCase(SEL);toast('Assign officer: add officers on the Team page first');goPage('team')});
+// KPI cards open Cases with the matching filter
+document.querySelector('.kpis').addEventListener('click',e=>{const k=e.target.closest('.kpi');if(!k)return;e.stopImmediatePropagation();
+  if(k.dataset.k==='avg_resolution_min')return goPage('analytics');
+  casesWith({grp:{total:'all',submitted:'submitted',in_progress:'prog',at_risk:'at_risk',acknowledged:'ack'}[k.dataset.k]||'all'})},true);
 // sidebar Cases badge = open cases
 setInterval(()=>{if(CASES.length)$('bCases').textContent=CASES.filter(c=>!['acknowledged','closed','area_based'].includes(c.status_key)).length},2000);
 
@@ -1850,8 +1947,8 @@ let MM={map:null,reg:'mh',heat:null,tile:null,dark:null,rj:null,lay:{cases:true,
 const RD={mh:'Nashik',rj:'Jodhpur'};
 function mapsPage(){if(!CASES.length){setTimeout(mapsPage,500);return}
   if(!MM.map){MM.map=L.map('bigMapN',{zoomControl:true,attributionControl:false,zoomSnap:.25});MM.map.zoomControl.setPosition('bottomright');
-    MM.tile=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:15,className:'sat'}).addTo(MM.map);
-    MM.dark=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:15});MM.heat=L.layerGroup().addTo(MM.map);
+    MM.tile=L.tileLayer('/tiles/esri/{z}/{x}/{y}',{maxZoom:15,className:'sat'}).addTo(MM.map);
+    MM.dark=L.tileLayer('/tiles/dark/{z}/{x}/{y}',{maxZoom:15});MM.heat=L.layerGroup().addTo(MM.map);
     fetch('geo/rajasthan_districts.geojson').then(r=>r.json()).then(g=>{MM.rj=L.geoJSON(g,{style:{color:'#7dffb8',weight:1.2,fillColor:'#1aa364',fillOpacity:.18},className:'rjglow'})}).catch(()=>{})}
   setTimeout(()=>{MM.map.invalidateSize();drawMap()},60);loadWx()}
 function mapStats(){const d=RD[MM.reg],L=CASES.filter(c=>c.district===d),now=Date.now()+skew,w=7*864e5,by={};
