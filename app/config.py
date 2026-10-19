@@ -40,3 +40,8 @@ HANDOFF_WINDOW_HOURS = float(_env("HANDOFF_WINDOW_HOURS", "48"))
 ADMIN_KEY = _env("ADMIN_KEY", "")
 # Public deployment (Render/Railway): the password for the sign-in page. Empty on the laptop = no sign-in.
 ADMIN_PASSWORD = _env("ADMIN_PASSWORD", "")
+
+# Free backup brain (Groq): used automatically when every Gemini model is busy or out of quota.
+GROQ_API_KEY = _env("GROQ_API_KEY")
+GROQ_MODELS = [m.strip() for m in _env("GROQ_MODELS", "qwen/qwen3.8-27b,openai/gpt-oss-120b").split(",") if m.strip()]
+GROQ_STT_MODEL = _env("GROQ_STT_MODEL", "whisper-large-v3")

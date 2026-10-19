@@ -15,7 +15,8 @@ from google import genai
 from google.genai import errors, types
 
 from . import store
-from .config import GEMINI_API_KEY, GEMINI_FALLBACK_MODELS, GEMINI_MODEL, GEMINI_TTS_MODELS, GEMINI_TTS_VOICE
+from .config import GEMINI_API_KEY, GEMINI_FALLBACK_MODELS, GEMINI_MODEL, GEMINI_TTS_MODELS, GEMINI_TTS_VOICE, GROQ_API_KEY, GROQ_MODELS, GROQ_STT_MODEL
+import httpx
 
 ATTEMPT_TIMEOUT_S = 25
 
@@ -68,10 +69,33 @@ async def generate_json(name: str, system: str, parts: list[Any], case_id: str |
         except Exception as err:  # noqa: BLE001 - classified below
             last_err = err
             store.add_trace(case_id, "llm", name, "error", int((time.perf_counter() - t0) * 1000), {"model": model}, f"{type(err).__name__}: {str(err)[:300]}")
-            if isinstance(err, json.JSONDecodeError) or _retryable(err):
+            if isinstance(err, json.JSONDecodeError) or _retryable(err) or isinstance(err, LLMUnavailable):
                 continue
             break
+    if GROQ_API_KEY and all(isinstance(p, str) for p in parts):
+        # Every Gemini model is busy / out of quota: the free Groq backup answers instead (text-only steps).
+        data = await _groq_json(name, system, "\n\n".join(parts), case_id, schema)
+        if data is not None:
+            return data
     raise LLMUnavailable(str(last_err))
+
+
+async def _groq_json(name: str, system: str, prompt: str, case_id: str | None, schema: dict | None) -> dict | None:
+    sys_text = system + ("\n\nReturn ONLY a JSON object matching this JSON schema:\n" + json.dumps(schema) if schema else "\n\nReturn ONLY a JSON object.")
+    for model in GROQ_MODELS:
+        t0 = time.perf_counter()
+        try:
+            async with httpx.AsyncClient(timeout=ATTEMPT_TIMEOUT_S) as http:
+                r = await http.post("https://api.groq.com/openai/v1/chat/completions", headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
+                                    json={"model": model, "temperature": 0.1, "response_format": {"type": "json_object"},
+                                          "messages": [{"role": "system", "content": sys_text}, {"role": "user", "content": prompt}]})
+            r.raise_for_status()
+            data = json.loads(r.json()["choices"][0]["message"]["content"])
+            store.add_trace(case_id, "llm", name, "ok", int((time.perf_counter() - t0) * 1000), {"model": f"groq/{model}"}, data)
+            return data
+        except Exception as err:  # noqa: BLE001
+            store.add_trace(case_id, "llm", name, "error", int((time.perf_counter() - t0) * 1000), {"model": f"groq/{model}"}, f"{type(err).__name__}: {str(err)[:300]}")
+    return None
 
 
 TRANSCRIBE_SYSTEM = """You transcribe WhatsApp voice notes and phone-call audio from Indian farmers.
@@ -84,7 +108,26 @@ Return JSON: {"transcript": str, "language": ISO-like code (mr, hi, mwr for Marw
 
 async def transcribe(audio: bytes, mime: str, case_id: str | None) -> dict:
     parts = [types.Part.from_bytes(data=audio, mime_type=mime), "Transcribe this audio."]
-    return await generate_json("speech_to_text", TRANSCRIBE_SYSTEM, parts, case_id)
+    try:
+        return await generate_json("speech_to_text", TRANSCRIBE_SYSTEM, parts, case_id)
+    except LLMUnavailable:
+        if not GROQ_API_KEY:
+            raise
+    # Free backup: Groq Whisper.
+    t0 = time.perf_counter()
+    try:
+        async with httpx.AsyncClient(timeout=60) as http:
+            r = await http.post("https://api.groq.com/openai/v1/audio/transcriptions", headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
+                                data={"model": GROQ_STT_MODEL, "response_format": "verbose_json"}, files={"file": ("voice.ogg", audio, mime)})
+        r.raise_for_status()
+        j = r.json()
+        lang = {"marathi": "mr", "hindi": "hi", "gujarati": "gu", "english": "en"}.get((j.get("language") or "").lower(), "hi")
+        out = {"transcript": (j.get("text") or "").strip(), "language": lang, "language_name": j.get("language"), "audio_quality": "good", "confidence": 0.7}
+        store.add_trace(case_id, "llm", "speech_to_text", "ok", int((time.perf_counter() - t0) * 1000), {"model": f"groq/{GROQ_STT_MODEL}"}, out)
+        return out
+    except Exception as err:  # noqa: BLE001
+        store.add_trace(case_id, "llm", "speech_to_text", "error", int((time.perf_counter() - t0) * 1000), {"model": f"groq/{GROQ_STT_MODEL}"}, f"{type(err).__name__}: {str(err)[:300]}")
+        raise LLMUnavailable(str(err)) from err
 
 
 IMAGE_SYSTEM = """You look at a photo a farmer sent while reporting crop loss under PMFBY (Indian crop insurance).
