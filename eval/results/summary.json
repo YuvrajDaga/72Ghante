@@ -1,0 +1,507 @@
+{
+ "available": true,
+ "sample": false,
+ "generated": "20 Oct 2026, 12:16 AM",
+ "metrics": [
+  [
+   "Task Completed %",
+   100,
+   11
+  ],
+  [
+   "Correct Deadline %",
+   100,
+   31
+  ],
+  [
+   "Correct Fields %",
+   100,
+   100
+  ],
+  [
+   "Recovered from Failure %",
+   100,
+   0
+  ]
+ ],
+ "calls": [
+  3.2,
+  4.0
+ ],
+ "time": [
+  15.1,
+  10.0
+ ],
+ "false_done": [
+  0,
+  16
+ ],
+ "langs": [
+  [
+   "Hindi",
+   21
+  ],
+  [
+   "Marathi",
+   15
+  ],
+  [
+   "Marwadi",
+   9
+  ]
+ ],
+ "real_notes": 0,
+ "cases": [
+  {
+   "id": "TC-001",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-002",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Rain on standing crop (area-based)",
+   "exp": "rain · maize · explain area-based, do not file",
+   "ours": "Explained area-based (not filed)",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-003",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Vague first message",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-908358",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-004",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Portal down (503)",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-217660",
+   "base": "said it was filed (docket DOC2026101901)",
+   "pass": true
+  },
+  {
+   "id": "TC-005",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-006",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Crop not on policy",
+   "exp": "rain · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-113149",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-007",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Portal timeout",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-008",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-009",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-010",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Rain on standing crop (area-based)",
+   "exp": "rain · maize · explain area-based, do not file",
+   "ours": "Explained area-based (not filed)",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-011",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Vague first message",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "said it was filed (docket PMFBY-98765)",
+   "pass": true
+  },
+  {
+   "id": "TC-012",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Portal down (503)",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-217660",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-013",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-014",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Crop not on policy",
+   "exp": "rain · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-015",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Portal timeout",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-016",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-017",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-018",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Rain on standing crop (area-based)",
+   "exp": "rain · maize · explain area-based, do not file",
+   "ours": "Explained area-based (not filed)",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-019",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Vague first message",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-020",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Portal down (503)",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-021",
+   "lang": "Hindi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-022",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Crop not on policy",
+   "exp": "rain · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-023",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Portal timeout",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-024",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-217660",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-025",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-026",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Rain on standing crop (area-based)",
+   "exp": "rain · maize · explain area-based, do not file",
+   "ours": "Explained area-based (not filed)",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-027",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Vague first message",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-028",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Portal down (503)",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-029",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-030",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Crop not on policy",
+   "exp": "rain · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-217660",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-031",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Portal timeout",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-032",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-624237",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-033",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-608422",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-034",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Rain on standing crop (area-based)",
+   "exp": "rain · maize · explain area-based, do not file",
+   "ours": "Explained area-based (not filed)",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-035",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Vague first message",
+   "exp": "flood · onion · verified filing",
+   "ours": "Verified PMFBY-MH-2610-473211",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-036",
+   "lang": "Marathi",
+   "audio": "Text",
+   "sc": "Portal down (503)",
+   "exp": "fire · maize · verified filing",
+   "ours": "Verified PMFBY-MH-2610-217660",
+   "base": "said it was filed",
+   "pass": true
+  },
+  {
+   "id": "TC-037",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-533922",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-038",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "rain · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-533922",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-039",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Portal timeout",
+   "exp": "flood · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-632616",
+   "base": "said it was filed (docket PMFBY-89745)",
+   "pass": true
+  },
+  {
+   "id": "TC-040",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "fire · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-533922",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-041",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-533922",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-042",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Rain on standing crop (area-based)",
+   "exp": "rain · bajra · explain area-based, do not file",
+   "ours": "Explained area-based (not filed)",
+   "base": "said it was filed (docket PMFBY-2026-1020-001)",
+   "pass": true
+  },
+  {
+   "id": "TC-043",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Vague first message",
+   "exp": "flood · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-533922",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-044",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Portal down (503)",
+   "exp": "fire · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-533922",
+   "base": "did not claim filing",
+   "pass": true
+  },
+  {
+   "id": "TC-045",
+   "lang": "Marwadi",
+   "audio": "Text",
+   "sc": "Normal flow",
+   "exp": "hail · bajra · verified filing",
+   "ours": "Verified PMFBY-RJ-2610-632616",
+   "base": "did not claim filing",
+   "pass": true
+  }
+ ],
+ "method": "45 scripted farmer conversations (21 Hindi, 15 Marathi, 9 Marwadi); same AI models for both; plain chatbot has no tools; automatic scoring."
+}
