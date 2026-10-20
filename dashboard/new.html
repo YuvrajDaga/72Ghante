@@ -1813,12 +1813,12 @@ $('fAdd').addEventListener('click',()=>toast('Add Farmer form comes next'));
 // ===== Analytics page (real data) =====
 let ACH='ch';
 function analyticsPage(){if(!STATS||!CASES.length){setTimeout(analyticsPage,500);return}const S=STATS,ack=S.kpis.acknowledged.value||1;
-  const within=Math.round(100*S.within_window/ack),rec=S.recovery.failures?Math.round(100*S.recovery.recovered/S.recovery.failures):100,avg=Math.round(S.kpis.avg_resolution_min.value);
+  const ktot=S.kpis.total.value||1,within=Math.round(100*S.within_window/ktot),rec=S.recovery.failures?Math.round(100*S.recovery.recovered/S.recovery.failures):100,avg=Math.round(S.kpis.avg_resolution_min.value);
   const sp=k=>(S.kpis[k]?.spark||[]).slice(-10),bars=a=>{const m=Math.max(1,...a);return`<span class="sp">${a.map((v,j)=>`<i style="--i:${j};height:${Math.max(2,Math.round(34*v/m))}px"></i>`).join('')}</span>`};
-  const K=[['k1','file-check-2',within+'%','Filed Within 72h',`${S.within_window} of ${ack} verified`,sp('acknowledged')],
-    ['k6','clock',avg+' min','Avg Time to Verified Receipt',`${S.kpis.avg_resolution_min.trend>=0?'↑':'↓'} ${Math.abs(S.kpis.avg_resolution_min.trend)}% vs last week`,sp('avg_resolution_min')],
-    ['k3','shield',rec+'%','Recovery Rate after Failure',`${S.recovery.recovered} of ${S.recovery.failures} recovered`,sp('submitted')],
-    ['k4b','circle-check',String(S.recovery.false_done),'False "Done" Cases','Only verified = done',sp('total').map(()=>0)]];
+  const K=[['k1','file-check-2',within+'%','Filed Within 72h',`${S.within_window} of ${ktot} cases · demo data`,sp('acknowledged')],
+    ['k6','clock',avg+' min','Avg Time to Verified Receipt',`${S.kpis.avg_resolution_min.trend>=0?'↑':'↓'} ${Math.abs(S.kpis.avg_resolution_min.trend)}% vs last week · demo data`,sp('avg_resolution_min')],
+    ['k3','shield',rec+'%','Recovery Rate after Failure',`${S.recovery.recovered} of ${S.recovery.failures} recovered · demo data`,sp('submitted')],
+    ['k4b','circle-check',String(S.recovery.false_done),'False "Done" Cases','Only verified = done (also 0 in our 45-case test)',sp('total').map(()=>0)]];
   $('akpis').innerHTML=K.map(([k,ic,v,l,sub,a])=>`<div class="kpi ${k}"><span class="ic" style="width:62px;height:62px;top:30px"><i data-lucide="${ic}"></i></span><b style="left:92px;top:22px;font-size:30px">${v}</b><span class="lb" style="left:92px;top:62px;font-size:15px">${l}</span><span class="tr up" style="left:92px;bottom:18px;font-weight:500;font-size:12.5px;color:#d6e4df">${sub}</span>${bars(a)}</div>`).join('');
   // cases per day
   const reg=$('aReg').value,L=reg?CASES.filter(c=>c.district===reg):CASES,days=S.daily.slice(-15).map(d=>d.date);
@@ -2146,7 +2146,7 @@ const rpStore={get(){try{return JSON.parse(localStorage.getItem('72g_reports')||
 function rpCases(){const now=Date.now()+skew;return CASES.filter(c=>now-new Date(c.created)<=RPD*864e5)}
 async function reportsPage(){if(!CASES.length||!STATS){setTimeout(reportsPage,500);return}const L=rpCases(),now=new Date(Date.now()+skew),from=new Date(now-RPD*864e5),f=d=>d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
   $('rpTitle').textContent={1:'Daily',7:'Weekly',30:'Monthly'}[RPD]+' Report';$('rpRange').textContent=`${f(from)} – ${f(now)}`;$('rpGen').textContent=now.toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-  const ver=L.filter(c=>['acknowledged','closed'].includes(c.status_key)).length,esc2=L.filter(c=>c.status_key==='escalated').length,within=Math.round(100*STATS.within_window/(STATS.kpis.acknowledged.value||1));
+  const ver=L.filter(c=>['acknowledged','closed'].includes(c.status_key)).length,esc2=L.filter(c=>c.status_key==='escalated').length,within=Math.round(100*STATS.within_window/(STATS.kpis.total.value||1));
   $('rpK').innerHTML=[['k1','file-text',L.length,'Total Cases'],['k2','clock',within+'%','Filed Within 72h'],['k5','shield-check',ver,'Verified Receipt'],['k4','triangle-alert',esc2,'Escalated Cases']]
     .map(([k,ic,v,l])=>`<div class="kpi ${k}"><span class="ic" style="top:24px"><i data-lucide="${ic}"></i></span><b style="left:76px;top:22px">${v}</b><span class="lb" style="left:76px;top:52px">${l}</span></div>`).join('');
   const days=[...Array(Math.max(RPD,2))].map((_,i)=>new Date(now-(Math.max(RPD,2)-1-i)*864e5).toISOString().slice(0,10)),cnt=p=>days.map(d=>L.filter(c=>c.created?.slice(0,10)===d&&p(c)).length);
