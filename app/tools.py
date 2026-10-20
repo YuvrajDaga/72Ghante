@@ -78,7 +78,7 @@ async def officer_report_status(case_id: str, report_id: str) -> dict:
 
 PLACES = {
     "lasalgaon": (20.15, 74.23), "niphad": (20.08, 74.11), "dindori": (20.20, 73.83), "mohadi": (20.17, 73.86),
-    "nashik": (19.99, 73.79), "osian": (26.72, 72.92), "tinwari": (26.53, 72.96), "jodhpur": (26.24, 73.02),
+    "nashik": (19.99, 73.79), "osian": (26.72, 72.92), "tinwari": (26.53, 72.96), "jodhpur": (26.24, 73.02), "mumbai": (19.08, 72.88),
 }
 HAIL_CODES = {96, 99}
 RAIN_CODES = {61, 63, 65, 80, 81, 82, 95, 96, 99}

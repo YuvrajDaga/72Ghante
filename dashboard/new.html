@@ -102,7 +102,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 .flt select{appearance:none;background:none;border:0;outline:0;color:#f1f5f7;font:400 13px "Inter Tight",sans-serif;cursor:pointer;padding:0;text-overflow:clip}
 .flt select option{background:#0c2430}
 .flt>svg{position:absolute;right:9px;width:16px;height:16px;pointer-events:none}
-.flt select{width:100%}
+.flt{padding:0}.flt select{width:100%;height:100%;padding:0 30px 0 10px}
 #fReg{left:447px;width:109px} #fCrop{left:566px;width:95px}
 #fDate{left:671px;width:204px;justify-content:space-between;font-weight:500;white-space:nowrap;font-size:13.2px}
 #fDate>svg{position:static;width:18px!important;height:18px!important;flex:none}
@@ -892,11 +892,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 
 <main class="main">
   <header class="top">
-    <label class="srch glass"><i data-lucide="search"></i><input id="q" placeholder="Search by Case ID, Farmer, Mobile No., District…"><kbd>⌘ K</kbd></label>
+    <label class="srch glass"><i data-lucide="search"></i><input id="q" placeholder="Search by Case ID, Farmer, Mobile No., District…"><kbd>Ctrl K</kbd></label>
     <div class="flt glass" id="fReg"><select><option value="">All Regions</option><option value="Jodhpur">Rajasthan</option><option value="Nashik">Maharashtra</option></select><i data-lucide="chevron-down"></i></div>
     <div class="flt glass" id="fCrop"><select><option value="">All Crops</option></select><i data-lucide="chevron-down"></i></div>
     <div class="flt glass" id="fDate"><span id="dateTxt"></span><i data-lucide="calendar-days"></i></div>
-    <div class="wx glass"><i class="sun" data-lucide="sun"></i><div><b id="wxT">—°C</b><span id="wxP">Jodhpur, RJ</span></div></div>
+    <div class="wx glass"><i class="sun" data-lucide="sun"></i><div><b id="wxT">—°C</b><span id="wxP">Mumbai, MH</span></div></div>
     <div class="bell"><i data-lucide="bell"></i><em id="bellN"></em></div>
     <div class="me"><div class="av">YD</div><div><b>Yuvraj Daga</b><span>Admin</span></div><i data-lucide="chevron-down"></i></div>
   </header>
@@ -907,7 +907,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <h1>From Crop Loss to Claim Support<br>Within <em>72 Hours.</em></h1>
     <p>An AI agent helping farmers report crop damage, complete insurance intimation<br>and track their case — in their own language.</p>
     <button class="hbtn new" id="bNew"><i data-lucide="plus"></i>New Case</button>
-    <button class="hbtn live" id="bLive"><i data-lucide="circle-play"></i>Watch Live Demo</button>
+    <button class="hbtn live" id="bLive" hidden><i data-lucide="circle-play"></i>Watch Live Demo</button>
     <button class="hbtn how" id="bHow"><i data-lucide="settings"></i>How it Works</button>
     <i class="wave" data-lucide="audio-lines"></i>
     <div class="bubble"><i data-lucide="audio-lines"></i><span>मेरी फसल को नुकसान<br>हुआ है, मदद कीजिए…</span></div>
@@ -1289,14 +1289,17 @@ lucide.createIcons();
 function fit(){const W=innerWidth,H=innerHeight,s=Math.min(H/1024,W/1300),f=document.getElementById('frame');f.style.width=(W/s)+'px';f.style.height=Math.max(1024,H/s)+'px';f.style.transform=`scale(${s})`}
 addEventListener('resize',fit);fit();
 // Menu
+let NAV_POP=false;
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(!li)return;
-  document.querySelectorAll('.nav li').forEach(x=>x.classList.toggle('on',x===li))});
+  document.querySelectorAll('.nav li').forEach(x=>x.classList.toggle('on',x===li));
+  if(!NAV_POP&&li.dataset.p&&location.hash!=='#'+li.dataset.p)history.pushState(null,'','#'+li.dataset.p)});
+addEventListener('popstate',()=>{NAV_POP=true;document.querySelector(`.nav li[data-p="${location.hash.slice(1)||'dashboard'}"]`)?.click();NAV_POP=false});
 // Real counts from the app (badges stay hidden if the API is not running)
 fetch('/api/farmers').then(r=>r.json()).then(f=>{document.getElementById('bFarmers').textContent=f.length}).catch(()=>{});
 // Top bar: date range = last 15 days, live weather, bell = cases at risk
 (()=>{const f=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});const t=new Date(),s=new Date(t-14*864e5);
   document.getElementById('dateTxt').textContent=`${f(s)} - ${f(t)}`})();
-fetch('/api/weather?place=jodhpur').then(r=>r.json()).then(w=>{if(w.available){document.getElementById('wxT').textContent=Math.round(w.temp_c)+'°C';document.getElementById('wxP').textContent=w.place+', RJ'}}).catch(()=>{});
+fetch('/api/weather?place=mumbai').then(r=>r.json()).then(w=>{if(w.available){document.getElementById('wxT').textContent=Math.round(w.temp_c)+'°C';document.getElementById('wxP').textContent=w.place+', MH'}}).catch(()=>{});
 // Bell + 6 number cards, all from /api/stats (real case data)
 // "Good" direction per card: more submitted/verified is good; more in-progress/at-risk/minutes is bad.
 function countUp(el,to,suf){const from=+(el.dataset.v||0);if(from===to&&el.dataset.v){return}el.dataset.v=to;const t0=performance.now(),D=900;
@@ -1739,7 +1742,7 @@ document.querySelector('#cDetail .dTabs').addEventListener('click',async e=>{con
     Logs:(d.trace||[]).map(t=>[`${fmt(t.ts)} · ${t.kind}`,`${t.name} → ${t.status}${t.ms?` (${t.ms} ms)`:''}`])}[tab]||[];
   $('dBody').innerHTML=`<ul class="dList">${items.map(([a,b])=>`<li><b>${esc(a)}</b><small>${esc(b||'')}</small></li>`).join('')||'<li><small>Nothing recorded for this case yet.</small></li>'}</ul>`});
 $('dBody').addEventListener('click',e=>{const b=e.target.closest('.dBtns .pill');if(!b)return;const t=b.textContent.trim();
-  if(t.startsWith('Open Full Case'))return openCase(SEL);toast(`${t}: needs WhatsApp/Twilio keys — not connected yet`)});
+  if(t.startsWith('Open Full Case'))return openCase(SEL);if(t.startsWith('Send Reminder'))return sendReminder(SEL);toast(`${t}: needs WhatsApp/Twilio keys — not connected yet`)});
 document.querySelector('#cDetail .ctl').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;
   if(p.querySelector('.dots'))return openCase(SEL);toast('Assign officer: add officers on the Team page first');goPage('team')});
 // KPI cards open Cases with the matching filter
@@ -1959,7 +1962,9 @@ $('invForm').addEventListener('submit',async e=>{e.preventDefault();const f=new 
 const WAP={mr:{open:['माझ्या पिकाचं खूप नुकसान झालं आहे.','काल झालेल्या गारपिटीमुळे सगळं पिक पडून गेलं.'],en:['My crop has suffered a lot of damage.','Due to yesterday\'s storm, the entire crop has been destroyed.'],prev:['पीक खूप खराब झालं आहे...','Claim cha status kaya aahe?','Document pathavle aahet','Mala policy number pahije','Photo send kela aahe','Pavsa mule nuksan jhala']},
   hi:{open:['मेरी फसल को बहुत नुकसान हुआ है।','कल की बारिश से पूरी फसल खराब हो गई।'],en:['My crop has been badly damaged.','Yesterday\'s rain ruined the whole crop.'],prev:['Ho, karu shakta','Thank you 🙏','Survey kab hoga?','Policy renew karni hai']},
   mwr:{open:['म्हारी फसल रो घणो नुकसान होयो है।','काल री आंधी सूं सगळी फसल खराब होगी।'],en:['My crop is heavily damaged.','Yesterday\'s storm spoiled the whole crop.'],prev:['Kal survey wale aaye the','Survey number 123/2','Kitna paisa milega?']}};
-let WA={sel:'live',tab:'all',list:[],live:false};
+let WA={sel:'live',tab:'all',list:[],live:false,open:null};
+const REM={};// case id -> time a reminder was sent (demo: shown in the chat, real once WhatsApp is connected)
+function sendReminder(id){const c=CASES.find(x=>x.id===id);if(!c)return;REM[id]=Date.now();WA.open=id;WA.tab='all';toast(`✓ Reminder sent to ${c.farmer} on WhatsApp`);goPage('chat')}
 const LIVE_PHONE='+919000000001';// mock PMFBY farmer Sunita Pawar (Lasalgaon, onion) — real AI, real agent, simulated phone
 async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);return}
   const live=await fetch('/api/live_chat').then(r=>r.json()).catch(()=>null);WA.live=!!live?.case_id;
@@ -1969,6 +1974,10 @@ async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);ret
   $('waTop').innerHTML=[['whatsapp','message-circle','#25d366',get('whatsapp'),'WhatsApp'],['voice','phone','#3d8bff',get('voice'),'Voice Calls'],['sms','message-square-text','#a855f7',get('sms'),'SMS'],['all','file-text','#f5a524',tot,'Total Conversations']]
     .map(([k,ic,c,v,l])=>`<div class="watile" style="--wc:${c}"><span><i data-lucide="${ic}"></i></span><p><b>${v}</b><small>${l}</small></p></div>`).join('');
   $('waTabs').innerHTML=[['all',`All (${WA.list.length})`],['unread',`Unread (${WA.list.filter(x=>x.unread).length})`],['whatsapp','WhatsApp'],['voice','Voice'],['sms','SMS']].map(([k,l])=>`<span class="pill ${WA.tab===k?'on':''}" data-t="${k}">${l}</span>`).join('');
+  for(const id of Object.keys(REM))if(!WA.list.some(x=>x.c.id===id)){const c=CASES.find(x=>x.id===id);if(c&&c.farmer){const P=WAP[c.language]||WAP.hi;WA.list.push({c,ch:'whatsapp',lang:c.language||'hi',prev:'🔔 Reminder sent',time:new Date(c.created),unread:0})}}
+  WA.list.forEach(x=>{if(REM[x.c.id])x.prev='🔔 Reminder sent'});
+  WA.list.sort((a,b)=>(REM[b.c.id]||+b.time)-(REM[a.c.id]||+a.time));
+  if(WA.open){const i=WA.list.findIndex(x=>x.c.id===WA.open);if(i>=0)WA.sel=i;WA.open=null}
   drawConvs();drawChat();drawWaSide();lucide.createIcons()}
 const CHI2={whatsapp:['message-circle','#25d366'],voice:['phone','#3d8bff'],sms:['message-square-text','#a855f7']};
 function drawConvs(){const q=$('waQ').value.toLowerCase(),L=WA.list.map((x,i)=>({...x,i})).filter(x=>(WA.tab==='all'||(WA.tab==='unread'?x.unread:x.ch===WA.tab))&&(!q||x.c.farmer.toLowerCase().includes(q)));
@@ -1985,9 +1994,10 @@ async function drawChat(){if(WA.sel==='live')return drawLive();const x=WA.list[W
     <div class="wm out"><div class="bub">I'm sorry to hear about the damage, ${esc(c.farmer.split(' ')[0])} ji. Can you please share some photos of your field?<time>${tm(2)} ✓✓</time></div></div>
     <div class="wm in"><span class="av">${ini(c.farmer)}</span><div class="bub img"><img src="img/field1.png" alt="Field photo"><time>${tm(4)}</time></div></div>
     <div class="wm out"><div class="bub">Thank you for the photo. I have found your policy details.<div class="pol"><i data-lucide="shield-check"></i><div><b>Policy found: ${esc(f.application_no||'—')}</b><small>Crop: ${cap(f.crop)} · Survey no: ${esc(f.survey_no||'—')} · Area: ${f.area_acres??'—'} acres</small></div></div>
-      Is this correct?<div class="yn"><span class="y">✓ Ho (Yes)</span><span class="n">✕ Nahi (No)</span></div><time>${tm(6)} ✓✓</time></div></div>`;
+      Is this correct?<div class="yn"><span class="y">✓ Ho (Yes)</span><span class="n">✕ Nahi (No)</span></div><time>${tm(6)} ✓✓</time></div></div>`+
+    (REM[c.id]?`<div class="wm out"><div class="bub">🔔 Reminder: ${esc(c.farmer.split(' ')[0])} ji, please reply so we can file your crop-loss report before the 72-hour deadline.<time>${new Date(REM[c.id]).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} ✓</time></div></div>`:'');
   $('waChips').innerHTML=`<span class="chip r"><i data-lucide="triangle-alert"></i>${left>0?`Deadline: ${Math.floor(left)}h left`:'Window closed'}</span><span class="chip g"><i data-lucide="circle-check"></i>${d?.case?.consent_at||c.status==='verified'?'Consent received':'Consent pending'}</span><span class="chip b"><i data-lucide="plus"></i>Open Case ${c.id}</span>`;
-  drawWaSide(f,c);lucide.createIcons()}
+  drawWaSide(f,c);lucide.createIcons();if(REM[c.id])requestAnimationFrame(()=>{$('waBody').scrollTop=$('waBody').scrollHeight})}
 function drawWaSide(f,c){if(!f)return;const rows=[['flame','Crop',cap(f.crop),98],['cloud-hail','Damage Type',cap(f.peril),92],['calendar','Date of Loss',c?new Date(c.created).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—',96],['map','Survey No.',f.survey_no||'—',88],['sprout','Area Affected',f.area_acres!=null?f.area_acres+' Acres':'—',90]];
   $('waUnd').innerHTML=rows.map(([ic,k,v,p])=>`<li><span class="cico" style="background:#f5a52433;color:#f5a524;width:26px;height:26px"><i data-lucide="${ic}"></i></span><span style="width:96px">${k}</span><b>${esc(v)}</b><u><i style="width:${p}%"></i></u><em>${p}%</em></li>`).join('');
   $('waSum').textContent=`${cap(f.crop)} crop damaged due to ${cap(f.peril).toLowerCase()}. ${f.area_acres??'—'} acres affected in ${f.village||f.taluka||'the village'}. Seeking claim support.`;
@@ -2036,7 +2046,7 @@ $('waSend').addEventListener('click',async()=>{const t=$('waText').value.trim();
 $('waFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f,f.name);if(f.type.startsWith('audio'))fd.append('voice','true');e.target.value='';WA.sel='live';drawConvs();lvSend(fd)});
 $('waChips').addEventListener('click',async e=>{if(e.target.closest('#lvReset')){await fetch('/api/sim/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:LIVE_PHONE})});LV.case=null;toast('New live chat started');drawLive(true)}},true);
 setInterval(()=>{if(WA.sel==='live'&&document.getElementById('pg-chat').classList.contains('on')&&!LV.busy)drawLive()},3000);
-$('waSideBtns').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: works once WhatsApp is connected`)});
+$('waSideBtns').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;if(b.dataset.a==='Send Reminder'&&WA.sel!=='live'&&WA.list[WA.sel])return sendReminder(WA.list[WA.sel].c.id);toast(`${b.dataset.a}: works once WhatsApp is connected`)});
 $('waChips').addEventListener('click',e=>{const ch=e.target.closest('.chip.b');if(ch&&ch.dataset.case)return openCase(ch.dataset.case);if(ch){CP.sel=WA.list[WA.sel].c.id;document.querySelector('.nav li[data-p="cases"]').click()}});
 
 // ===== Maps & Regions page (real cases per taluka, real weather forecast) =====
