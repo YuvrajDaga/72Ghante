@@ -270,7 +270,15 @@ async def sim_mode():
 @app.post("/api/sim/mode")
 async def sim_mode_set(body: dict):
     stage.set_on(bool(body.get("script")))
+    if stage.is_on():  # start the stage demo from a clean chat
+        stage.clear(body.get("phone") or "+919000000001")
     return {"script": stage.is_on()}
+
+
+@app.post("/api/sim/clear")
+async def sim_clear(body: dict):
+    stage.clear(body.get("phone") or "+919000000001")
+    return {"ok": True}
 
 
 @app.post("/api/sim/script")

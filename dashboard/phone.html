@@ -115,7 +115,10 @@ let SCRIPT=false;
 const PRE={wa:['🎤 Voice note · नमस्ते, कल रात ओले गिरे, मेरी प्याज की पूरी फसल खराब हो गई।','📷 Photo · खेत की फोटो','🎤 Voice note · हाँ जी, हाँ… रिपोर्ट दर्ज कर दीजिए।'],
   sms:['नमस्ते, कल रात ओले गिरे, मेरी प्याज की पूरी फसल खराब हो गई।','खेत की फोटो नहीं है, आगे बढ़िए','हाँ जी, रिपोर्ट दर्ज कर दीजिए']};
 function prefill(n){const t=$('txt');if(!SCRIPT||busy)return;const v=PRE[MODE==='sms'?'sms':'wa'][n%3];if(t.value===''||t.value===t.dataset.pre){t.value=v;t.dataset.pre=v;updBtn()}}
-async function pollMode(){const m=await fetch('/api/sim/mode').then(r=>r.json()).catch(()=>null);if(!m)return;if(m.script!==SCRIPT){SCRIPT=m.script;document.documentElement.classList.toggle('script',SCRIPT);sig='';draw(true)}}
+let FIRST=true;
+async function pollMode(){const m=await fetch('/api/sim/mode').then(r=>r.json()).catch(()=>null);if(!m)return;
+  if(FIRST&&m.script)await fetch('/api/sim/clear',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:PHONE})});FIRST=false;// stage demo always opens on a clean chat
+  if(m.script!==SCRIPT){SCRIPT=m.script;document.documentElement.classList.toggle('script',SCRIPT);sig='';draw(true)}}
 async function scriptNext(text){if(busy)return;busy=true;draw(true);const fd=new FormData();fd.append('phone',PHONE);if(text)fd.append('text',text);if(MODE==='sms')fd.append('as_text','true');
   try{await fetch('/api/sim/script',{method:'POST',body:fd})}catch(e){}busy=false;draw(true)}
 const hm=t=>new Date(t).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}).toLowerCase();

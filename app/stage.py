@@ -38,6 +38,14 @@ def set_on(on: bool) -> None:
     MODE_FILE.write_text(json.dumps({"script": bool(on)}))
 
 
+def clear(phone: str) -> None:
+    """Empty chat on the demo phone: close its open case (history stays in Cases / Agent Logs)."""
+    old = store.open_case_for(phone)
+    if old:
+        old["stage"] = "closed"
+        store.save_case(old)
+
+
 def _fresh_case(phone: str) -> dict:
     old = store.open_case_for(phone)
     if old:
