@@ -259,9 +259,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #mapBox{position:absolute;left:8px;right:8px;top:42px;bottom:8px;border-radius:9px;overflow:hidden;background:#061612}
 #mapBox .leaflet-container{background:#061612}
 /* map styled like Yuvraj's picture: dark satellite + orange night lights, glowing green states with cyan neon border, pulsing hotspots, name pills */
-#mapBox .lights{filter:grayscale(1) contrast(1.6) brightness(.82) sepia(1) saturate(4.5) hue-rotate(-16deg) brightness(1.2) drop-shadow(0 0 3px rgba(255,150,30,.9))}
+#mapBox .lights,#bigMapN .lights{filter:grayscale(1) contrast(1.6) brightness(.82) sepia(1) saturate(4.5) hue-rotate(-16deg) brightness(1.2) drop-shadow(0 0 3px rgba(255,150,30,.9))}
 #mapBox .stfill{filter:drop-shadow(0 0 1px rgba(200,255,120,.5))}
-#mapBox .stglow{filter:drop-shadow(0 0 3px #3ff0ff) drop-shadow(0 0 9px #14d8f0)}
+#mapBox .stglow,#bigMapN .stglow{filter:drop-shadow(0 0 3px #3ff0ff) drop-shadow(0 0 9px #14d8f0)}
 .hs{position:relative;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle,#fff 0 7%,var(--c) 13%,color-mix(in srgb,var(--c) 55%,transparent) 30%,transparent 70%)}
 .hs::after,.hs::before{content:"";position:absolute;inset:22%;border-radius:50%;border:1.5px solid var(--c);animation:hsPulse 2.2s ease-out infinite}
 .hs::before{animation-delay:1.1s}
@@ -2061,20 +2061,30 @@ const RD={mh:'Nashik',rj:'Jodhpur'};
 function mapsPage(){if(!CASES.length){setTimeout(mapsPage,500);return}
   if(!MM.map){MM.map=L.map('bigMapN',{zoomControl:true,attributionControl:false,zoomSnap:.25});MM.map.zoomControl.setPosition('bottomright');
     MM.tile=L.tileLayer('/tiles/esri/{z}/{x}/{y}',{maxZoom:15,className:'sat'}).addTo(MM.map);
-    MM.dark=L.tileLayer('/tiles/dark/{z}/{x}/{y}',{maxZoom:15});MM.heat=L.layerGroup().addTo(MM.map);
-    fetch('geo/rajasthan_districts.geojson').then(r=>r.json()).then(g=>{MM.rj=L.geoJSON(g,{style:{color:'#7dffb8',weight:1.2,fillColor:'#1aa364',fillOpacity:.18},className:'rjglow'})}).catch(()=>{})}
+    MM.dark=L.tileLayer('/tiles/dark/{z}/{x}/{y}',{maxZoom:15});
+    // same look as the dashboard map: dark mask outside the states, green tint inside, golden night lights, white district lines, cyan neon border
+    [['maskP',300,''],['tintP',320,'hard-light'],['lightP',340,'screen']].forEach(([n,z,m])=>{const pn=MM.map.createPane(n);pn.style.zIndex=z;if(m)pn.style.mixBlendMode=m;pn.style.pointerEvents='none'});
+    L.tileLayer(NIGHT,{maxNativeZoom:8,maxZoom:15,className:'lights',pane:'lightP',opacity:.55}).addTo(MM.map);
+    MM.heat=L.layerGroup();const holes=[];
+    Promise.all(['geo/rj.json','geo/maharashtra.json'].map(u=>fetch(u).then(r=>r.json()).then(g=>{
+      const dist={...g,features:g.features.filter(f=>!f.properties.border)},bord={...g,features:g.features.filter(f=>f.properties.border)};
+      bord.features.forEach(f=>f.geometry.coordinates.forEach(r=>holes.push(r.map(([x,y])=>[y,x]))));
+      L.geoJSON(dist,{pane:'tintP',interactive:false,style:{stroke:false,fillColor:'#0f8a36',fillOpacity:.9}}).addTo(MM.map);
+      L.geoJSON(dist,{style:{color:'rgba(235,255,225,.62)',weight:.8,fill:false},interactive:false}).addTo(MM.map);
+      L.geoJSON(bord,{style:{color:'#5ff6ff',weight:2.6,opacity:1},className:'stglow',interactive:false}).addTo(MM.map)}).catch(()=>{})))
+      .then(()=>{L.polygon([[[-85,-180],[85,-180],[85,180],[-85,180]],...holes],{pane:'maskP',stroke:false,fillColor:'#021a0c',fillOpacity:.74,interactive:false}).addTo(MM.map);MM.heat.addTo(MM.map);drawMap()})}
   setTimeout(()=>{MM.map.invalidateSize();drawMap()},60);loadWx()}
 function mapStats(){const d=RD[MM.reg],L=CASES.filter(c=>c.district===d),now=Date.now()+skew,w=7*864e5,by={};
   L.forEach(c=>{const k=c.taluka||'—',b=by[k]=by[k]||{n:0,risk:0,ver:0,a:0,p:0};b.n++;if(['at_risk','escalated'].includes(c.status_key))b.risk++;if(['acknowledged','closed'].includes(c.status_key))b.ver++;const age=now-new Date(c.created);if(age<=w)b.a++;else if(age<=2*w)b.p++});
   return Object.entries(by).sort((a,b)=>b[1].n-a[1].n)}
 function drawMap(){const S=mapStats(),q=$('mq').value.toLowerCase(),mx=Math.max(1,...S.map(x=>x[1].n));MM.heat.clearLayers();
-  if(MM.rj)MM.reg==='rj'?MM.rj.addTo(MM.map):MM.map.removeLayer(MM.rj);
   const pts=[];S.forEach(([k,b])=>{const ll=PL[k];if(!ll||(q&&!k.toLowerCase().includes(q)))return;pts.push(ll);const f=b.n/mx,rk=S.findIndex(x=>x[0]===k)/Math.max(1,S.length-1),col=rk<.34?'#ff3b4e':rk<.67?'#f5c518':'#2fe08a';
-    if(MM.lay.cases){[34,22,10].forEach((r,i)=>L.circleMarker(ll,{radius:r*(.5+f*.7),stroke:false,fillColor:col,fillOpacity:[.13,.26,.95][i],className:i<2?'hotspot':''}).addTo(MM.heat));
-      L.marker(ll,{icon:L.divIcon({className:'',html:`<div class="mlab">${esc(k)}<small style="color:${col}">${b.n} cases</small></div>`})}).addTo(MM.heat)}
+    if(MM.lay.cases){const sz=Math.round(30+f*34);
+      L.marker(ll,{icon:L.divIcon({className:'',html:`<div class="hs" style="--c:${col};--s:${sz}px"></div>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})}).bindTooltip(`${k}: ${b.n} cases`).addTo(MM.heat);
+      L.marker(ll,{icon:L.divIcon({className:'',html:`<span class="hl2"><i style="background:${col};color:${col}"></i>${esc(k)} · ${b.n}</span>`,iconSize:[0,0],iconAnchor:[0,0]}),interactive:false,zIndexOffset:1000}).addTo(MM.heat)}
     if(MM.lay.risk&&b.risk)L.circleMarker(ll,{radius:18,color:'#ff3b4e',weight:2.5,fill:false,className:'hotspot'}).bindTooltip(`${k}: ${b.risk} at risk / escalated`).addTo(MM.heat)});
   if(MM.lay.wx)MM.wx.forEach(a=>{const ll=PL[a.place]||{Nashik:[20.0,73.79],Jodhpur:[26.24,73.02]}[a.place];if(ll)L.marker(ll,{icon:L.divIcon({className:'',html:`<div style="transform:translate(-50%,-140%);font-size:22px;filter:drop-shadow(0 0 6px #f5a524)">${a.level==='high'?'⛈️':'🌧️'}</div>`})}).bindTooltip(`${a.place}: ${a.kind}`).addTo(MM.heat)});
-  if(pts.length)MM.map.fitBounds(L.latLngBounds(pts).pad(MM.reg==='rj'?.6:.35));
+  if(pts.length)MM.map.fitBounds(L.latLngBounds(pts).pad(MM.reg==='rj'?2.2:1.6));
   $('mtsReg').textContent=$('mwReg').textContent=$('msReg').textContent=`(${RD[MM.reg]})`;
   $('mts').innerHTML=`<tr><th>Taluka</th><th>Total Cases</th><th>At Risk</th><th>Verified %</th><th>Trend</th></tr>`+S.slice(0,10).map(([k,b])=>{const t=b.p?Math.round(100*(b.a-b.p)/b.p):0;
     return`<tr><td>${esc(k)}</td><td>${b.n}</td><td>${b.risk}</td><td>${Math.round(100*b.ver/b.n)}%</td><td class="${t>=0?'up':'dn'}">${t>=0?'↑':'↓'} ${Math.abs(t)}%</td></tr>`}).join('');
