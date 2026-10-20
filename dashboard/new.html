@@ -1221,7 +1221,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
         <div class="tabs" id="stCT" style="margin:8px 0"><span class="pill on" data-c="whatsapp">WhatsApp</span><span class="pill" data-c="voice">Voice Call</span><span class="pill" data-c="sms">SMS</span></div>
         <textarea id="stCon" maxlength="500"></textarea><div style="display:flex;align-items:center;margin-top:6px"><small id="stCnt" style="color:#cfdcd8"></small><span class="pbtn new" id="stSave" style="position:static;margin-left:auto;height:34px;font-size:13px">Save Changes</span></div></div>
       <div class="scard"><div class="sh"><span><i data-lucide="share-2"></i></span><div><b>Channels</b><small>Enable or disable channels; status is checked live.</small></div></div><div id="stCh"></div>
-        <div class="snote"><i data-lucide="wifi"></i>Live status is on the Tools &amp; Integrations page.</div></div>
+        <div class="snote"><i data-lucide="wifi"></i>Messages go to our own demo farmer phone. Real WhatsApp / phone line connect at the pilot.</div></div>
       <div class="scard"><div class="sh"><span><i data-lucide="key-round"></i></span><div><b>API Keys</b><small>Keys live only in the server's .env file and are never shown here.</small></div></div><div id="stKeys"></div></div>
       <div class="scard"><div class="sh"><span><i data-lucide="shield-check"></i></span><div><b>Data &amp; Privacy</b><small>Data retention, masking and privacy as per DPDP Act 2023.</small></div></div>
         <div class="srow"><div><b>Data Retention Period</b><small>Delete farmer data after</small></div><select id="stRet" class="lin"><option value="30">30 days</option><option value="90">90 days (Recommended)</option><option value="180">180 days</option></select></div>
@@ -1663,7 +1663,7 @@ const step=dir=>{const L=filtered(),i=L.findIndex(c=>c.id===CP.sel)+dir;if(i>=0&
 $('sPrev').addEventListener('click',()=>step(-1));$('sNext').addEventListener('click',()=>step(1));$('sClose').addEventListener('click',()=>showPage('dashboard')||document.querySelector('.nav li[data-p="dashboard"]').click());
 document.querySelector('.sId').addEventListener('click',e=>{if(!e.target.closest('#sCopy'))return;navigator.clipboard?.writeText($('sId').textContent).catch(()=>{});toast('Case ID copied: '+$('sId').textContent)});
 document.querySelector('.sId').style.cursor='pointer';
-$('sBody').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: not connected yet — needs WhatsApp/Twilio keys`)});
+$('sBody').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: works on our demo phone now; real WhatsApp at pilot`)});
 $('cExp').addEventListener('click',()=>{const L=filtered(),h=['id','farmer','phone','crop','peril','taluka','district','channel','status_key','created','deadline'];
   const csv=[h.join(','),...L.map(c=>h.map(k=>`"${String(c[k]??'').replace(/"/g,'""')}"`).join(','))].join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='72ghante-cases.csv';a.click()});
 
@@ -1748,7 +1748,7 @@ document.querySelector('#cDetail .dTabs').addEventListener('click',async e=>{con
     Logs:(d.trace||[]).map(t=>[`${fmt(t.ts)} · ${t.kind}`,`${t.name} → ${t.status}${t.ms?` (${t.ms} ms)`:''}`])}[tab]||[];
   $('dBody').innerHTML=`<ul class="dList">${items.map(([a,b])=>`<li><b>${esc(a)}</b><small>${esc(b||'')}</small></li>`).join('')||'<li><small>Nothing recorded for this case yet.</small></li>'}</ul>`});
 $('dBody').addEventListener('click',e=>{const b=e.target.closest('.dBtns .pill');if(!b)return;const t=b.textContent.trim();
-  if(t.startsWith('Open Full Case'))return openCase(SEL);if(t.startsWith('Send Reminder'))return sendReminder(SEL);toast(`${t}: needs WhatsApp/Twilio keys — not connected yet`)});
+  if(t.startsWith('Open Full Case'))return openCase(SEL);if(t.startsWith('Send Reminder'))return sendReminder(SEL);toast(`${t}: works on our demo phone now; real WhatsApp at pilot`)});
 document.querySelector('#cDetail .ctl').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;
   if(p.querySelector('.dots'))return openCase(SEL);toast('Assign officer: add officers on the Team page first');goPage('team')});
 // KPI cards open Cases with the matching filter
@@ -1807,7 +1807,7 @@ $('fpSize').addEventListener('change',e=>{FP.size=+e.target.value;FP.page=1;draw
 $('farmTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r&&e.target.type!=='checkbox'){FP.sel=r.dataset.p;FP.tab='ov';document.querySelectorAll('#farmTbl tr.row').forEach(x=>x.classList.toggle('sel',x===r));farmSide()}});
 $('fTabs').addEventListener('click',e=>{const t=e.target.closest('span');if(t){FP.tab=t.dataset.t;farmSide()}});
 $('fClose').addEventListener('click',()=>document.querySelector('.nav li[data-p="dashboard"]').click());
-$('fSide').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: not connected yet — needs WhatsApp/Twilio keys`)});
+$('fSide').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)toast(`${b.dataset.a}: works on our demo phone now; real WhatsApp at pilot`)});
 $('fAdd').addEventListener('click',()=>toast('Add Farmer form comes next'));
 
 // ===== Analytics page (real data) =====
@@ -1855,8 +1855,8 @@ $('aExp').addEventListener('click',()=>{const S=STATS,rows=[['metric','value'],[
 
 // ===== Tools & Integrations page (real health checks from /api/tools/health) =====
 const TOOLS=[
-  ['whatsapp','WhatsApp (Twilio)','Messaging, voice notes, photos','message-circle','#25d366','twilio','live','Farmer channel: voice notes, photos, text'],
-  ['voice','Voice Calls (Twilio)','IVR, call recording, voice input','phone','#3d8bff','twilio','live','For farmers without a smartphone'],
+  ['whatsapp','WhatsApp (our demo phone)','Messaging, voice notes, photos','message-circle','#25d366',null,'demo','Our own simulated farmer phone; real WhatsApp Business at pilot'],
+  ['voice','Voice Calls (our demo phone)','IVR, call recording, voice input','phone','#3d8bff',null,'demo','Call tab on our demo phone; real phone line at pilot'],
   ['gemini','Gemini AI (Google)','Intent detection, extraction, reasoning','sparkles','#a855f7','gemini','live','Understanding + replies in Marathi, Hindi, Marwadi'],
   ['stt','Speech-to-Text (Gemini)','Audio → text (multi-language)','audio-lines','#22d3ee','gemini','live','Same Gemini key; voice notes to text'],
   ['pmfby','PMFBY Portal','Policy lookup, intimation, status','landmark','#facc15','pmfby','mock','Faithful mock with fault injection; no public API access'],
@@ -1866,7 +1866,7 @@ const TOOLS=[
 let TH=null,TT=null;
 async function toolsPage(){TH=await fetch('/api/tools/health').then(r=>r.json()).catch(()=>null);if(!TH)return;drawTools();clearTimeout(TT);
   TT=setTimeout(()=>{if($('pg-tools').classList.contains('on'))toolsPage()},15000)}
-function tState(t){const[,, ,,,pr,kind]=t;if(kind==='human')return['Human hand-off','hum'];const p=TH.probes[pr];
+function tState(t){const[,, ,,,pr,kind]=t;if(kind==='human')return['Human hand-off','hum'];if(kind==='demo')return['Demo phone','mock'];const p=TH.probes[pr];
   if(pr==='twilio'&&!TH.configured.twilio||pr==='gemini'&&!TH.configured.gemini)return['Not connected','off'];
   if(kind==='mock')return[p?.last.ok?'Mock · up':'Mock · down','mock'];return[p?.last.ok?'Live':'Down',p?.last.ok?'live':'off']}
 function drawTools(){const fmt=x=>new Date(x).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false});
@@ -1878,7 +1878,7 @@ function drawTools(){const fmt=x=>new Date(x).toLocaleString('en-IN',{day:'numer
       <div class="tft"><span><i class="dot ${sk}"></i>${p?'Last check: '+fmt(p.last.ts):sk==='hum'?'No automatic check':'—'}</span></div></div>`}).join('');
   $('tTbl').innerHTML=`<tr><th>#</th><th>Tool / Integration</th><th>Purpose</th><th>Status</th><th>Data</th><th>Notes</th></tr>`+TOOLS.map((t,i)=>{const[st,sk]=tState(t);
     return`<tr><td>${i+1}</td><td>${t[1]}</td><td>${t[2]}</td><td><span class="tst ${sk}">${st}</span></td><td>${t[6]==='mock'?'Sample':t[6]==='human'?'Human':'Real'}</td><td>${t[7]}</td></tr>`}).join('');
-  const series=[['weather','Weather API','#2fe08a'],['pmfby','PMFBY (Mock)','#facc15'],['gemini','Gemini AI','#a855f7'],['twilio','Twilio','#3d8bff']].filter(([k])=>TH.probes[k]?.history.some(x=>x.ok));
+  const series=[['weather','Weather API','#2fe08a'],['pmfby','PMFBY (Mock)','#facc15'],['gemini','Gemini AI','#a855f7'],['__none','','#3d8bff']].filter(([k])=>TH.probes[k]?.history.some(x=>x.ok));
   const n=Math.max(...series.map(([k])=>TH.probes[k].history.length),1);
   chart('tLat',{type:'line',data:{labels:Array.from({length:n},(_,i)=>'#'+(i+1)),datasets:series.map(([k,l,c])=>({label:l,data:TH.probes[k].history.map(x=>x.ok?x.ms:null),borderColor:c,backgroundColor:c,tension:.35,pointRadius:2.5,borderWidth:2}))},
     options:{maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{usePointStyle:true,boxWidth:8}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'Health check'}},y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.06)'},title:{display:true,text:'Latency (ms)'}}}}});
@@ -2122,7 +2122,7 @@ const WHY={'pmfby.submit_intimation':'File the loss intimation on the PMFBY port
   'pmfby.health_check':'Check if the portal is up before retrying, so the agent does not waste the 72-hour window.','retry_backoff':'Portal failed: wait and retry with backoff instead of giving up.',
   'background_retry':'Keep retrying in the background while the farmer is told: PENDING, NOT DONE.','verified_done':'Receipt verified: only now the case is marked done.','start_clock':'Start the 72-hour clock from the time of loss.',
   'plan_route':'Choose the filing route (portal, helpline, bank, officer) based on what is up and the time left.','consent_received':'Farmer agreed to file; no filing happens without consent.',
-  'photo_admissibility':'Decide if the damage photo can be used as evidence.','photo.quality_check':'Pixel checks: too dark, blurry or reused photos are rejected with a reason.','sms.send':'Send the farmer an update by SMS (fails here because Twilio is not connected yet).'};
+  'photo_admissibility':'Decide if the damage photo can be used as evidence.','photo.quality_check':'Pixel checks: too dark, blurry or reused photos are rejected with a reason.','sms.send':'Send the farmer an update by SMS (goes to the SMS tab of our demo phone).'};
 ['lgCase','lgKind','lgSt'].forEach(id=>$(id).addEventListener(id==='lgCase'?'input':'change',()=>{LG.page=1;drawLogs()}));
 $('lgPg').addEventListener('click',e=>{const p=+e.target.dataset.p;if(p>=1){LG.page=p;drawLogs()}});
 $('lgTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r){LG.sel=+r.dataset.id;document.querySelectorAll('#lgTbl tr.row').forEach(x=>x.classList.toggle('sel',x===r));drawStep()}});
@@ -2174,10 +2174,10 @@ async function settingsPage(){PF=await fetch('/api/prefs').then(r=>r.json()).cat
     `<div class="srow"><span class="lg2">${g}</span><div><b>${n}</b><small>${d}</small></div><span class="tog ${PF.languages[k]?'on':''}" data-lang="${k}"></span><span class="cns ${PF.languages[k]?'y':'n'}">${PF.languages[k]?'Enabled':'Off'}</span></div>`).join('');
   $('stRisk').value=PF.at_risk_hours;$('stRiskV').textContent=PF.at_risk_hours+' hours';$('stRem').value=String(PF.reminder_hours);$('stHand').textContent=PF.handoff_window_hours+' hours';
   $('stCon').value=PF.consent[PCT]||'';$('stCnt').textContent=`Characters: ${$('stCon').value.length}/500`;
-  const live={whatsapp:PF.keys.twilio,voice:PF.keys.twilio,sms:PF.keys.twilio};
-  $('stCh').innerHTML=[['whatsapp','message-circle','#25d366','WhatsApp (Twilio)','Messages, voice notes, photos'],['voice','phone','#3d8bff','Voice Calls (Twilio)','AI voice calls to farmers'],['sms','message-square-text','#f5a524','SMS (Twilio)','SMS alerts and updates']].map(([k,ic,c,n,d])=>
-    `<div class="srow"><span class="cico" style="background:${c};color:#fff;width:36px;height:36px"><i data-lucide="${ic}"></i></span><div><b>${n}</b><small>${d}</small></div><span class="tog ${PF.channels[k]?'on':''}" data-ch="${k}"></span><span class="tst ${live[k]?'live':'off'}">${live[k]?'Live':'Not connected'}</span></div>`).join('');
-  $('stKeys').innerHTML=[['Google Gemini','Voice, understanding, documents',PF.keys.gemini,'GEMINI_API_KEY'],['Twilio','WhatsApp, voice and SMS',PF.keys.twilio,'TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN']].map(([n,d,ok,env])=>
+  const live={whatsapp:1,voice:1,sms:1};
+  $('stCh').innerHTML=[['whatsapp','message-circle','#25d366','WhatsApp','Messages, voice notes, photos'],['voice','phone','#3d8bff','Voice Calls','AI voice calls to farmers'],['sms','message-square-text','#f5a524','SMS','SMS alerts and updates']].map(([k,ic,c,n,d])=>
+    `<div class="srow"><span class="cico" style="background:${c};color:#fff;width:36px;height:36px"><i data-lucide="${ic}"></i></span><div><b>${n}</b><small>${d}</small></div><span class="tog ${PF.channels[k]?'on':''}" data-ch="${k}"></span><span class="tst mock">Demo phone</span></div>`).join('');
+  $('stKeys').innerHTML=[['Google Gemini','Voice, understanding, documents',PF.keys.gemini,'GEMINI_API_KEY']].map(([n,d,ok,env])=>
     `<div class="srow" style="flex-wrap:wrap"><div><b>${n}</b><small>${d}</small></div><span class="sval" style="font-family:monospace;font-weight:400">${ok?'••••••••••••':'not set'}</span><span class="tst ${ok?'live':'off'}">${ok?'Configured':'Not configured'}</span><small style="width:100%;color:#cfdcd8">Set <code>${env}</code> in the server .env file, then restart.</small></div>`).join('')+`<div class="snote"><i data-lucide="shield"></i>For safety, keys can't be typed or viewed in the browser.</div>`;
   $('stRet').value=String(PF.retention_days);$('stMask').classList.toggle('on',PF.mask_phones);$('stDl').classList.toggle('on',PF.allow_report_download);lucide.createIcons()}
 $('stLang').addEventListener('click',e=>{const t=e.target.closest('[data-lang]');if(!t)return;PF.languages[t.dataset.lang]=!PF.languages[t.dataset.lang];savePf({languages:PF.languages});settingsPage()});
