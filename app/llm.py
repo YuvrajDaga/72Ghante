@@ -35,7 +35,7 @@ def client() -> genai.Client:
     if _client is None:
         # Hard HTTP timeout and no hidden SDK retries: our own loop decides when to move to the next model.
         _client = genai.Client(api_key=GEMINI_API_KEY, http_options=types.HttpOptions(
-            timeout=ATTEMPT_TIMEOUT_S * 1000, retry_options=types.HttpRetryOptions(attempts=1)))
+            timeout=max(ATTEMPT_TIMEOUT_S, 10) * 1000, retry_options=types.HttpRetryOptions(attempts=1)))
     return _client
 
 
