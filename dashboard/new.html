@@ -1895,13 +1895,13 @@ const SCN=[['success','Simulate Success','Normal flow, everything works','play',
 const SN={success:'Success (Normal)',timeout:'Timeout (Slow)',server_failure:'Server Failure (503)',invalid_document:'Invalid Document',hour61:'Break at Hour 61'};
 let FR={runs:[],sel:null,page:1,speed:1,timer:null};
 async function failurePage(){const d=await fetch('/api/scenarios').then(r=>r.json()).catch(()=>null);if(!d)return;FR.runs=d.runs||[];
-  $('sBtnRow').innerHTML=SCN.map(([k,t,s,ic,c])=>`<button class="sbig" data-k="${k}" style="--sc:${c}"><span><i data-lucide="${ic}"></i></span><p><b>${t}</b><small>${s}</small></p><i data-lucide="chevron-right"></i></button>`).join('');
+  if(!$('sBtnRow').children.length)$('sBtnRow').innerHTML=SCN.map(([k,t,s,ic,c])=>`<button class="sbig" data-k="${k}" style="--sc:${c}"><span><i data-lucide="${ic}"></i></span><p><b>${t}</b><small>${s}</small></p><i data-lucide="chevron-right"></i></button>`).join('');
   const done=FR.runs.filter(r=>r.status!=='running'),pass=done.filter(r=>r.status==='passed').length,fail=done.length-pass,fx=done.filter(r=>r.kind!=='success'&&r.kind!=='invalid_document'),rec=fx.filter(r=>r.status==='passed').length;
   const R=[['k5','circle-check',pass,'Passed Runs',done.length?Math.round(100*pass/done.length)+'% success rate':'No runs yet'],['k4','circle-x',fail,'Failed Runs',done.length?Math.round(100*fail/done.length)+'% failure rate':'—'],
     ['k2','refresh-cw',fx.length?Math.round(100*rec/fx.length)+'%':'—','Recovery Rate',fx.length?`${rec} of ${fx.length} failures recovered`:'Run a failure test'],['k4b','shield-check',String(STATS?.recovery.false_done??0),'False "Done"','No incorrect done status']];
   $('simRes').innerHTML=R.map(([k,ic,v,l,s])=>`<div class="kpi ${k}"><span class="ic" style="width:40px;height:40px;top:14px;left:12px"><i data-lucide="${ic}"></i></span><b style="left:62px;top:12px">${v}</b><span class="lb" style="left:62px;top:40px;font-size:12.5px">${l}</span><span class="tr up" style="left:12px;bottom:8px;font-size:11.5px;font-weight:500;color:#d6e4df">${s}</span></div>`).join('');
-  drawRuns();if(!FR.sel&&FR.runs[0])FR.sel=FR.runs[0].id;replay(false);lucide.createIcons();
-  if(FR.runs.some(r=>r.status==='running'))setTimeout(()=>{if($('pg-failure').classList.contains('on'))failurePage()},2000)}
+  drawRuns();if(!FR.sel&&FR.runs[0])FR.sel=FR.runs[0].id;if(!FR.busy)replay(false);lucide.createIcons();
+  if(!FR.busy&&FR.runs.some(r=>r.status==='running'))setTimeout(()=>{if($('pg-failure').classList.contains('on'))failurePage()},2000)}
 function dur(a,b){if(!a||!b)return'—';const s=Math.max(0,(new Date(b)-new Date(a))/1000);return s<60?s.toFixed(1)+' s':`${Math.floor(s/60)}m ${String(Math.round(s%60)).padStart(2,'0')}s`}
 function drawRuns(){const q=$('rSearch').value.toLowerCase(),k=$('rKind').value,L=FR.runs.filter(r=>(!k||r.kind===k)&&(!q||[r.id,SN[r.kind],r.status,r.outcome].join(' ').toLowerCase().includes(q))),pages=Math.max(1,Math.ceil(L.length/10));
   FR.page=Math.min(FR.page,pages);const rows=L.slice((FR.page-1)*10,FR.page*10),cls={passed:'sub',failed:'risk',error:'risk',running:'prog'},lab=r=>r.status==='passed'?(r.kind==='success'?'Success':r.kind==='invalid_document'?'Rejected ✓':'Recovered'):cap(r.status);
@@ -1928,10 +1928,11 @@ async function replay(animate){clearInterval(FR.timer);const run=FR.runs.find(r=
   const tot=ev.length>1?dur(ev[0].ts,ev.at(-1).ts):'—',avg=gaps.length>1?(gaps.slice(1).reduce((a,b)=>a+b,0)/(gaps.length-1)).toFixed(1)+' s':'—';
   $('rpStat').innerHTML=[['Total Steps',ev.length],['Total Duration',tot],['Avg Step Gap',avg],['Longest Gap',Math.max(0,...gaps).toFixed(1)+' s']].map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join('');
   lucide.createIcons()}
-$('sBtnRow').addEventListener('click',async e=>{const b=e.target.closest('.sbig');if(!b)return;b.disabled=true;b.classList.add('run');
+$('sBtnRow').addEventListener('click',async e=>{const b=e.target.closest('.sbig');if(!b||FR.busy)return;FR.busy=true;document.querySelectorAll('#sBtnRow .sbig').forEach(x=>x.disabled=true);b.classList.add('run');clearInterval(FR.timer);
+  $('rpList').innerHTML=`<li class="rp"><p><b>⏳ Running: ${SN[b.dataset.k]}</b><small>The real agent is working — steps appear here when it finishes (about 10 seconds).</small></p></li>`;$('rpFin').innerHTML='';
   const r=await fetch('/api/scenarios/'+b.dataset.k,{method:'POST'}).then(r=>r.json()).catch(()=>null);if(r?.run_id)FR.sel=r.run_id;toast('Running real test: '+SN[b.dataset.k]);
-  const poll=async()=>{await failurePage();const run=FR.runs.find(x=>x.id===FR.sel);if(run&&run.status==='running')setTimeout(poll,1500);else{b.disabled=false;b.classList.remove('run');replay(true);loadAll()}};setTimeout(poll,1200)});
-$('runTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r){FR.sel=+r.dataset.id;drawRuns();replay(true)}});
+  const poll=async()=>{await failurePage();const run=FR.runs.find(x=>x.id===FR.sel);if(run&&run.status==='running')setTimeout(poll,1500);else{FR.busy=false;document.querySelectorAll('#sBtnRow .sbig').forEach(x=>x.disabled=false);b.classList.remove('run');replay(true);loadAll()}};setTimeout(poll,1200)});
+$('runTbl').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(r&&!FR.busy){FR.sel=+r.dataset.id;drawRuns();replay(true)}});
 $('rpSpeed').addEventListener('click',e=>{const p=e.target.closest('.pill');if(!p)return;FR.speed=+p.dataset.s;document.querySelectorAll('#rpSpeed .pill').forEach(x=>x.classList.toggle('on',x===p))});
 $('rpFin').addEventListener('click',e=>{if(e.target.closest('#rpAgain'))replay(true)});
 $('rSearch').addEventListener('input',drawRuns);$('rKind').addEventListener('change',drawRuns);
