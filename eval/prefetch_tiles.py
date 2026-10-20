@@ -12,7 +12,9 @@ from app.main import fetch_tile
 STATES = (68.0, 15.5, 81.0, 30.5)          # lon/lat box covering Rajasthan + Maharashtra
 DISTRICTS = [(72.0, 25.8, 74.2, 27.6),      # Jodhpur talukas
              (73.4, 19.6, 74.9, 20.9)]      # Nashik talukas
-PLAN = [("esri", range(4, 10), [STATES]), ("dark", range(4, 10), [STATES]), ("night", range(4, 9), [STATES]),
+INDIA = (66.0, 6.0, 98.0, 37.6)           # whole India incl. Jammu & Kashmir, Ladakh, North-East, Andaman edge
+PLAN = [("esri", range(4, 8), [INDIA]), ("dark", range(4, 8), [INDIA]), ("night", range(4, 9), [INDIA]),
+        ("esri", range(8, 10), [STATES]), ("dark", range(8, 10), [STATES]),
         ("esri", range(10, 12), DISTRICTS), ("dark", range(10, 12), DISTRICTS)]
 
 
