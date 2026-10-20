@@ -10,7 +10,7 @@ from collections import defaultdict
 import httpx
 
 from . import llm, store
-from .config import MEDIA_DIR, PUBLIC_BASE_URL, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM, TWILIO_WHATSAPP_FROM
+from .config import META_GRAPH, META_PHONE_ID, META_TOKEN, MEDIA_DIR, PUBLIC_BASE_URL, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS_FROM, TWILIO_WHATSAPP_FROM
 
 # Replies waiting to be spoken on a live call, per phone number.
 voice_queue: dict[str, list[dict]] = defaultdict(list)
@@ -39,16 +39,40 @@ async def twilio_send(to: str, body: str, media_url: str | None, whatsapp: bool)
     return {"sent": ok, "status": resp.status_code, "error": None if ok else resp.json().get("message")}
 
 
+async def meta_send(to: str, text: str | None = None, ogg: bytes | None = None) -> dict:
+    """Real WhatsApp through the Meta Cloud API: text, then the voice note (uploaded as OGG/Opus)."""
+    if not (META_TOKEN and META_PHONE_ID):
+        return {"sent": False, "reason": "meta not configured"}
+    hdr = {"Authorization": f"Bearer {META_TOKEN}"}
+    to = to.lstrip("+")
+    async with httpx.AsyncClient(timeout=20) as http:
+        if ogg:
+            up = await http.post(f"{META_GRAPH}/{META_PHONE_ID}/media", headers=hdr, data={"messaging_product": "whatsapp", "type": "audio/ogg"},
+                                 files={"file": ("reply.ogg", ogg, "audio/ogg")})
+            if up.status_code >= 300:
+                return {"sent": False, "status": up.status_code, "error": up.text[:200]}
+            body = {"messaging_product": "whatsapp", "to": to, "type": "audio", "audio": {"id": up.json()["id"]}}
+        else:
+            body = {"messaging_product": "whatsapp", "to": to, "type": "text", "text": {"body": text[:4000]}}
+        r = await http.post(f"{META_GRAPH}/{META_PHONE_ID}/messages", headers=hdr, json=body)
+    return {"sent": r.status_code < 300, "status": r.status_code, "error": None if r.status_code < 300 else r.text[:200]}
+
+
 async def send(case: dict, text: str, voice: bool = True, also_sms: bool = False) -> None:
     """Sends one reply. Voice is best-effort: if speech fails, the text still goes."""
     channel, phone = case["channel"], case["phone"]
     media_path = None
-    if voice and channel in ("whatsapp", "voice", "sim"):
+    if voice and channel in ("whatsapp", "meta", "voice", "sim"):
         ogg = await llm.tts(text, case["id"]) if channel != "sim" or case.get("sim_voice") else None
         if ogg:
             media_path = save_media(llm.to_mp3_from_ogg(ogg), "mp3") if channel == "voice" else save_media(ogg, "ogg")
     store.add_message(case["id"], phone, channel, "out", "voice" if media_path else "text", text, media_path)
 
+    if channel == "meta":
+        result = await meta_send(phone, text)
+        if media_path:
+            await meta_send(phone, ogg=(MEDIA_DIR / media_path.rsplit("/", 1)[-1]).read_bytes())
+        store.add_trace(case["id"], "channel", "whatsapp.send", "ok" if result.get("sent") else "error", None, {"to": store.mask_phone(phone), "via": "Meta Cloud API"}, result)
     if channel == "whatsapp":
         # Text first (so numbers can be read), then the voice note.
         result = await twilio_send(phone, text, None, whatsapp=True)

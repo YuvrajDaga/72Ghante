@@ -45,3 +45,9 @@ ADMIN_PASSWORD = _env("ADMIN_PASSWORD", "")
 GROQ_API_KEY = _env("GROQ_API_KEY")
 GROQ_MODELS = [m.strip() for m in _env("GROQ_MODELS", "qwen/qwen3.8-27b,openai/gpt-oss-120b").split(",") if m.strip()]
 GROQ_STT_MODEL = _env("GROQ_STT_MODEL", "whisper-large-v3")
+
+# Real WhatsApp via Meta WhatsApp Cloud API (free test number). The demo phone keeps working without these.
+META_TOKEN = _env("META_TOKEN")
+META_PHONE_ID = _env("META_PHONE_ID")
+META_VERIFY_TOKEN = _env("META_VERIFY_TOKEN", "72ghante-verify")
+META_GRAPH = "https://graph.facebook.com/v21.0"

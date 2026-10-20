@@ -57,7 +57,7 @@ app.mount("/static", StaticFiles(directory=ROOT / "dashboard"), name="static")
 
 
 # Phone webhooks Twilio must reach from the internet; everything else is the admin control room.
-PUBLIC_PATHS = ("/whatsapp", "/sms", "/voice/", "/media/")
+PUBLIC_PATHS = ("/whatsapp", "/meta", "/sms", "/voice/", "/media/")
 
 
 @app.middleware("http")
@@ -159,6 +159,51 @@ async def whatsapp_webhook(request: Request, background: BackgroundTasks):
     form = dict(await request.form())
     background.add_task(_process_twilio_message, form, "whatsapp")
     return EMPTY_TWIML
+
+
+# ---------------------------------------------------------------- real WhatsApp (Meta Cloud API)
+
+@app.get("/meta/webhook")
+async def meta_verify(request: Request):
+    q = request.query_params
+    if q.get("hub.mode") == "subscribe" and q.get("hub.verify_token") == _cfg.META_VERIFY_TOKEN:
+        return Response(q.get("hub.challenge", ""), media_type="text/plain")
+    return Response("forbidden", status_code=403)
+
+
+async def _meta_media(media_id: str) -> tuple[bytes, str]:
+    hdr = {"Authorization": f"Bearer {_cfg.META_TOKEN}"}
+    async with httpx.AsyncClient(timeout=30, follow_redirects=True) as http:
+        info = (await http.get(f"{_cfg.META_GRAPH}/{media_id}", headers=hdr)).json()
+        r = await http.get(info["url"], headers=hdr)
+        r.raise_for_status()
+        return r.content, (info.get("mime_type") or "application/octet-stream").split(";")[0]
+
+
+async def _process_meta(msg: dict) -> None:
+    phone = "+" + msg.get("from", "").lstrip("+")
+    kind, text, media = msg.get("type"), None, []
+    if kind == "text":
+        text = msg["text"]["body"]
+    elif kind in ("audio", "image", "document"):
+        try:
+            media.append(await _meta_media(msg[kind]["id"]))
+        except Exception as err:  # noqa: BLE001
+            store.add_trace(None, "channel", "whatsapp.media_download", "error", None, None, str(err)[:200])
+        text = msg[kind].get("caption")
+    elif kind == "button":
+        text = msg["button"].get("text")
+    await agent.handle_inbound(phone, "meta", text, media)
+
+
+@app.post("/meta/webhook")
+async def meta_webhook(request: Request, background: BackgroundTasks):
+    body = await request.json()
+    for entry in body.get("entry", []):
+        for ch in entry.get("changes", []):
+            for msg in ch.get("value", {}).get("messages", []):
+                background.add_task(_process_meta, msg)
+    return {"ok": True}
 
 
 @app.post("/sms")
