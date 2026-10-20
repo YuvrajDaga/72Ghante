@@ -126,8 +126,8 @@ setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString('en-IN',{ho
 async function draw(force){
   const o=await fetch('/api/sim/open?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>({}));
   const all=o.case_id?await fetch('/api/sim/messages?phone='+encodeURIComponent(PHONE)).then(r=>r.json()).catch(()=>[]):[];
-  const msgs=all.filter(m=>m.case_id===o.case_id&&m.channel!=='sms');// the SMS copy of a confirmation is not a second chat message
-  const s=JSON.stringify([o.case_id,msgs.length,busy]);if(s===sig&&!force)return;sig=s;
+  const msgs=all.filter(m=>m.case_id===o.case_id&&(MODE==='sms'?m.channel==='sms':m.channel!=='sms'));// SMS tab shows only SMS; WhatsApp tab only the WhatsApp chat// the SMS copy of a confirmation is not a second chat message
+  const s=JSON.stringify([o.case_id,msgs.length,busy,MODE]);if(s===sig&&!force)return;sig=s;if(SCRIPT&&$('txt').value===$('txt').dataset.pre)$('txt').value='';
   // farmer = this phone = right side (green); agent = left side (white)
   $('chat').innerHTML=`<div class="enc">🔒 Messages are end-to-end encrypted. No one outside of this chat can read them.</div><div class="day">TODAY</div>`+msgs.map(m=>{
     const mine=m.direction==='in',txt=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');
@@ -140,7 +140,7 @@ async function draw(force){
 async function post(fd){if(busy)return;busy=true;fd.append('phone',PHONE);draw(true);
   try{await fetch('/api/sim/send',{method:'POST',body:fd})}catch(e){}
   busy=false;draw(true)}
-function sendText(){const t=$('txt').value.trim();if(!t)return;const pre=t===$('txt').dataset.pre;$('txt').value='';$('txt').dataset.pre='';updBtn();if(SCRIPT)return scriptNext(pre&&MODE!=='sms'?'':t);const fd=new FormData();fd.append('text',t);post(fd)}
+function sendText(){const t=$('txt').value.trim();if(!t)return;const pre=t===$('txt').dataset.pre;$('txt').value='';$('txt').dataset.pre='';updBtn();if(SCRIPT)return scriptNext(pre?'':t);const fd=new FormData();fd.append('text',t);post(fd)}
 function updBtn(){$('send').textContent=$('txt').value.trim()?'➤':(rec?'■':'🎤')}
 $('txt').addEventListener('input',updBtn);
 $('txt').addEventListener('keydown',e=>{if(e.key==='Enter')sendText()});

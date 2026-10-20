@@ -27,6 +27,17 @@ STEPS = [
 ]
 
 
+# SMS conversation (plain text both ways, no photo, no emoji)
+SMS_STEPS = [
+    ("नमस्ते, कल रात ओले गिरे, मेरी प्याज की पूरी फसल खराब हो गई।",
+     "72 घंटे: नमस्ते सुनीता जी। प्याज की फसल के ओलों से नुकसान की सूचना मिली। 72 घंटे की घड़ी शुरू, आपके पास 2 दिन 19 घंटे हैं। पॉलिसी MH-26-0457812 मिल गई। क्या खेत की फोटो है?"),
+    ("खेत की फोटो नहीं है, आगे बढ़िए",
+     "72 घंटे: ठीक है। सूचना: प्याज, ओलावृष्टि, 2 एकड़, लासलगाँव, निफाड, नासिक। क्या मैं यह रिपोर्ट दर्ज कर दूँ? उत्तर दें: हाँ / ना"),
+    ("हाँ जी, रिपोर्ट दर्ज कर दीजिए",
+     "72 घंटे: आपकी रिपोर्ट दर्ज हो गई और बीमा कंपनी ने पुष्टि की। डॉकेट {docket}। सर्वेयर की तारीख SMS से भेजेंगे।"),
+]
+
+
 def is_on() -> bool:
     try:
         return bool(json.loads(MODE_FILE.read_text()).get("script"))
@@ -64,14 +75,19 @@ def _fresh_case(phone: str) -> dict:
 
 async def step(phone: str, text: str | None = None, as_text: bool = False) -> dict:
     """Plays the next scripted step. Typed text (or SMS mode) replaces the farmer's media with that text."""
+    ch = "sms" if as_text else "sim"  # SMS tab = its own text conversation; WhatsApp tab = the WhatsApp chat
     case = store.open_case_for(phone)
-    done = sum(1 for m in store.messages_for_case(case["id"]) if m["direction"] == "in") if case and case.get("stage_script") else 0
+    done = sum(1 for m in store.messages_for_case(case["id"]) if m["direction"] == "in" and m["channel"] == ch) if case and case.get("stage_script") else 0
     if not case or not case.get("stage_script") or done >= len(STEPS):
         case, done = _fresh_case(phone), 0
-    kind, farmer_text, media, reply = STEPS[done]
-    if text or as_text:
-        kind, media, farmer_text = "text", None, text or farmer_text or "फोटो नहीं है, आगे बढ़िए"
-    store.add_message(case["id"], phone, "sim", "in", kind, farmer_text, media)
+    if as_text:
+        farmer_text, reply = SMS_STEPS[done]
+        kind, media, farmer_text = "text", None, text or farmer_text
+    else:
+        kind, farmer_text, media, reply = STEPS[done]
+        if text:
+            kind, media, farmer_text = "text", None, text
+    store.add_message(case["id"], phone, ch, "in", kind, farmer_text, media)
     await asyncio.sleep(2.2)  # agent 'typing…'
     now = clock.now().isoformat()
     if done == 2:
@@ -82,7 +98,8 @@ async def step(phone: str, text: str | None = None, as_text: bool = False) -> di
         case["intimation"].update({"status": "verified", "reference": docket, "route": "portal_api", "verified_at": now})
         case["stage"] = "tracking"
         case["action_log"].append({"ts": now, "kind": "done", "text": f"Stage script demo: report filed and verified ({docket})"})
-        store.add_message(case["id"], phone, "sms", "out", "text", f"72 घंटे: आपकी फसल नुकसान की सूचना दर्ज हुई। डॉकेट {docket}। सर्वेयर की तारीख जल्द भेजेंगे।")
-    store.add_message(case["id"], phone, "sim", "out", "text", reply)
+        if ch == "sim":  # WhatsApp flow: the farmer also gets an SMS copy of the docket
+            store.add_message(case["id"], phone, "sms", "out", "text", f"72 घंटे: आपकी फसल नुकसान की सूचना दर्ज हुई। डॉकेट {docket}। सर्वेयर की तारीख जल्द भेजेंगे।")
+    store.add_message(case["id"], phone, ch, "out", "text", reply)
     store.save_case(case)
     return {"case_id": case["id"], "step": done + 1}
