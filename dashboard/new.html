@@ -1126,7 +1126,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
       <p style="width:640px">AI-powered multi-language agent to help farmers report crop loss, check policy and track claims — on WhatsApp, Voice and SMS.</p>
     </section>
     <section id="waTop"></section>
-    <section class="card" style="left:10px;top:174px;width:calc(29% - 12px);bottom:10px"><h3 id="waConvTitle" style="font-size:18px">Conversations</h3>
+    <section class="card" id="waLeft" style="left:10px;top:174px;width:calc(29% - 12px);bottom:10px"><h3 id="waConvTitle" style="font-size:18px">Conversations</h3>
+      <span class="pill" id="waPhoneBtn" style="position:absolute;right:12px;top:10px;z-index:3;cursor:pointer">📱 Farmer phone</span>
+      <iframe id="waPhone" title="Farmer phone (demo)" style="display:none;position:absolute;left:0;right:0;top:44px;bottom:0;width:100%;height:calc(100% - 44px);border:0;background:transparent"></iframe>
       <label class="srch2" style="left:auto;right:12px;width:38%"><i data-lucide="search"></i><input id="waQ" placeholder="Search..."></label>
       <div id="waTabs" class="watabs"></div>
       <div class="sample">Sample conversations · real chats appear here once WhatsApp is connected</div>
@@ -1971,7 +1973,7 @@ const WAP={mr:{open:['माझ्या पिकाचं खूप नुक�
   mwr:{open:['म्हारी फसल रो घणो नुकसान होयो है।','काल री आंधी सूं सगळी फसल खराब होगी।'],en:['My crop is heavily damaged.','Yesterday\'s storm spoiled the whole crop.'],prev:['Kal survey wale aaye the','Survey number 123/2','Kitna paisa milega?']}};
 let WA={sel:'live',tab:'all',list:[],live:false,open:null};
 const REM={};// case id -> time a reminder was sent (demo: shown in the chat, real once WhatsApp is connected)
-function sendReminder(id){const c=CASES.find(x=>x.id===id);if(!c)return;REM[id]=Date.now();WA.open=id;WA.tab='all';toast(`✓ Reminder sent to ${c.farmer} on WhatsApp`);goPage('chat')}
+function sendReminder(id){const c=CASES.find(x=>x.id===id);if(!c)return;REM[id]=Date.now();WA.open=id;WA.tab='all';waPhone(false);toast(`✓ Reminder sent to ${c.farmer} on WhatsApp`);goPage('chat')}
 const LIVE_PHONE='+919000000001';// mock PMFBY farmer Sunita Pawar (Lasalgaon, onion) — real AI, real agent, simulated phone
 async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);return}
   const live=await fetch('/api/live_chat').then(r=>r.json()).catch(()=>null);WA.live=!!live?.case_id;
@@ -1985,10 +1987,10 @@ async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);ret
   WA.list.forEach(x=>{if(REM[x.c.id])x.prev='🔔 Reminder sent'});
   WA.list.sort((a,b)=>(REM[b.c.id]||+b.time)-(REM[a.c.id]||+a.time));
   if(WA.open){const i=WA.list.findIndex(x=>x.c.id===WA.open);if(i>=0)WA.sel=i;WA.open=null}
-  drawConvs();drawChat();drawWaSide();lucide.createIcons()}
+  drawConvs();drawChat();drawWaSide();lucide.createIcons();if(WA.phone===undefined)waPhone(true)}
 const CHI2={whatsapp:['message-circle','#25d366'],voice:['phone','#3d8bff'],sms:['message-square-text','#a855f7']};
 function drawConvs(){const q=$('waQ').value.toLowerCase(),L=WA.list.map((x,i)=>({...x,i})).filter(x=>(WA.tab==='all'||(WA.tab==='unread'?x.unread:x.ch===WA.tab))&&(!q||x.c.farmer.toLowerCase().includes(q)));
-  $('waConvTitle').textContent=`Conversations (${WA.list.length})`;
+  $('waConvTitle').textContent=WA.phone?'Farmer phone (live demo)':`Conversations (${WA.list.length})`;
   $('waList').innerHTML=`<li class="${WA.sel==='live'?'on':''} liveConv" data-i="live"><span class="av">${avImg('Sunita Pawar')}</span><p><b>Live demo · Sunita Pawar</b><small>Real AI agent · type or speak</small></p><span class="livePill" style="position:static">Live</span></li>`+L.map(x=>{const[ic,col]=CHI2[x.ch]||CHI2.whatsapp;return`<li class="${x.i===WA.sel?'on':''}" data-i="${x.i}"><span class="av">${avImg(x.c.farmer)}</span><p><b>${esc(x.c.farmer)}</b><small>${esc(x.prev)}</small></p><span class="lang ${x.lang}">${LANG[x.lang]||x.lang}</span><span class="wt">${x.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}${x.unread?`<em>${x.unread}</em>`:''}</span><span class="wci" style="color:${col}"><i data-lucide="${ic}"></i></span></li>`}).join('');lucide.createIcons()}
 async function drawChat(){if(WA.sel==='live')return drawLive();const x=WA.list[WA.sel];if(!x)return;const c=x.c,P=WAP[x.lang]||WAP.hi;
   const d=await fetch('/api/cases/'+c.id).then(r=>r.json()).catch(()=>null),f=d?.case?.fields||{},left=(new Date(c.deadline)-(Date.now()+skew))/36e5;
@@ -2016,6 +2018,12 @@ function drawWaSide(f,c){if(!f)return;const rows=[['flame','Crop',cap(f.crop),98
 $('waList').addEventListener('click',e=>{const li=e.target.closest('li');if(!li)return;if(li.dataset.i==='live'){WA.sel='live';drawConvs();drawLive();return}WA.sel=+li.dataset.i;WA.list[WA.sel].unread=0;drawConvs();drawChat()});
 $('waTabs').addEventListener('click',e=>{const p=e.target.closest('.pill');if(p){WA.tab=p.dataset.t;document.querySelectorAll('#waTabs .pill').forEach(x=>x.classList.toggle('on',x===p));drawConvs()}});
 $('waQ').addEventListener('input',drawConvs);
+// Farmer phone inside the WhatsApp page: the same live chat on the farmer's phone (left) and in the control room (middle)
+function waPhone(on){WA.phone=on;const f=$('waPhone');if(on&&!f.src)f.src='phone.html?embed=1';f.style.display=on?'block':'none';
+  ['waTabs','waList','waQ'].forEach(id=>{const e=$(id);if(e)(e.closest('label')||e).style.visibility=on?'hidden':''});document.querySelector('#waLeft .sample').style.visibility=on?'hidden':'';
+  $('waConvTitle').textContent=on?'Farmer phone (live demo)':`Conversations (${WA.list.length})`;$('waPhoneBtn').textContent=on?'☰ Chats':'📱 Farmer phone';
+  if(on&&WA.sel!=='live'){WA.sel='live';drawConvs();drawLive()}}
+$('waPhoneBtn').addEventListener('click',()=>waPhone(!WA.phone));
 // ---- Live demo chat: real agent + real Gemini, the phone is simulated (no Twilio needed)
 let LV={case:null,busy:false,rec:null,chunks:[],sig:''};
 const lvTime=t=>new Date(t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
