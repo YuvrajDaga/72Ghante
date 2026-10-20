@@ -39,10 +39,8 @@ SMS_STEPS = [
 
 
 def is_on() -> bool:
-    try:
-        return bool(json.loads(MODE_FILE.read_text()).get("script"))
-    except (OSError, ValueError):
-        return False
+    """The demo phone always uses the fixed flow (Yuvraj's choice for the finale)."""
+    return True
 
 
 def set_on(on: bool) -> None:
