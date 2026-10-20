@@ -18,7 +18,8 @@ from . import store
 from .config import GEMINI_API_KEY, GEMINI_FALLBACK_MODELS, GEMINI_MODEL, GEMINI_TTS_MODELS, GEMINI_TTS_VOICE, GROQ_API_KEY, GROQ_MODELS, GROQ_STT_MODEL
 import httpx
 
-ATTEMPT_TIMEOUT_S = 25
+ATTEMPT_TIMEOUT_S = 8  # a busy model is skipped after 8 s, so a farmer never waits long
+GROQ_FIRST = True  # text steps: Groq first (fastest, ~1 s), Gemini as backup; images always Gemini
 
 _client: genai.Client | None = None
 
@@ -59,6 +60,11 @@ async def generate_json(name: str, system: str, parts: list[Any], case_id: str |
         thinking_config=types.ThinkingConfig(thinking_level=types.ThinkingLevel.LOW),
     )
     last_err: Exception | None = None
+    text_only = all(isinstance(p, str) for p in parts)
+    if GROQ_FIRST and GROQ_API_KEY and text_only:
+        data = await _groq_json(name, system, "\n\n".join(parts), case_id, schema)
+        if data is not None:
+            return data
     for model in _models():
         t0 = time.perf_counter()
         try:
@@ -72,7 +78,7 @@ async def generate_json(name: str, system: str, parts: list[Any], case_id: str |
             if isinstance(err, json.JSONDecodeError) or _retryable(err) or isinstance(err, LLMUnavailable):
                 continue
             break
-    if GROQ_API_KEY and all(isinstance(p, str) for p in parts):
+    if GROQ_API_KEY and text_only and not GROQ_FIRST:
         # Every Gemini model is busy / out of quota: the free Groq backup answers instead (text-only steps).
         data = await _groq_json(name, system, "\n\n".join(parts), case_id, schema)
         if data is not None:
@@ -108,15 +114,12 @@ Return JSON: {"transcript": str, "language": ISO-like code (mr, hi, mwr for Marw
 
 async def transcribe(audio: bytes, mime: str, case_id: str | None) -> dict:
     parts = [types.Part.from_bytes(data=audio, mime_type=mime), "Transcribe this audio."]
-    try:
+    if not GROQ_API_KEY:
         return await generate_json("speech_to_text", TRANSCRIBE_SYSTEM, parts, case_id)
-    except LLMUnavailable:
-        if not GROQ_API_KEY:
-            raise
-    # Free backup: Groq Whisper.
+    # Groq Whisper first (~1 s); Gemini is the backup.
     t0 = time.perf_counter()
     try:
-        async with httpx.AsyncClient(timeout=60) as http:
+        async with httpx.AsyncClient(timeout=ATTEMPT_TIMEOUT_S * 2) as http:
             r = await http.post("https://api.groq.com/openai/v1/audio/transcriptions", headers={"Authorization": f"Bearer {GROQ_API_KEY}"},
                                 data={"model": GROQ_STT_MODEL, "response_format": "verbose_json"}, files={"file": ("voice.ogg", audio, mime)})
         r.raise_for_status()
@@ -127,7 +130,7 @@ async def transcribe(audio: bytes, mime: str, case_id: str | None) -> dict:
         return out
     except Exception as err:  # noqa: BLE001
         store.add_trace(case_id, "llm", "speech_to_text", "error", int((time.perf_counter() - t0) * 1000), {"model": f"groq/{GROQ_STT_MODEL}"}, f"{type(err).__name__}: {str(err)[:300]}")
-        raise LLMUnavailable(str(err)) from err
+    return await generate_json("speech_to_text", TRANSCRIBE_SYSTEM, parts, case_id)
 
 
 IMAGE_SYSTEM = """You look at a photo a farmer sent while reporting crop loss under PMFBY (Indian crop insurance).

@@ -271,20 +271,19 @@ async def sim_mode():
 async def sim_mode_set(body: dict):
     stage.set_on(bool(body.get("script")))
     if stage.is_on():  # start the stage demo from a clean chat
-        stage.clear(body.get("phone") or "+919000000001")
+        await sim_reset({"phone": body.get("phone") or "+919000000001"})
     return {"script": stage.is_on()}
 
 
 @app.post("/api/sim/clear")
 async def sim_clear(body: dict):
-    stage.clear(body.get("phone") or "+919000000001")
-    return {"ok": True}
+    return await sim_reset({"phone": body.get("phone") or "+919000000001"})
 
 
 @app.post("/api/sim/script")
 async def sim_script(phone: str = Form(...), text: str = Form(""), as_text: bool = Form(False)):
     """Stage script mode (backup): next fixed farmer step + fixed agent reply, no AI."""
-    return await stage.step(phone, text or None, as_text)
+    return await stage.step(phone, text or None, as_text, reset=lambda ph: sim_reset({"phone": ph}))
 
 
 @app.post("/api/sim/reset")

@@ -229,9 +229,11 @@ async def handle_image(case: dict, data: bytes, mime: str, path: str, use_vision
         seen = {"kind": "crop_damage_photo", "damage_visible": not quality["problems"], "summary": "vision skipped (deterministic test)"}
     else:
         try:
-            seen = await llm.analyse_image(data, mime, case["id"])
-        except llm.LLMUnavailable:
-            seen = {"kind": "other", "readable": False, "problems": ["could not analyse"]}
+            seen = await asyncio.wait_for(llm.analyse_image(data, mime, case["id"]), 10)
+        except (llm.LLMUnavailable, asyncio.TimeoutError):
+            # AI vision busy: keep the photo if the pixel checks pass; the surveyor sees it anyway.
+            seen = {"kind": "crop_damage_photo", "damage_visible": not quality["problems"], "summary": "AI vision unavailable; kept on pixel checks for the surveyor"}
+            store.add_trace(case["id"], "decision", "vision_unavailable", "warn", None, None, {"kept_on_pixel_checks": not quality["problems"]})
 
     if seen.get("kind") in ("insurance_document", "bank_passbook"):
         doc = seen.get("document_fields") or {}

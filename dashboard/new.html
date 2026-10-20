@@ -2035,7 +2035,7 @@ async function drawLive(force){if(WA.sel!=='live')return;
   const msgs=o.case_id?all.filter(m=>m.case_id===o.case_id&&m.channel!=='sms'):[];
   const d=o.case_id?await fetch('/api/cases/'+o.case_id).then(r=>r.json()).catch(()=>null):null,c=d?.case;
   const sig=JSON.stringify([msgs.length,LV.busy,c?.stage,c?.intimation?.status]);if(sig===LV.sig&&!force)return;LV.sig=sig;
-  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${avImg('Sunita Pawar')}</span><div><b>Sunita Pawar</b> <span class="cns y" style="font-size:10.5px">● Live demo</span><small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
+  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${avImg('Sunita Pawar')}</span><div><b>Sunita Pawar</b> <span class="cns y" style="font-size:10.5px">● Live · AI agent</span><small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
   const bub=m=>{const media=m.media_url?(m.kind==='image'?`<img src="${m.media_url}" alt="">`:`<audio controls preload="none" src="${m.media_url}" style="width:220px;height:32px;display:block;margin-bottom:4px"></audio>`):'';
     const txt=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');
     return m.direction==='in'?`<div class="wm in"><span class="av">${avImg('Sunita Pawar')}</span><div class="bub ${m.kind==='image'?'img':''}">${media}${m.kind==='voice'&&txt?`<small style="color:#9fb3ae">🎤 heard:</small><br>`:''}${esc(txt)}<time>${lvTime(m.ts)}</time></div></div>`
