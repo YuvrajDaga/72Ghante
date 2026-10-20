@@ -18,7 +18,7 @@ from fastapi.staticfiles import StaticFiles
 
 from mock_pmfby import server as mock_server
 
-from . import agent, channels, clock, demo_roll, store, tools
+from . import agent, channels, clock, demo_roll, stage, store, tools
 from . import stats as stats_mod
 from .api_cases import router as cases_router
 from .config import ADMIN_KEY, ADMIN_PASSWORD, DATA_DIR, MEDIA_DIR, PUBLIC_BASE_URL, ROOT, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VOICE_FROM
@@ -260,6 +260,23 @@ def _to_ogg(data: bytes) -> bytes:
     import imageio_ffmpeg
     return subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), "-loglevel", "error", "-i", "pipe:0", "-c:a", "libopus", "-b:a", "32k", "-f", "ogg", "pipe:1"],
                           input=data, capture_output=True, check=True).stdout
+
+
+@app.get("/api/sim/mode")
+async def sim_mode():
+    return {"script": stage.is_on()}
+
+
+@app.post("/api/sim/mode")
+async def sim_mode_set(body: dict):
+    stage.set_on(bool(body.get("script")))
+    return {"script": stage.is_on()}
+
+
+@app.post("/api/sim/script")
+async def sim_script(phone: str = Form(...), text: str = Form(""), as_text: bool = Form(False)):
+    """Stage script mode (backup): next fixed farmer step + fixed agent reply, no AI."""
+    return await stage.step(phone, text or None, as_text)
 
 
 @app.post("/api/sim/reset")

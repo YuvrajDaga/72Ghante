@@ -1128,6 +1128,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
     <section id="waTop"></section>
     <section class="card" id="waLeft" style="left:10px;top:174px;width:calc(29% - 12px);bottom:10px"><h3 id="waConvTitle" style="font-size:18px">Conversations</h3>
       <span class="pill" id="waPhoneBtn" style="position:absolute;right:12px;top:10px;z-index:3;cursor:pointer">📱 Farmer phone</span>
+      <span class="pill" id="waScriptBtn" title="Backup: fixed demo replies (no AI)" style="position:absolute;right:118px;top:10px;z-index:3;cursor:pointer">🎬 Script: off</span>
       <iframe id="waPhone" title="Farmer phone (demo)" style="display:none;position:absolute;left:0;right:0;top:44px;bottom:0;width:100%;height:calc(100% - 44px);border:0;background:transparent"></iframe>
       <label class="srch2" style="left:auto;right:12px;width:38%"><i data-lucide="search"></i><input id="waQ" placeholder="Search..."></label>
       <div id="waTabs" class="watabs"></div>
@@ -2024,6 +2025,13 @@ function waPhone(on){WA.phone=on;const f=$('waPhone');if(on&&!f.src)f.src='phone
   $('waConvTitle').textContent=on?'Farmer phone (live demo)':`Conversations (${WA.list.length})`;$('waPhoneBtn').textContent=on?'☰ Chats':'📱 Farmer phone';
   if(on&&WA.sel!=='live'){WA.sel='live';drawConvs();drawLive()}}
 $('waPhoneBtn').addEventListener('click',()=>waPhone(!WA.phone));
+// Stage script mode (backup when the AI is slow): fixed replies, no AI. Shown honestly on the chat header.
+let SCRIPT_ON=false;
+async function loadScript(){const m=await fetch('/api/sim/mode').then(r=>r.json()).catch(()=>null);if(!m)return;SCRIPT_ON=m.script;
+  $('waScriptBtn').textContent='🎬 Script: '+(SCRIPT_ON?'ON':'off');$('waScriptBtn').style.cssText+=SCRIPT_ON?';background:#f5a524;color:#1a1300;border-color:#f5a524':';background:;color:;border-color:'}
+$('waScriptBtn').addEventListener('click',async()=>{await fetch('/api/sim/mode',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({script:!SCRIPT_ON})});
+  await loadScript();toast(SCRIPT_ON?'Stage script ON: fixed replies, no AI (backup)':'Live AI ON: real agent replies');LV.sig='';drawLive(true)});
+loadScript();
 // ---- Live demo chat: real agent + real Gemini, the phone is simulated (no Twilio needed)
 let LV={case:null,busy:false,rec:null,chunks:[],sig:''};
 const lvTime=t=>new Date(t).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
@@ -2033,7 +2041,7 @@ async function drawLive(force){if(WA.sel!=='live')return;
   const msgs=o.case_id?all.filter(m=>m.case_id===o.case_id&&m.channel!=='sms'):[];
   const d=o.case_id?await fetch('/api/cases/'+o.case_id).then(r=>r.json()).catch(()=>null):null,c=d?.case;
   const sig=JSON.stringify([msgs.length,LV.busy,c?.stage,c?.intimation?.status]);if(sig===LV.sig&&!force)return;LV.sig=sig;
-  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${avImg('Sunita Pawar')}</span><div><b>Sunita Pawar</b> <span class="cns y" style="font-size:10.5px">● Live · real AI</span><small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
+  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${avImg('Sunita Pawar')}</span><div><b>Sunita Pawar</b> ${SCRIPT_ON?'<span class="cns" style="font-size:10.5px;background:#f5a52433;color:#ffd23f;border-color:#f5a524">🎬 Stage script</span>':'<span class="cns y" style="font-size:10.5px">● Live · real AI</span>'}<small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
   const bub=m=>{const media=m.media_url?(m.kind==='image'?`<img src="${m.media_url}" alt="">`:`<audio controls preload="none" src="${m.media_url}" style="width:220px;height:32px;display:block;margin-bottom:4px"></audio>`):'';
     const txt=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');
     return m.direction==='in'?`<div class="wm in"><span class="av">${avImg('Sunita Pawar')}</span><div class="bub ${m.kind==='image'?'img':''}">${media}${m.kind==='voice'&&txt?`<small style="color:#9fb3ae">🎤 heard:</small><br>`:''}${esc(txt)}<time>${lvTime(m.ts)}</time></div></div>`

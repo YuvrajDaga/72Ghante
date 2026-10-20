@@ -75,12 +75,14 @@ html.embed .modes{position:fixed;top:6px;left:6px;flex-direction:row;gap:6px}
 html.embed .modes span{padding:5px 9px;font-size:12px}
 html.embed .reset{top:6px;right:6px;padding:5px 8px;font-size:12px}
 html.embed .cap{display:none}
+.nexthint{margin:10px auto 4px;width:max-content;max-width:90%;padding:5px 10px;border-radius:12px;background:rgba(0,0,0,.08);color:#54656f;font:12px Roboto,sans-serif;text-align:center}
+html.script .reset{display:none}
 </style>
 </head>
 <script>if(/[?&]embed=1/.test(location.search))document.documentElement.classList.add('embed')</script>
 <body>
 <div class="cap">📱 Farmer's phone · real 72 Ghante agent</div>
-<div class="reset" id="reset">↺ New chat</div>
+<div class="reset" id="reset">↺ Clear chat</div>
 <div class="modes" id="modes"><span data-m="wa" class="on">💬 WhatsApp</span><span data-m="call">📞 Call</span><span data-m="sms">✉️ SMS</span></div>
 <div class="phone"><div class="screen">
   <div class="notch"></div>
@@ -107,6 +109,15 @@ html.embed .cap{display:none}
 const PHONE=new URLSearchParams(location.search).get('phone')||'+919000000001';
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let busy=false,rec=null,chunks=[],sig='',t0=0;
+// Stage script mode (backup, switched from the dashboard): every send plays the next fixed step, no AI.
+let SCRIPT=false;
+// the farmer's next message, already typed in the box: press ➤ to send it
+const PRE={wa:['🎤 Voice note · नमस्ते, कल रात ओले गिरे, मेरी प्याज की पूरी फसल खराब हो गई।','📷 Photo · खेत की फोटो','🎤 Voice note · हाँ जी, हाँ… रिपोर्ट दर्ज कर दीजिए।'],
+  sms:['नमस्ते, कल रात ओले गिरे, मेरी प्याज की पूरी फसल खराब हो गई।','खेत की फोटो नहीं है, आगे बढ़िए','हाँ जी, रिपोर्ट दर्ज कर दीजिए']};
+function prefill(n){const t=$('txt');if(!SCRIPT||busy)return;const v=PRE[MODE==='sms'?'sms':'wa'][n%3];if(t.value===''||t.value===t.dataset.pre){t.value=v;t.dataset.pre=v;updBtn()}}
+async function pollMode(){const m=await fetch('/api/sim/mode').then(r=>r.json()).catch(()=>null);if(!m)return;if(m.script!==SCRIPT){SCRIPT=m.script;document.documentElement.classList.toggle('script',SCRIPT);sig='';draw(true)}}
+async function scriptNext(text){if(busy)return;busy=true;draw(true);const fd=new FormData();fd.append('phone',PHONE);if(text)fd.append('text',text);if(MODE==='sms')fd.append('as_text','true');
+  try{await fetch('/api/sim/script',{method:'POST',body:fd})}catch(e){}busy=false;draw(true)}
 const hm=t=>new Date(t).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}).toLowerCase();
 setInterval(()=>$('clock').textContent=new Date().toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',hour12:false}),1000);
 async function draw(force){
@@ -120,17 +131,19 @@ async function draw(force){
     const media=m.media_url?(m.kind==='image'?`<img src="${m.media_url}">`:`<audio controls preload="none" src="${m.media_url}"></audio>`):'';
     const body=m.kind==='voice'&&mine?`${media}<span class="heard">🎤 ${esc(txt)}</span>`:`${media}${esc(txt)}`;
     return`<div class="m ${mine?'out':'in'}">${body}<span class="t">${hm(m.ts)}${mine?'<span class="tk">✓✓</span>':''}</span></div>`}).join('')+`<div class="typing ${busy?'on':''}"><i></i><i></i><i></i></div>`;
+  if(SCRIPT){const n=msgs.filter(m=>m.direction==='in').length;prefill(n>=3?0:n)}
   $('st').textContent=busy?'typing…':'online';
   $('chat').scrollTop=1e9}
 async function post(fd){if(busy)return;busy=true;fd.append('phone',PHONE);draw(true);
   try{await fetch('/api/sim/send',{method:'POST',body:fd})}catch(e){}
   busy=false;draw(true)}
-function sendText(){const t=$('txt').value.trim();if(!t)return;$('txt').value='';updBtn();const fd=new FormData();fd.append('text',t);post(fd)}
+function sendText(){const t=$('txt').value.trim();if(!t)return;const pre=t===$('txt').dataset.pre;$('txt').value='';$('txt').dataset.pre='';updBtn();if(SCRIPT)return scriptNext(pre&&MODE!=='sms'?'':t);const fd=new FormData();fd.append('text',t);post(fd)}
 function updBtn(){$('send').textContent=$('txt').value.trim()?'➤':(rec?'■':'🎤')}
 $('txt').addEventListener('input',updBtn);
 $('txt').addEventListener('keydown',e=>{if(e.key==='Enter')sendText()});
 $('send').addEventListener('click',async()=>{
   if($('txt').value.trim())return sendText();
+  if(SCRIPT)return scriptNext();
   if(rec){rec.stop();return}
   try{const st=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];rec=new MediaRecorder(st);t0=Date.now();
     rec.ondataavailable=e=>chunks.push(e.data);
@@ -140,9 +153,10 @@ $('send').addEventListener('click',async()=>{
     rec.start();$('send').classList.add('rec');$('recbar').classList.add('on');$('txt').style.display='none';updBtn();
     const tick=setInterval(()=>{if(!rec)return clearInterval(tick);const s=Math.floor((Date.now()-t0)/1000);$('rt').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')},250);
   }catch(e){alert('Please allow the microphone for this page.')}});
-const upload=e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('file',f,f.name);if(f.type.startsWith('audio'))fd.append('voice','true');e.target.value='';post(fd)};
+const upload=e=>{const f=e.target.files[0];if(!f)return;if(SCRIPT){e.target.value='';return scriptNext()}const fd=new FormData();fd.append('file',f,f.name);if(f.type.startsWith('audio'))fd.append('voice','true');e.target.value='';post(fd)};
 $('file').addEventListener('change',upload);$('cam').addEventListener('change',upload);
-$('reset').addEventListener('click',async()=>{if(!confirm('Start a new chat? The current case is closed.'))return;await fetch('/api/sim/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:PHONE})});sig='';draw(true)});
+document.querySelectorAll('.box label').forEach(l=>l.addEventListener('click',e=>{if(SCRIPT){e.preventDefault();scriptNext()}}));
+$('reset').addEventListener('click',async()=>{if(!SCRIPT&&!confirm('Clear the chat and start again? The current case is closed.'))return;await fetch('/api/sim/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({phone:PHONE})});sig='';draw(true)});
 // ---- modes: WhatsApp / SMS share the chat view (different skin); Call is a voice-only screen
 let MODE='wa',lastSpoken='',callT0=0,callTick=null;
 const scr=document.querySelector('.screen');
@@ -157,10 +171,17 @@ async function lastAgent(){const o=await fetch('/api/sim/open?phone='+encodeURIC
 async function callSay(){const m=await lastAgent();if(!m||String(m.id)===lastSpoken)return;lastSpoken=String(m.id);
   const t=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');$('capt').textContent=t;
   if(m.media_url){const a=new Audio(m.media_url);a.play().catch(()=>speak(t))}else speak(t)}
+let CALLSTEP=0,CA=null;const playA=(src,cap,then)=>{if(CA)CA.pause();$('capt').textContent=cap;CA=new Audio(src);CA.onended=then||null;CA.play().catch(()=>{})};
+$('cstart').addEventListener('click',async e=>{if(SCRIPT){e.stopImmediatePropagation();$('callv').classList.remove('idle');callT0=Date.now();CALLSTEP=0;$('capt').textContent='📞 Ringing…';$('hint').textContent='Connecting…';
+    callTick=setInterval(()=>{const s=Math.floor((Date.now()-callT0)/1000);$('ctime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},500);
+    setTimeout(()=>{$('hint').textContent='Tap the mic and speak';playA('demo/call_agent1.mp3','नमस्ते, 72 घंटे हेल्पलाइन में आपका स्वागत है। अपनी फसल के नुकसान के बारे में बताइए।',()=>{CALLSTEP=1})},1800);return}},true);
 $('cstart').addEventListener('click',async()=>{$('callv').classList.remove('idle');callT0=Date.now();
   callTick=setInterval(()=>{const s=Math.floor((Date.now()-callT0)/1000);$('ctime').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},500);
   const m=await lastAgent();lastSpoken=m?String(m.id):'';const hello='नमस्ते, 72 घंटे हेल्पलाइन में आपका स्वागत है। अपनी फसल के नुकसान के बारे में बताइए।';$('capt').textContent=hello;speak(hello)});
 $('cend').addEventListener('click',()=>{$('callv').classList.add('idle');clearInterval(callTick);$('ctime').textContent='00:00';speechSynthesis.cancel()});
+$('talk').addEventListener('click',e=>{if(!SCRIPT)return;e.stopImmediatePropagation();if(CALLSTEP!==1)return;CALLSTEP=2;$('hint').textContent='Farmer speaking…';
+  playA('demo/call_farmer2.mp3','🧑‍🌾 कल रात ओले गिरे, मेरी प्याज की फसल खराब हो गई।',()=>{$('hint').textContent='Agent speaking…';playA('demo/call_agent3.mp3','समझ गई। आपकी सूचना दर्ज हो गई है। डॉकेट नंबर आपको SMS से भेज दिया है। चिंता मत कीजिए।',()=>{$('hint').textContent='Call complete ✓';CALLSTEP=3})})},true);
+$('cend').addEventListener('click',()=>{if(CA)CA.pause();CALLSTEP=0},true);
 $('talk').addEventListener('click',async()=>{
   if(rec){rec.stop();return}
   try{const st=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];rec=new MediaRecorder(st);
@@ -168,7 +189,7 @@ $('talk').addEventListener('click',async()=>{
     rec.onstop=async()=>{st.getTracks().forEach(t=>t.stop());const b=new Blob(chunks,{type:rec.mimeType||'audio/webm'});rec=null;$('talk').classList.remove('rec');$('hint').textContent='Agent is listening…';$('capt').textContent='…';
       const fd=new FormData();fd.append('file',b,'voice.webm');fd.append('voice','true');await post(fd);$('hint').textContent='Tap the mic and speak';callSay()};
     speechSynthesis.cancel();rec.start();$('talk').classList.add('rec');$('hint').textContent='Speaking… tap again to send'}catch(e){alert('Please allow the microphone for this page.')}});
-draw(true);setInterval(()=>{if(!busy)draw()},2500);
+pollMode();setInterval(pollMode,3000);draw(true);setInterval(()=>{if(!busy)draw()},2500);
 </script>
 </body>
 </html>

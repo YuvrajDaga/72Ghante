@@ -11,3 +11,4 @@ data/mock_registry.json
 data/tiles/
 data/demo_anchor.json
 data/*.bak*
+data/stage_mode.json
