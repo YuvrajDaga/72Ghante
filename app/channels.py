@@ -58,8 +58,8 @@ async def send(case: dict, text: str, voice: bool = True, also_sms: bool = False
     elif channel == "voice":
         voice_queue[phone].append({"text": text, "audio": media_path})
     if also_sms or channel == "sms":
-        # Simulator farmers have fake numbers: log the SMS copy, never send it.
-        result = {"sent": False, "reason": "simulator"} if channel == "sim" else await twilio_send(phone, text, None, whatsapp=False)
+        # Simulator / test farmers have fake numbers: the SMS goes to the simulated phone (its SMS tab), never to a real number.
+        result = {"sent": True, "via": "simulated phone"} if channel in ("sim", "test") else await twilio_send(phone, text, None, whatsapp=False)
         store.add_message(case["id"], phone, "sms", "out", "text", text)
         # India requires DLT sender registration for SMS; a trial number may be blocked. We record the outcome honestly.
         store.add_trace(case["id"], "channel", "sms.send", "ok" if result.get("sent") else "error", None, {"to": store.mask_phone(phone)}, result)
