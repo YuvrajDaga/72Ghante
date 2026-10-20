@@ -1841,9 +1841,9 @@ function analyticsPage(){if(!STATS||!CASES.length){setTimeout(analyticsPage,500)
       animation:{onComplete(){const ch=this,x=ch.ctx;x.save();x.textAlign='center';ch.getDatasetMeta(0).data.forEach((b,i)=>{const v=ch.data.datasets[0].data[i];x.fillStyle='#fff';x.font='700 12px "Inter Tight"';x.fillText(v,b.x,b.y-16);x.font='600 10px "Inter Tight"';x.fillStyle='#cfdcd8';x.fillText(Math.round(100*v/ct)+'%',b.x,b.y-4)});x.restore()}}}});
   // peak hours heat grid: real report times (day × 3-hour slot)
   const D=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],grid=D.map(()=>Array(8).fill(0));CASES.forEach(c=>{const t=new Date(c.created);if(!isNaN(t))grid[(t.getDay()+6)%7][Math.floor(t.getHours()/3)]++});
-  const mx=Math.max(1,...grid.flat()),col=v=>{const f=v/mx;return f>.75?'#ff3b4e':f>.5?'#fb923c':f>.3?'#facc15':f>.12?'#4ade80':'#14532d'};
+  const mx=Math.max(1,...grid.flat()),col=v=>{const f=v/mx;return f>.66?'#ff3b4e':f>.33?'#facc15':'#2fe08a'};
   $('aHeat').innerHTML=`<div class="hg"><span></span>${['12AM','3AM','6AM','9AM','12PM','3PM','6PM','9PM'].map(h=>`<small>${h}</small>`).join('')}${D.map((d,i)=>`<small>${d}</small>${grid[i].map(v=>`<i title="${v} reports" style="background:${col(v)}"></i>`).join('')}`).join('')}</div>
-    <div class="hl"><span><i style="background:#14532d"></i>Low</span><span><i style="background:#facc15"></i>Medium</span><span><i style="background:#ff3b4e"></i>High</span></div>`;
+    <div class="hl"><span><i style="background:#2fe08a"></i>Low</span><span><i style="background:#facc15"></i>Medium</span><span><i style="background:#ff3b4e"></i>High</span></div>`;
   drawChan()}
 function drawChan(){const I={whatsapp:['message-circle','#25d366','WhatsApp'],voice:['phone','#3d8bff','Voice Call'],sms:['message-square-text','#a855f7','SMS'],sim:['smartphone','#f5a524','Demo phone'],test:['flask-conical','#94a3b8','Tests'],mr:['languages','#2fe08a','Marathi'],hi:['languages','#3d8bff','Hindi'],mwr:['languages','#a855f7','Marwadi']};
   const rows=ACH==='ch'?STATS.channels:STATS.languages,t=rows.reduce((a,r)=>a+r[1],0)||1;
