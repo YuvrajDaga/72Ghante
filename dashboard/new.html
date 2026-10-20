@@ -856,6 +856,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #evTbl td{height:27px}.pf{padding:2px 9px;border-radius:6px;font-weight:700;font-size:10.5px}.pf.p{background:#1e8a52}.pf.f{background:#c81e3a}
 #evEx{position:absolute;left:12px;right:12px;top:40px;bottom:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px}
 #evEx>div{padding:8px 10px;border-radius:9px;border:1px solid}#evEx b{display:block;font-size:12.5px;margin-bottom:3px}
+.av:has(>img.avp){padding:0;overflow:hidden;background:#0d2a22}.av>img.avp{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 </style>
 </head>
 <body>
@@ -1475,6 +1476,7 @@ const CROPI={onion:'🧅',soybean:'🫘',bajra:'🌾',wheat:'🌾',paddy:'🌾',
 const FEM=new Set(['Anita','Geeta','Kamla','Lakshmi','Manisha','Savita','Shobha','Sunita']);
 const FACEOF={};// case id -> photo shown in Recent Cases, so Case Details shows the same face
 const FACES_F=[1,5,7],FACES_M=[0,2,3,4,6],FEMF=new Set(FACES_F);
+const avImg=n=>n?`<img class="avp" src="${face(n)}" alt="">`:'';
 const face=n=>{const f=String(n||'').split(' ')[0],p=FEM.has(f)?FACES_F:FACES_M;let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))>>>0;return`img/fa${p[h%p.length]}.webp`};
 const isLive=c=>!['acknowledged','closed','area_based'].includes(c.status_key);
 // No search: newest real case of each status, in the design's order (one row per status)
@@ -1617,7 +1619,7 @@ function drawCases(){const L=filtered(),pages=Math.max(1,Math.ceil(L.length/CP.s
   $('ctTitle').textContent=`Cases (${L.length.toLocaleString('en-IN')})`;
   $('allTbl').innerHTML=`<tr><th><input type="checkbox"></th><th>Case ID</th><th>Farmer</th><th>Phone</th><th>Crop</th><th>Damage Type</th><th>Taluka</th><th>Channel</th><th>Status</th><th>Time Left</th><th>Created</th><th>Actions</th></tr>`+
     rows.map((c,i)=>{const[t,k]=left(c),[cc,ci]=CHI[c.channel]||['','circle'],cr=new Date(c.created);
-      return`<tr class="row ${c.id===CP.sel?'sel':''}" data-id="${c.id}" style="animation-delay:${i*30}ms"><td><input type="checkbox"></td><td>${c.id}</td><td><span class="av">${ini(c.farmer)}</span>${esc(c.farmer)}</td><td>${esc(c.phone.replace(/^x+/,'••••'))}</td><td>${cap(c.crop)}</td><td>${cap(c.peril)}</td><td>${esc(c.taluka||'—')}</td><td class="chi ${cc}"><i data-lucide="${ci}"></i></td><td>${badge(c)}</td>
+      return`<tr class="row ${c.id===CP.sel?'sel':''}" data-id="${c.id}" style="animation-delay:${i*30}ms"><td><input type="checkbox"></td><td>${c.id}</td><td><span class="av">${avImg(c.farmer)}</span>${esc(c.farmer)}</td><td>${esc(c.phone.replace(/^x+/,'••••'))}</td><td>${cap(c.crop)}</td><td>${cap(c.peril)}</td><td>${esc(c.taluka||'—')}</td><td class="chi ${cc}"><i data-lucide="${ci}"></i></td><td>${badge(c)}</td>
       <td>${t==='—'?'—':`<span class="tlp ${t==='Expired'?'r':k}"><i data-lucide="clock"></i>${t}</span>`}</td><td>${cr.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}<br><small style="color:#c7d5d1">${cr.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</small></td><td><span class="mdot">···</span></td></tr>`}).join('');
   const s=(L.length?(CP.page-1)*CP.size+1:0),e=Math.min(L.length,CP.page*CP.size);$('pgInfo').textContent=`Showing ${s}–${e} of ${L.length.toLocaleString('en-IN')} cases`;
   const nums=[...new Set([1,2,3,4,5,CP.page-1,CP.page,CP.page+1,pages].filter(n=>n>=1&&n<=pages))].sort((a,b)=>a-b);let html=`<span class="pg" data-p="${CP.page-1}">‹</span>`,prev=0;
@@ -1626,7 +1628,7 @@ function drawCases(){const L=filtered(),pages=Math.max(1,Math.ceil(L.length/CP.s
 async function caseSide(){const L=filtered(),idx=L.findIndex(c=>c.id===CP.sel),sum=L[idx];if(!sum){$('sBody').innerHTML='';return}
   $('sPos').textContent=`Case ${idx+1} of ${L.length}`;$('sSt').innerHTML=badge(sum);
   const d=await fetch('/api/cases/'+sum.id).then(r=>r.json()).catch(()=>null);if(!d||CP.sel!==sum.id)return;const c=d.case,f=c.fields||{};CP.case=d;
-  $('sId').textContent=c.id;$('sAv').textContent=ini(c.farmer_name);$('sName').textContent=c.farmer_name||'—';$('sPhone').textContent=sum.phone.replace(/^x+/,'••••');
+  $('sId').textContent=c.id;$('sAv').innerHTML=avImg(c.farmer_name);$('sName').textContent=c.farmer_name||'—';$('sPhone').textContent=sum.phone.replace(/^x+/,'••••');
   $('sPlace').textContent=[...new Set([f.village,f.taluka,f.district])].filter(Boolean).join(', ');
   document.querySelectorAll('#sTabs span').forEach(x=>{const n={doc:(c.evidence||[]).length,conv:(d.messages||[]).length}[x.dataset.t];x.textContent=x.textContent.replace(/ \(\d+\)$/,'')+(n!=null?` (${n})`:'');x.classList.toggle('on',x.dataset.t===CP.tab)});
   sideTab()}
@@ -1774,7 +1776,7 @@ function ffiltered(){const q=$('fq').value.toLowerCase(),ta=$('ffTa').value,cr=$
 function drawFarmers(){const L=ffiltered(),pages=Math.max(1,Math.ceil(L.length/FP.size));FP.page=Math.min(FP.page,pages);const rows=L.slice((FP.page-1)*FP.size,FP.page*FP.size);
   if(!FP.sel||!L.find(f=>f.phone===FP.sel))FP.sel=rows[0]?.phone||null;$('ftTitle').textContent=`Farmers (${L.length.toLocaleString('en-IN')})`;
   $('farmTbl').innerHTML=`<tr><th><input type="checkbox"></th><th>Farmer</th><th>Phone</th><th>Village / Taluka</th><th>Language</th><th>Policy No.</th><th>Crops</th><th>Cases</th><th>Consent</th><th>Actions</th></tr>`+
-    rows.map((f,i)=>`<tr class="row ${f.phone===FP.sel?'sel':''}" data-p="${esc(f.phone)}" style="animation-delay:${i*30}ms"><td><input type="checkbox"></td><td><span class="av">${ini(f.name)}</span>${esc(f.name)}</td><td>${esc(f.phone.replace(/^x+/,'••••'))}</td>
+    rows.map((f,i)=>`<tr class="row ${f.phone===FP.sel?'sel':''}" data-p="${esc(f.phone)}" style="animation-delay:${i*30}ms"><td><input type="checkbox"></td><td><span class="av">${avImg(f.name)}</span>${esc(f.name)}</td><td>${esc(f.phone.replace(/^x+/,'••••'))}</td>
       <td>${esc(f.village||'—')}<br><small style="color:#c7d5d1">${esc(f.taluka||'')}</small></td><td><span class="lang">${LANG[f.language]||esc(f.language||'—')}</span></td><td>${esc(f.application_no||'—')}</td><td>${f.crops.map(cap).join(', ')}</td><td style="text-align:center">${f.cases}</td>
       <td><span class="cns ${f.consent?'y':'n'}">${f.consent?'✓ Given':'⏳ Pending'}</span></td><td><span class="mdot">···</span></td></tr>`).join('');
   const s=L.length?(FP.page-1)*FP.size+1:0,e=Math.min(L.length,FP.page*FP.size);$('fpInfo').textContent=`Showing ${s}–${e} of ${L.length.toLocaleString('en-IN')} farmers`;
@@ -1782,7 +1784,7 @@ function drawFarmers(){const L=ffiltered(),pages=Math.max(1,Math.ceil(L.length/F
   nums.forEach(n=>{if(n-pv>1)h+=`<span class="pg" style="cursor:default">…</span>`;h+=`<span class="pg ${n===FP.page?'on':''}" data-p="${n}">${n}</span>`;pv=n});$('fpBtns').innerHTML=h+`<span class="pg" data-p="${FP.page+1}">›</span>`;
   lucide.createIcons();farmSide()}
 async function farmSide(){const f=FARM.find(x=>x.phone===FP.sel);if(!f){$('fBody').innerHTML='';return}
-  $('fAv').textContent=ini(f.name);$('fName').textContent=f.name;$('fId').textContent='Latest case '+f.latest_case;$('fPhone').textContent=f.phone.replace(/^x+/,'••••');
+  $('fAv').innerHTML=avImg(f.name);$('fName').textContent=f.name;$('fId').textContent='Latest case '+f.latest_case;$('fPhone').textContent=f.phone.replace(/^x+/,'••••');
   $('fPlace').textContent=[...new Set([f.village,f.taluka,f.district])].filter(Boolean).join(', ');$('fLang').textContent=LANG[f.language]||f.language||'—';
   $('fBadge').textContent=f.open?'Open case':'Active Farmer';$('fBadge').className='st '+(f.open?'wait':'sub');
   const past=CASES.filter(c=>c.farmer===f.name&&c.phone===f.phone);document.querySelectorAll('#fTabs span').forEach(x=>{if(x.dataset.t==='past')x.textContent=`Past Cases (${past.length})`;x.classList.toggle('on',x.dataset.t===FP.tab)});
@@ -1986,17 +1988,17 @@ async function whatsappPage(){if(!CASES.length){setTimeout(whatsappPage,500);ret
 const CHI2={whatsapp:['message-circle','#25d366'],voice:['phone','#3d8bff'],sms:['message-square-text','#a855f7']};
 function drawConvs(){const q=$('waQ').value.toLowerCase(),L=WA.list.map((x,i)=>({...x,i})).filter(x=>(WA.tab==='all'||(WA.tab==='unread'?x.unread:x.ch===WA.tab))&&(!q||x.c.farmer.toLowerCase().includes(q)));
   $('waConvTitle').textContent=`Conversations (${WA.list.length})`;
-  $('waList').innerHTML=`<li class="${WA.sel==='live'?'on':''} liveConv" data-i="live"><span class="av" style="background:linear-gradient(135deg,#25d366,#0f8a5a)">SP</span><p><b>Live demo · Sunita Pawar</b><small>Real AI agent · type or speak</small></p><span class="livePill" style="position:static">Live</span></li>`+L.map(x=>{const[ic,col]=CHI2[x.ch]||CHI2.whatsapp;return`<li class="${x.i===WA.sel?'on':''}" data-i="${x.i}"><span class="av">${ini(x.c.farmer)}</span><p><b>${esc(x.c.farmer)}</b><small>${esc(x.prev)}</small></p><span class="lang ${x.lang}">${LANG[x.lang]||x.lang}</span><span class="wt">${x.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}${x.unread?`<em>${x.unread}</em>`:''}</span><span class="wci" style="color:${col}"><i data-lucide="${ic}"></i></span></li>`}).join('');lucide.createIcons()}
+  $('waList').innerHTML=`<li class="${WA.sel==='live'?'on':''} liveConv" data-i="live"><span class="av">${avImg('Sunita Pawar')}</span><p><b>Live demo · Sunita Pawar</b><small>Real AI agent · type or speak</small></p><span class="livePill" style="position:static">Live</span></li>`+L.map(x=>{const[ic,col]=CHI2[x.ch]||CHI2.whatsapp;return`<li class="${x.i===WA.sel?'on':''}" data-i="${x.i}"><span class="av">${avImg(x.c.farmer)}</span><p><b>${esc(x.c.farmer)}</b><small>${esc(x.prev)}</small></p><span class="lang ${x.lang}">${LANG[x.lang]||x.lang}</span><span class="wt">${x.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}${x.unread?`<em>${x.unread}</em>`:''}</span><span class="wci" style="color:${col}"><i data-lucide="${ic}"></i></span></li>`}).join('');lucide.createIcons()}
 async function drawChat(){if(WA.sel==='live')return drawLive();const x=WA.list[WA.sel];if(!x)return;const c=x.c,P=WAP[x.lang]||WAP.hi;
   const d=await fetch('/api/cases/'+c.id).then(r=>r.json()).catch(()=>null),f=d?.case?.fields||{},left=(new Date(c.deadline)-(Date.now()+skew))/36e5;
-  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${ini(c.farmer)}</span><div><b>${esc(c.farmer)}</b> <span class="cns y" style="font-size:10.5px">✓ Farmer</span><small>${esc(c.phone.replace(/^x+/,'••••'))} · ${esc([f.village,f.taluka,f.district].filter(Boolean).join(', '))} · <span class="lang">${LANG[x.lang]}</span></small></div><span class="nav2" style="margin-left:auto"><i data-lucide="phone"></i></span><span class="nav2"><i data-lucide="ellipsis"></i></span>`;
+  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${avImg(c.farmer)}</span><div><b>${esc(c.farmer)}</b> <span class="cns y" style="font-size:10.5px">✓ Farmer</span><small>${esc(c.phone.replace(/^x+/,'••••'))} · ${esc([f.village,f.taluka,f.district].filter(Boolean).join(', '))} · <span class="lang">${LANG[x.lang]}</span></small></div><span class="nav2" style="margin-left:auto"><i data-lucide="phone"></i></span><span class="nav2"><i data-lucide="ellipsis"></i></span>`;
   const t0=new Date(c.created),tm=m=>new Date(t0.getTime()+m*6e4).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
   const wave=Array.from({length:34},(_,i)=>`<i style="height:${6+Math.abs(Math.sin(i*1.7))*16}px"></i>`).join('');
   $('waBody').innerHTML=`<div class="wday">Today</div>
-    <div class="wm in"><span class="av">${ini(c.farmer)}</span><div class="bub"><div class="voice"><span class="play"><i data-lucide="play"></i></span><span class="wave">${wave}</span><small>0:24</small></div>
+    <div class="wm in"><span class="av">${avImg(c.farmer)}</span><div class="bub"><div class="voice"><span class="play"><i data-lucide="play"></i></span><span class="wave">${wave}</span><small>0:24</small></div>
       <p class="nat">${P.open[0]}<br>${P.open[1]}</p><div class="tr2"><small>Translation (English)</small>${P.en[0]}<br>${P.en[1]}</div><time>${tm(0)}</time></div></div>
     <div class="wm out"><div class="bub">I'm sorry to hear about the damage, ${esc(c.farmer.split(' ')[0])} ji. Can you please share some photos of your field?<time>${tm(2)} ✓✓</time></div></div>
-    <div class="wm in"><span class="av">${ini(c.farmer)}</span><div class="bub img"><img src="img/field1.png" alt="Field photo"><time>${tm(4)}</time></div></div>
+    <div class="wm in"><span class="av">${avImg(c.farmer)}</span><div class="bub img"><img src="img/field1.png" alt="Field photo"><time>${tm(4)}</time></div></div>
     <div class="wm out"><div class="bub">Thank you for the photo. I have found your policy details.<div class="pol"><i data-lucide="shield-check"></i><div><b>Policy found: ${esc(f.application_no||'—')}</b><small>Crop: ${cap(f.crop)} · Survey no: ${esc(f.survey_no||'—')} · Area: ${f.area_acres??'—'} acres</small></div></div>
       Is this correct?<div class="yn"><span class="y">✓ Ho (Yes)</span><span class="n">✕ Nahi (No)</span></div><time>${tm(6)} ✓✓</time></div></div>`+
     (REM[c.id]?`<div class="wm out"><div class="bub">🔔 Reminder: ${esc(c.farmer.split(' ')[0])} ji, please reply so we can file your crop-loss report before the 72-hour deadline.<time>${new Date(REM[c.id]).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})} ✓</time></div></div>`:'');
@@ -2022,10 +2024,10 @@ async function drawLive(force){if(WA.sel!=='live')return;
   const msgs=o.case_id?all.filter(m=>m.case_id===o.case_id&&m.channel!=='sms'):[];
   const d=o.case_id?await fetch('/api/cases/'+o.case_id).then(r=>r.json()).catch(()=>null):null,c=d?.case;
   const sig=JSON.stringify([msgs.length,LV.busy,c?.stage,c?.intimation?.status]);if(sig===LV.sig&&!force)return;LV.sig=sig;
-  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px;background:linear-gradient(135deg,#25d366,#0f8a5a)">SP</span><div><b>Sunita Pawar</b> <span class="cns y" style="font-size:10.5px">● Live · real AI</span><small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
+  $('waHead').innerHTML=`<span class="av" style="width:44px;height:44px;font-size:15px">${avImg('Sunita Pawar')}</span><div><b>Sunita Pawar</b> <span class="cns y" style="font-size:10.5px">● Live · real AI</span><small>Demo phone ${LIVE_PHONE.slice(0,3)} ••••••0001 · Lasalgaon, Niphad, Nashik</small></div>`;
   const bub=m=>{const media=m.media_url?(m.kind==='image'?`<img src="${m.media_url}" alt="">`:`<audio controls preload="none" src="${m.media_url}" style="width:220px;height:32px;display:block;margin-bottom:4px"></audio>`):'';
     const txt=(m.text||'').replace(/\n\n(⏱|📄)[^\n]*$/,'');
-    return m.direction==='in'?`<div class="wm in"><span class="av">SP</span><div class="bub ${m.kind==='image'?'img':''}">${media}${m.kind==='voice'&&txt?`<small style="color:#9fb3ae">🎤 heard:</small><br>`:''}${esc(txt)}<time>${lvTime(m.ts)}</time></div></div>`
+    return m.direction==='in'?`<div class="wm in"><span class="av">${avImg('Sunita Pawar')}</span><div class="bub ${m.kind==='image'?'img':''}">${media}${m.kind==='voice'&&txt?`<small style="color:#9fb3ae">🎤 heard:</small><br>`:''}${esc(txt)}<time>${lvTime(m.ts)}</time></div></div>`
       :`<div class="wm out"><div class="bub">${media}${esc(txt).replace(/\n/g,'<br>')}<time>${lvTime(m.ts)} ✓✓</time></div></div>`};
   $('waBody').innerHTML=(msgs.length?`<div class="wday">Today</div>`+msgs.map(bub).join(''):`<div class="wday">Live demo · real AI agent</div><div class="wm out"><div class="bub">Type or record a message as the farmer — Hindi, Marathi or Marwadi.<br>For example: <i>काल रात्री गारपीट झाली, कांद्याचं नुकसान झालं</i><time>now</time></div></div>`)
     +(LV.busy?`<div class="wm out"><div class="bub">⏳ Agent is thinking…</div></div>`:'');
