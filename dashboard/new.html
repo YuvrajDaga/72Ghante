@@ -2117,9 +2117,11 @@ $('mq').addEventListener('input',drawMap);
 // ===== Agent Logs page (real trace from /api/trace) =====
 const KD={inbound:['Voice / In','mic','#15803d'],llm:['AI Decision','brain','#7c3aed'],tool:['Tool Call','wrench','#1d4ed8'],decision:['Decision','git-branch','#b45309'],channel:['Message','send','#0e7490'],system:['System','settings','#334155']};
 let LG={all:[],page:1,sel:null};
+// estimated AI spend from the real trace: Groq free tier = ₹0; Gemini ≈ ₹0.25 per text/vision call, ≈ ₹1 per voice (TTS) reply
+function aiCost(){return LG.all.filter(x=>x.kind==='llm'&&x.status==='ok').reduce((a,x)=>{let m='';try{m=JSON.parse(x.input||'{}').model||''}catch{}return a+(m.startsWith('groq')?0:/tts/.test(m)||x.name==='text_to_speech'?1:.25)},0)}
 async function logsPage(){LG.all=await fetch('/api/trace?limit=5000').then(r=>r.json()).catch(()=>[]);LG.all.sort((a,b)=>b.id-a.id);
   const ms=LG.all.filter(x=>x.ms!=null),avg=ms.length?ms.reduce((a,x)=>a+x.ms,0)/ms.length:0,llm=LG.all.filter(x=>x.kind==='llm').length;
-  $('lgTop').innerHTML=[['k1','list-checks',LG.all.length.toLocaleString('en-IN'),'Total Agent Steps'],['k2','timer',avg?(avg/1000).toFixed(2)+' s':'—','Avg Tool Step Time'],['k8','indian-rupee',llm?'—':'₹0.00',llm?'AI cost so far':'AI cost (no LLM calls yet)']]
+  $('lgTop').innerHTML=[['k1','list-checks',LG.all.length.toLocaleString('en-IN'),'Total Agent Steps'],['k2','timer',avg?(avg/1000).toFixed(2)+' s':'—','Avg Tool Step Time'],['k8','indian-rupee','₹'+aiCost().toFixed(2),'AI cost so far (est.) · Groq free']]
     .map(([k,ic,v,l])=>`<div class="kpi ${k}"><span class="ic" style="top:22px"><i data-lucide="${ic}"></i></span><b style="left:76px;top:18px">${v}</b><span class="lb" style="left:76px;top:48px;font-size:12.5px;white-space:normal;right:8px">${l}</span></div>`).join('');
   const cnt={};LG.all.forEach(x=>cnt[x.kind]=(cnt[x.kind]||0)+1);const bad=LG.all.filter(x=>x.status!=='ok').length;
   $('lgChips').innerHTML=Object.entries(cnt).map(([k,n])=>`<span>${(KD[k]||[k])[0]} (${n})</span>`).join('')+`<span style="border-color:#ff3b4e;color:#ff8a96">Failed (${bad})</span>`;
