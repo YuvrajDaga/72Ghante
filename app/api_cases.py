@@ -70,6 +70,18 @@ async def list_cases(q: str = "", status: str = "", crop: str = "", district: st
         items = [c for c in items if source_of(c) != "test"]  # test runs live on the Reports page
     elif source in ("live", "demo", "test"):
         items = [c for c in items if source_of(c) == source]
+    # The simulated phone starts a new case on every "New chat": list only the newest case per demo phone, so one farmer shows once.
+    seen: set[str] = set()
+    kept = []
+    for c in items:  # newest first
+        if c.get("channel") == "sim":
+            if not c.get("phone") or c["phone"] in seen:
+                continue
+            seen.add(c["phone"])
+        elif c.get("channel") == "whatsapp" and not c.get("phone"):
+            continue  # empty test chat with no farmer
+        kept.append(c)
+    items = kept
     rows = [summary(c) for c in items]
     for r in rows:
         r["status_key"] = _status_key(r)

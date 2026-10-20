@@ -18,7 +18,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter Tight",Inter,system-ui,sans-serif;overflow:hidden}
-#stage{position:fixed;inset:0;overflow:hidden}
+#stage{position:fixed;inset:0;overflow-x:hidden;overflow-y:auto}
 #frame{width:1536px;height:1024px;position:absolute;left:0;top:0;transform-origin:0 0;
   background:radial-gradient(1200px 700px at 70% 40%,#0b2a1f 0%,#06140f 70%)}
 
@@ -498,18 +498,22 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 /* ---------- Pages ---------- */
 .page{position:absolute;inset:0;display:none}.page.on{display:block}
 /* ---------- Cases page ---------- */
-.phead{position:absolute;left:10px;right:10px;top:60px;height:106px;border-radius:12px;overflow:hidden;background:linear-gradient(90deg,#06140f 0%,#08201a 45%,#0a2a1e 100%);animation:rise .6s both}
-.phead img{position:absolute;right:0;top:0;height:100%;width:auto}
-.phead::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#06140f 0%,rgba(6,20,15,.9) 30%,rgba(6,20,15,0) 55%)}
+.phead{position:absolute;left:10px;right:10px;top:62px;height:188px;border-radius:12px;overflow:hidden;background:#0a1a14 url(img/hero_wide.jpg) center 55%/cover no-repeat;border:1px solid rgba(90,220,170,.28);animation:rise .6s both}
+.phead>img{display:none}
+/* page banners = same size as the dashboard banner; the page content moves down and the page scrolls */
+.page:has(>.phead)>:not(.phead){margin-top:84px}
+.phead>.pbtn{left:24px!important;top:126px}
+.phead>.pbtn.new~.pbtn.exp{left:168px!important}
+.phead::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(4,16,12,.82) 0%,rgba(4,16,12,.55) 30%,rgba(4,16,12,0) 55%)}
 .phead>*{position:absolute;z-index:1}
-.crumb{left:12px;top:6px;font-size:13.5px;color:#e6eeec}.crumb b{color:#3dffa0;font-weight:600}
-.phead h1{left:12px;top:24px;font-size:36px;font-weight:800;letter-spacing:-.5px}
-.phead p{left:12px;top:72px;font-size:13.5px;color:#e8f0ee;text-shadow:0 1px 4px #000}
+.crumb{left:24px;top:12px;font-size:13.5px;color:#e6eeec}.crumb b{color:#3dffa0;font-weight:600}
+.phead h1{left:24px;top:40px;font-size:36px;font-weight:800;letter-spacing:-.5px}
+.phead p{left:24px;top:90px;font-size:13.5px;color:#e8f0ee;text-shadow:0 1px 4px #000}
 .pbtn{top:50px;height:42px;border-radius:9px;display:flex;align-items:center;gap:10px;padding:0 18px;font:700 15px "Inter Tight",sans-serif;cursor:pointer;color:#fff;
   background:rgba(8,26,30,.85);border:1.5px solid rgba(200,230,230,.6)}
 .pbtn svg{width:20px;height:20px}
-.pbtn.new{left:565px;color:#05281a;border:0;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);box-shadow:0 0 16px rgba(63,240,170,.55);animation:icglow2 2.4s ease-in-out infinite}
-.pbtn.exp{left:707px}
+.pbtn.new{left:600px;color:#05281a;border:0;background:linear-gradient(180deg,#4ff6bd,#2fdc9f);box-shadow:0 0 16px rgba(63,240,170,.55);animation:icglow2 2.4s ease-in-out infinite}
+.pbtn.exp{left:742px}
 .ckpis{position:absolute;left:10px;right:10px;top:174px;height:82px;display:flex;gap:9px}
 .ckpis .kpi{cursor:pointer}
 .ckpis .kpi.sel{outline:2px solid rgba(var(--c),1);outline-offset:1px}
@@ -729,7 +733,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #invDlg label{display:block;font-size:12.5px;margin-bottom:10px}#invDlg input,#invDlg select{display:block;width:100%;margin-top:4px;height:34px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 13px "Inter Tight",sans-serif}
 
 /* WhatsApp page */
-#waTop{position:absolute;left:790px;right:10px;top:64px;height:96px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:2}
+#waTop{position:absolute;left:790px;right:16px;top:146px;margin-top:0!important;height:96px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;z-index:2}
 .watile{display:flex;align-items:center;gap:10px;padding:0 12px;border-radius:11px;border:1.5px solid var(--wc);background:linear-gradient(135deg,color-mix(in srgb,var(--wc) 30%,transparent),rgba(6,20,22,.9));box-shadow:0 0 12px color-mix(in srgb,var(--wc) 35%,transparent);animation:rise .6s both}
 .watile>span{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--wc);flex:none}.watile svg{width:22px;height:22px;color:#fff}
 .watile b{display:block;font-size:20px}.watile small{font-size:12px}
@@ -796,7 +800,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:"Inter T
 #msv{position:absolute;left:14px;right:14px;top:44px;bottom:10px;display:flex;gap:14px;align-items:center}
 
 /* Agent Logs page */
-#lgTop{position:absolute;left:760px;right:10px;top:66px;height:94px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;z-index:2}
+#lgTop{position:absolute;left:760px;right:16px;top:148px;margin-top:0!important;height:94px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;z-index:2}
 .lin{height:30px;min-width:150px;border-radius:7px;padding:0 10px;background:rgba(10,30,40,.85);border:1px solid rgba(110,170,210,.35);color:#fff;font:400 12.5px "Inter Tight",sans-serif;outline:0}
 .lchips{display:flex;gap:6px;flex-wrap:wrap;align-self:center;margin-left:6px}.lchips span{padding:4px 9px;border-radius:12px;font-size:11px;border:1px solid rgba(255,255,255,.18);background:rgba(10,30,40,.6);white-space:nowrap}
 .kd{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:6px;font-size:10.5px;font-weight:700;color:#fff}.kd svg{width:12px;height:12px}
@@ -1286,7 +1290,7 @@ lucide.createIcons();
 // Logo: uses img/logo.png once Yuvraj sends it; empty until then.
 (()=>{const i=new Image();i.onload=()=>document.getElementById('logo').appendChild(i);i.src='img/logo.png'})();
 // Fit the 1536×1024 design to the window.
-function fit(){const W=innerWidth,H=innerHeight,s=Math.min(H/1024,W/1300),f=document.getElementById('frame');f.style.width=(W/s)+'px';f.style.height=Math.max(1024,H/s)+'px';f.style.transform=`scale(${s})`}
+function fit(){const W=innerWidth,H=innerHeight,s=Math.min(H/1024,W/1300),f=document.getElementById('frame'),x=document.querySelector('.page.on>.phead')?84:0;f.style.width=(W/s)+'px';f.style.height=(Math.max(1024,H/s)+x)+'px';f.style.transform=`scale(${s})`;document.getElementById('stage').style.height=x?'':'';if(!x)document.getElementById('stage').scrollTop=0}
 addEventListener('resize',fit);fit();
 // Menu
 let NAV_POP=false;
@@ -1586,7 +1590,7 @@ loadAll();setInterval(loadAll,30000);
 
 // ===== Page switching =====
 function showPage(p){const el=document.getElementById('pg-'+p);if(!el)return false;
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));if(p==='cases')casesPage();if(p==='eval')evalPage();if(p==='settings')settingsPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x===el));fit();if(p==='cases')casesPage();if(p==='eval')evalPage();if(p==='settings')settingsPage();if(p==='reports')reportsPage();if(p==='logs')logsPage();if(p==='maps')mapsPage();if(p==='chat')whatsappPage();if(p==='farmers')farmersPage();if(p==='analytics')analyticsPage();if(p==='tools')toolsPage();if(p==='failure')failurePage();if(p==='team')teamPage();if(p==='dashboard'&&MAP)setTimeout(()=>MAP.invalidateSize(),50);return true}
 document.getElementById('nav').addEventListener('click',e=>{const li=e.target.closest('li');if(li)showPage(li.dataset.p)});
 document.querySelector('.kpis').addEventListener('click',e=>{if(e.target.closest('.kpi'))document.querySelector('.nav li[data-p="cases"]').click()});
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.querySelector('.main').appendChild(t);setTimeout(()=>t.remove(),2600)};
