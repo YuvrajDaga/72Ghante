@@ -1,4 +1,4 @@
-"""Opens a public https link to this laptop so real WhatsApp (Meta) can reach the agent.
+r"""Opens a public https link to this laptop so real WhatsApp (Meta) can reach the agent.
 Run:  .venv\Scripts\python tunnel_whatsapp.py      (keep the window open during the demo)
 Paste the printed Webhook URL into Meta → WhatsApp → Configuration."""
 from pyngrok import ngrok
